@@ -1,0 +1,1469 @@
+ SLAVE  PROCESSOR NUMBER            2  IN THE GROUP OF            4
+ EXECUTABLE FILE: /home/user/Desktop/pputils_v1.0/examples/uni_pputils/Fudaa_conversion_OK/uni.cas_2015-07-28-09h19min01s/A.EXE
+ BARRIER PASSED
+
+
+
+
+
+ LISTING OF TELEMAC-2D ------------------------------------------------------------------------------
+
+
+
+
+
+                 TTTTT  EEEEE  L      EEEEE  M   M  AAAAA  CCCCC
+                   T    E      L      E      MM MM  A   A  C    
+                   T    EEE    L      EEE    M M M  AAAAA  C    
+                   T    E      L      E      M   M  A   A  C    
+                   T    EEEEE  LLLLL  EEEEE  M   M  A   A  CCCCC
+                                                                
+                         2D    VERSION 7.0    FORTRAN 90        
+                               WITH SEVERAL TRACERS             
+                         COUPLED WITH SISYPHE AND TOMAWAC       
+
+
+
+
+
+
+  
+ THE KEY-WORD: STEERING FILE
+ APPPEARS AT LEAST TWICE , THE LAST VALUE WILL BE KEPT...
+  
+  
+ THE KEY-WORD: PARALLEL PROCESSORS
+ APPPEARS AT LEAST TWICE , THE LAST VALUE WILL BE KEPT...
+  
+  
+
+                   ********************************************
+                   *               LECDON:                    *
+                   *        AFTER CALLING DAMOCLES            *
+                   *        CHECKING OF DATA  READ            *
+                   *         IN THE STEERING FILE             *
+                   ********************************************
+
+
+ EXITING LECDON. NAME OF THE STUDY:
+                                                                         
+
+ OPENING FILES FOR TELEMAC2D               
+
+
+
+                          *****************************
+                          *    MEMORY ORGANIZATION    *
+                          *****************************
+
+
+
+ READGEO1: TITLE= grid                                                                    
+            NUMBER OF ELEMENTS:      197
+            NUMBER OF POINTS:      128
+
+            FORMAT NOT INDICATED IN TITLE
+  
+ MXPTEL (BIEF) : MAXIMUM NUMBER OF ELEMENTS AROUND A POINT:   6
+                 MAXIMUM NUMBER OF POINTS AROUND A POINT:   7
+ (GLOBAL MESH)
+ SEGBOR (BIEF) : NUMBER OF BOUNDARY SEGMENTS =     57
+ INCLUDING THOSE DUE TO DOMAIN DECOMPOSITION
+ CORRXY (BIEF):NO MODIFICATION OF COORDINATES
+
+ MESH: MESH   ALLOCATED
+
+
+
+                     *************************************
+                     *    END OF MEMORY ORGANIZATION:    *
+                     *************************************
+
+ INBIEF (BIEF): NOT A VECTOR MACHINE (ACCORDING TO YOUR DATA)
+ STRCHE (BIEF): NO MODIFICATION OF FRICTION
+
+  
+ NUMBER OF LIQUID BOUNDARIES:           2
+
+ CORFON (TELEMAC2D): NO MODIFICATION OF BOTTOM
+
+
+================================================================================
+ ITERATION        0    TIME:   0.0000 S
+ PRERES: MAXIMUM COURANT NUMBER:     0.000000    
+ THE LIQUID BOUNDARIES FILE CONTAINS
+           3  LINES WITH:
+ SL(2)    
+ USING STREAMLINE VERSION 7.0 FOR CHARACTERISTICS
+
+================================================================================
+ ITERATION      900    TIME:  7 MN  30.0000 S   (      450.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.7768815E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    16254.49     M3
+     FLUX BOUNDARY    1:     13.99916     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -21.51914     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        450.0     S :   -0.2964102E-06
+
+================================================================================
+ ITERATION     1800    TIME: 15 MN   0.0000 S   (      900.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        4 ITERATIONS, RELATIVE PRECISION:   0.6036075E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    14888.19     M3
+     FLUX BOUNDARY    1:     14.00143     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -12.16178     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        900.0     S :    0.4995040E-07
+
+================================================================================
+ ITERATION     2700    TIME: 22 MN  30.0000 S   (     1350.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.9655222E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    15211.83     M3
+     FLUX BOUNDARY    1:     14.00166     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.73226     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        1350.     S :   -0.9458941E-08
+
+================================================================================
+ ITERATION     3600    TIME: 30 MN   0.0000 S   (     1800.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.9789939E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    14841.05     M3
+     FLUX BOUNDARY    1:     13.99791     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.48151     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        1800.     S :   -0.5871032E-07
+
+================================================================================
+ ITERATION     4500    TIME: 37 MN  30.0000 S   (     2250.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6803869E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    14710.48     M3
+     FLUX BOUNDARY    1:     13.99870     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.29736     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        2250.     S :   -0.6170265E-07
+
+================================================================================
+ ITERATION     5400    TIME: 45 MN   0.0000 S   (     2700.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.9159105E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    14534.92     M3
+     FLUX BOUNDARY    1:     14.00203     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.44096     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        2700.     S :   -0.7510211E-07
+
+================================================================================
+ ITERATION     6300    TIME: 52 MN  30.0000 S   (     3150.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9670500E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    14354.49     M3
+     FLUX BOUNDARY    1:     14.00070     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.37614     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        3150.     S :   -0.5884506E-07
+
+================================================================================
+ ITERATION     7200    TIME:  1 H  0 MIN   0.0000 S   (     3600.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6144887E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    14186.51     M3
+     FLUX BOUNDARY    1:     14.00087     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.38164     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        3600.     S :   -0.9691186E-07
+
+================================================================================
+ ITERATION     8100    TIME:  1 H  7 MIN  30.0000 S   (     4050.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        4 ITERATIONS, RELATIVE PRECISION:   0.6557393E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    14015.72     M3
+     FLUX BOUNDARY    1:     14.00163     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.37850     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        4050.     S :   -0.1365769E-06
+
+================================================================================
+ ITERATION     9000    TIME:  1 H 15 MIN   0.0000 S   (     4500.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.9482397E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    13847.79     M3
+     FLUX BOUNDARY    1:     13.99776     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.37218     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        4500.     S :   -0.5870749E-07
+
+================================================================================
+ ITERATION     9900    TIME:  1 H 22 MIN  30.0000 S   (     4950.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.9388978E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    13681.74     M3
+     FLUX BOUNDARY    1:     14.00178     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.37250     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        4950.     S :   -0.6000973E-07
+
+================================================================================
+ ITERATION    10800    TIME:  1 H 30 MIN   0.0000 S   (     5400.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.8057166E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    13517.64     M3
+     FLUX BOUNDARY    1:     14.00216     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.36355     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        5400.     S :   -0.7840331E-07
+
+================================================================================
+ ITERATION    11700    TIME:  1 H 37 MIN  30.0000 S   (     5850.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.9345681E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    13355.78     M3
+     FLUX BOUNDARY    1:     14.00178     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.36160     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        5850.     S :   -0.3151021E-07
+
+================================================================================
+ ITERATION    12600    TIME:  1 H 45 MIN   0.0000 S   (     6300.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7637255E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    13195.91     M3
+     FLUX BOUNDARY    1:     13.99877     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.35615     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        6300.     S :    0.1119208E-06
+
+================================================================================
+ ITERATION    13500    TIME:  1 H 52 MIN  30.0000 S   (     6750.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6513134E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    13038.54     M3
+     FLUX BOUNDARY    1:     14.00096     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.34911     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        6750.     S :   -0.8868126E-07
+
+================================================================================
+ ITERATION    14400    TIME:  2 H  0 MIN   0.0000 S   (     7200.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9460295E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    12883.54     M3
+     FLUX BOUNDARY    1:     13.99908     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.34666     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        7200.     S :    0.1955167E-07
+
+================================================================================
+ ITERATION    15300    TIME:  2 H  7 MIN  30.0000 S   (     7650.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9011868E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    12730.55     M3
+     FLUX BOUNDARY    1:     14.00091     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.34093     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        7650.     S :   -0.1400767E-06
+
+================================================================================
+ ITERATION    16200    TIME:  2 H 15 MIN   0.0000 S   (     8100.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9163838E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    12579.98     M3
+     FLUX BOUNDARY    1:     14.00032     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.33037     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        8100.     S :   -0.6349573E-07
+
+================================================================================
+ ITERATION    17100    TIME:  2 H 22 MIN  30.0000 S   (     8550.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9919202E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    12432.81     M3
+     FLUX BOUNDARY    1:     13.99818     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.32426     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        8550.     S :   -0.1465499E-06
+
+================================================================================
+ ITERATION    18000    TIME:  2 H 30 MIN   0.0000 S   (     9000.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6544186E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    12287.69     M3
+     FLUX BOUNDARY    1:     14.00001     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.32208     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        9000.     S :   -0.1371151E-06
+
+================================================================================
+ ITERATION    18900    TIME:  2 H 37 MIN  30.0000 S   (     9450.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9610140E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    12145.42     M3
+     FLUX BOUNDARY    1:     13.99798     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.31728     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        9450.     S :   -0.1656263E-06
+
+================================================================================
+ ITERATION    19800    TIME:  2 H 45 MIN   0.0000 S   (     9900.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.6833201E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    12006.33     M3
+     FLUX BOUNDARY    1:     13.99952     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.30578     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        9900.     S :   -0.1238405E-06
+
+================================================================================
+ ITERATION    20700    TIME:  2 H 52 MIN  30.0000 S   (    10350.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6841648E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    11870.54     M3
+     FLUX BOUNDARY    1:     14.00098     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.30237     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1035E+05 S :   -0.1149691E-06
+
+================================================================================
+ ITERATION    21600    TIME:  3 H  0 MIN   0.0000 S   (    10800.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6797961E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    11737.03     M3
+     FLUX BOUNDARY    1:     13.99920     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.29692     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1080E+05 S :   -0.1077819E-06
+
+================================================================================
+ ITERATION    22500    TIME:  3 H  7 MIN  30.0000 S   (    11250.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.6655000E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    11606.63     M3
+     FLUX BOUNDARY    1:     14.00002     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.28975     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1125E+05 S :   -0.1084180E-06
+
+================================================================================
+ ITERATION    23400    TIME:  3 H 15 MIN   0.0000 S   (    11700.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7469519E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    11479.30     M3
+     FLUX BOUNDARY    1:     14.00077     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.28377     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1170E+05 S :   -0.1375727E-06
+
+================================================================================
+ ITERATION    24300    TIME:  3 H 22 MIN  30.0000 S   (    12150.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9791896E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    11354.86     M3
+     FLUX BOUNDARY    1:     13.99992     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.27618     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1215E+05 S :   -0.1409469E-06
+
+================================================================================
+ ITERATION    25200    TIME:  3 H 30 MIN   0.0000 S   (    12600.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9441118E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    11233.65     M3
+     FLUX BOUNDARY    1:     14.00001     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.26854     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1260E+05 S :   -0.1099211E-06
+
+================================================================================
+ ITERATION    26100    TIME:  3 H 37 MIN  30.0000 S   (    13050.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6243447E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    11115.28     M3
+     FLUX BOUNDARY    1:     14.00034     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.26188     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1305E+05 S :   -0.1544148E-06
+
+================================================================================
+ ITERATION    27000    TIME:  3 H 45 MIN   0.0000 S   (    13500.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7558685E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    11000.43     M3
+     FLUX BOUNDARY    1:     13.99945     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.25609     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1350E+05 S :   -0.1294106E-06
+
+================================================================================
+ ITERATION    27900    TIME:  3 H 52 MIN  30.0000 S   (    13950.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7390216E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    10888.45     M3
+     FLUX BOUNDARY    1:     14.00211     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.24768     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1395E+05 S :   -0.1382310E-06
+
+================================================================================
+ ITERATION    28800    TIME:  4 H  0 MIN   0.0000 S   (    14400.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9363190E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    10779.63     M3
+     FLUX BOUNDARY    1:     13.99700     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.24012     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1440E+05 S :   -0.1342494E-06
+
+================================================================================
+ ITERATION    29700    TIME:  4 H  7 MIN  30.0000 S   (    14850.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6428746E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    10674.51     M3
+     FLUX BOUNDARY    1:     14.00035     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.23575     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1485E+05 S :   -0.1647009E-06
+
+================================================================================
+ ITERATION    30600    TIME:  4 H 15 MIN   0.0000 S   (    15300.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7162905E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    10572.18     M3
+     FLUX BOUNDARY    1:     14.00071     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.22656     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1530E+05 S :   -0.1557335E-06
+
+================================================================================
+ ITERATION    31500    TIME:  4 H 22 MIN  30.0000 S   (    15750.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9889650E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    10473.29     M3
+     FLUX BOUNDARY    1:     13.99805     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.21704     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1575E+05 S :   -0.1886754E-06
+
+================================================================================
+ ITERATION    32400    TIME:  4 H 30 MIN   0.0000 S   (    16200.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.8536566E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    10377.67     M3
+     FLUX BOUNDARY    1:     14.00028     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.21226     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1620E+05 S :   -0.1488430E-06
+
+================================================================================
+ ITERATION    33300    TIME:  4 H 37 MIN  30.0000 S   (    16650.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.8158263E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    10284.95     M3
+     FLUX BOUNDARY    1:     14.00316     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.20722     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1665E+05 S :   -0.1657773E-06
+
+================================================================================
+ ITERATION    34200    TIME:  4 H 45 MIN   0.0000 S   (    17100.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.8798861E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    10195.94     M3
+     FLUX BOUNDARY    1:     13.99895     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.19870     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1710E+05 S :   -0.1900036E-06
+
+================================================================================
+ ITERATION    35100    TIME:  4 H 52 MIN  30.0000 S   (    17550.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9332821E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    10110.11     M3
+     FLUX BOUNDARY    1:     13.99765     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.18822     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1755E+05 S :   -0.1510681E-06
+
+================================================================================
+ ITERATION    36000    TIME:  5 H  0 MIN   0.0000 S   (    18000.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        1 ITERATIONS, RELATIVE PRECISION:   0.9777856E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    10027.26     M3
+     FLUX BOUNDARY    1:     14.00114     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.18347     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1800E+05 S :   -0.1663653E-06
+
+================================================================================
+ ITERATION    36900    TIME:  5 H  7 MIN  30.0000 S   (    18450.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9050259E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9948.122     M3
+     FLUX BOUNDARY    1:     14.00076     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.17546     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1845E+05 S :   -0.1656892E-06
+
+================================================================================
+ ITERATION    37800    TIME:  5 H 15 MIN   0.0000 S   (    18900.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9731860E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9872.023     M3
+     FLUX BOUNDARY    1:     14.00122     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.16635     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1890E+05 S :   -0.2319109E-06
+
+================================================================================
+ ITERATION    38700    TIME:  5 H 22 MIN  30.0000 S   (    19350.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9944506E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9799.085     M3
+     FLUX BOUNDARY    1:     14.00244     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.16358     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1935E+05 S :   -0.1597344E-06
+
+================================================================================
+ ITERATION    39600    TIME:  5 H 30 MIN   0.0000 S   (    19800.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9816958E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9729.162     M3
+     FLUX BOUNDARY    1:     14.00361     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.15746     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1980E+05 S :   -0.1560735E-06
+
+================================================================================
+ ITERATION    40500    TIME:  5 H 37 MIN  30.0000 S   (    20250.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.7015091E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9661.739     M3
+     FLUX BOUNDARY    1:     13.99579     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.14691     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2025E+05 S :   -0.1592407E-06
+
+================================================================================
+ ITERATION    41400    TIME:  5 H 45 MIN   0.0000 S   (    20700.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9451634E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9598.405     M3
+     FLUX BOUNDARY    1:     14.00271     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.14143     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2070E+05 S :   -0.1088550E-06
+
+================================================================================
+ ITERATION    42300    TIME:  5 H 52 MIN  30.0000 S   (    21150.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9622895E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9538.612     M3
+     FLUX BOUNDARY    1:     14.00178     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.13147     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2115E+05 S :   -0.1572603E-06
+
+================================================================================
+ ITERATION    43200    TIME:  6 H  0 MIN   0.0000 S   (    21600.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6242583E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9481.779     M3
+     FLUX BOUNDARY    1:     13.99624     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.12614     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2160E+05 S :   -0.1245872E-06
+
+================================================================================
+ ITERATION    44100    TIME:  6 H  7 MIN  30.0000 S   (    22050.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.6881257E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9462.701     M3
+     FLUX BOUNDARY    1:     14.00402     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.01344     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2205E+05 S :   -0.1487672E-06
+
+================================================================================
+ ITERATION    45000    TIME:  6 H 15 MIN   0.0000 S   (    22500.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7953657E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.986     M3
+     FLUX BOUNDARY    1:     13.99943     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00290     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2250E+05 S :   -0.1730651E-06
+
+================================================================================
+ ITERATION    45900    TIME:  6 H 22 MIN  30.0000 S   (    22950.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9363503E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.830     M3
+     FLUX BOUNDARY    1:     13.99751     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00488     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2295E+05 S :   -0.1361861E-06
+
+================================================================================
+ ITERATION    46800    TIME:  6 H 30 MIN   0.0000 S   (    23400.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.6215383E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.815     M3
+     FLUX BOUNDARY    1:     14.00393     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00358     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2340E+05 S :   -0.1549311E-06
+
+================================================================================
+ ITERATION    47700    TIME:  6 H 37 MIN  30.0000 S   (    23850.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7894842E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.830     M3
+     FLUX BOUNDARY    1:     13.99749     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00330     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2385E+05 S :   -0.1241201E-06
+
+================================================================================
+ ITERATION    48600    TIME:  6 H 45 MIN   0.0000 S   (    24300.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        1 ITERATIONS, RELATIVE PRECISION:   0.9744449E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.791     M3
+     FLUX BOUNDARY    1:     13.99907     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00486     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2430E+05 S :   -0.1549241E-06
+
+================================================================================
+ ITERATION    49500    TIME:  6 H 52 MIN  30.0000 S   (    24750.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.7495801E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.804     M3
+     FLUX BOUNDARY    1:     14.00273     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00188     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2475E+05 S :   -0.1467800E-06
+
+================================================================================
+ ITERATION    50400    TIME:  7 H  0 MIN   0.0000 S   (    25200.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.8837827E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.814     M3
+     FLUX BOUNDARY    1:     13.99259     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00485     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2520E+05 S :   -0.1495438E-06
+
+================================================================================
+ ITERATION    51300    TIME:  7 H  7 MIN  30.0000 S   (    25650.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7372092E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.798     M3
+     FLUX BOUNDARY    1:     14.00634     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00216     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2565E+05 S :   -0.1540459E-06
+
+================================================================================
+ ITERATION    52200    TIME:  7 H 15 MIN   0.0000 S   (    26100.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.8680248E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.834     M3
+     FLUX BOUNDARY    1:     13.99287     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00034     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2610E+05 S :   -0.1586291E-06
+
+================================================================================
+ ITERATION    53100    TIME:  7 H 22 MIN  30.0000 S   (    26550.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.7901155E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.801     M3
+     FLUX BOUNDARY    1:     14.00039     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00274     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2655E+05 S :   -0.1599244E-06
+
+================================================================================
+ ITERATION    54000    TIME:  7 H 30 MIN   0.0000 S   (    27000.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6950826E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.859     M3
+     FLUX BOUNDARY    1:     14.00694     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00149     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2700E+05 S :   -0.1435930E-06
+
+================================================================================
+ ITERATION    54900    TIME:  7 H 37 MIN  30.0000 S   (    27450.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9579894E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.834     M3
+     FLUX BOUNDARY    1:     13.99192     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00310     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2745E+05 S :   -0.1388598E-06
+
+================================================================================
+ ITERATION    55800    TIME:  7 H 45 MIN   0.0000 S   (    27900.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.7581746E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.802     M3
+     FLUX BOUNDARY    1:     14.00374     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00292     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2790E+05 S :   -0.1450939E-06
+
+================================================================================
+ ITERATION    56700    TIME:  7 H 52 MIN  30.0000 S   (    28350.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.8229139E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.860     M3
+     FLUX BOUNDARY    1:     13.99784     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00111     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2835E+05 S :   -0.1379384E-06
+
+================================================================================
+ ITERATION    57600    TIME:  8 H  0 MIN   0.0000 S   (    28800.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6064702E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.810     M3
+     FLUX BOUNDARY    1:     13.99642     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00345     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2880E+05 S :   -0.1426166E-06
+
+================================================================================
+ ITERATION    58500    TIME:  8 H  7 MIN  30.0000 S   (    29250.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7888719E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.836     M3
+     FLUX BOUNDARY    1:     14.00491     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00278     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2925E+05 S :   -0.1460539E-06
+
+================================================================================
+ ITERATION    59400    TIME:  8 H 15 MIN   0.0000 S   (    29700.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7580948E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.832     M3
+     FLUX BOUNDARY    1:     13.99891     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00152     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2970E+05 S :   -0.1407678E-06
+
+================================================================================
+ ITERATION    60300    TIME:  8 H 22 MIN  30.0000 S   (    30150.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9556519E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.815     M3
+     FLUX BOUNDARY    1:     13.99788     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00410     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3015E+05 S :   -0.1281061E-06
+
+================================================================================
+ ITERATION    61200    TIME:  8 H 30 MIN   0.0000 S   (    30600.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9090819E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.856     M3
+     FLUX BOUNDARY    1:     14.00474     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00238     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3060E+05 S :   -0.1654805E-06
+
+================================================================================
+ ITERATION    62100    TIME:  8 H 37 MIN  30.0000 S   (    31050.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        1 ITERATIONS, RELATIVE PRECISION:   0.9945479E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.847     M3
+     FLUX BOUNDARY    1:     13.99673     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00397     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3105E+05 S :   -0.1291052E-06
+
+================================================================================
+ ITERATION    63000    TIME:  8 H 45 MIN   0.0000 S   (    31500.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7825357E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.810     M3
+     FLUX BOUNDARY    1:     14.00050     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00363     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3150E+05 S :   -0.1345995E-06
+
+================================================================================
+ ITERATION    63900    TIME:  8 H 52 MIN  30.0000 S   (    31950.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9361671E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.826     M3
+     FLUX BOUNDARY    1:     14.00124     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00191     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3195E+05 S :   -0.1520327E-06
+
+================================================================================
+ ITERATION    64800    TIME:  9 H  0 MIN   0.0000 S   (    32400.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.8266274E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.828     M3
+     FLUX BOUNDARY    1:     13.99940     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00421     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3240E+05 S :   -0.1224350E-06
+
+================================================================================
+ ITERATION    65700    TIME:  9 H  7 MIN  30.0000 S   (    32850.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        1 ITERATIONS, RELATIVE PRECISION:   0.8315820E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.822     M3
+     FLUX BOUNDARY    1:     14.00290     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00272     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3285E+05 S :   -0.1398079E-06
+
+================================================================================
+ ITERATION    66600    TIME:  9 H 15 MIN   0.0000 S   (    33300.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7096142E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.849     M3
+     FLUX BOUNDARY    1:     13.99770     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00229     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3330E+05 S :   -0.1628547E-06
+
+================================================================================
+ ITERATION    67500    TIME:  9 H 22 MIN  30.0000 S   (    33750.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        1 ITERATIONS, RELATIVE PRECISION:   0.9116101E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.795     M3
+     FLUX BOUNDARY    1:     13.99806     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00552     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3375E+05 S :   -0.1593118E-06
+
+================================================================================
+ ITERATION    68400    TIME:  9 H 30 MIN   0.0000 S   (    34200.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.7783315E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.823     M3
+     FLUX BOUNDARY    1:     14.00512     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00380     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3420E+05 S :   -0.1461079E-06
+
+================================================================================
+ ITERATION    69300    TIME:  9 H 37 MIN  30.0000 S   (    34650.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.7441444E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.839     M3
+     FLUX BOUNDARY    1:     13.99731     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00061     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3465E+05 S :   -0.1232280E-06
+
+================================================================================
+ ITERATION    70200    TIME:  9 H 45 MIN   0.0000 S   (    35100.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6790539E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.821     M3
+     FLUX BOUNDARY    1:     13.99530     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00227     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3510E+05 S :   -0.1323383E-06
+
+================================================================================
+ ITERATION    71100    TIME:  9 H 52 MIN  30.0000 S   (    35550.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6644401E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.822     M3
+     FLUX BOUNDARY    1:     14.00561     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00197     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3555E+05 S :   -0.1476750E-06
+
+================================================================================
+ ITERATION    72000    TIME: 10 H  0 MIN   0.0000 S   (    36000.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.7785653E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.853     M3
+     FLUX BOUNDARY    1:     13.99771     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00095     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3600E+05 S :   -0.1237785E-06
+
+================================================================================
+ ITERATION    72900    TIME: 10 H  7 MIN  30.0000 S   (    36450.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6145387E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.827     M3
+     FLUX BOUNDARY    1:     13.99655     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00341     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3645E+05 S :   -0.1468136E-06
+
+================================================================================
+ ITERATION    73800    TIME: 10 H 15 MIN   0.0000 S   (    36900.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9185589E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.834     M3
+     FLUX BOUNDARY    1:     14.00718     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00303     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3690E+05 S :   -0.1432949E-06
+
+================================================================================
+ ITERATION    74700    TIME: 10 H 22 MIN  30.0000 S   (    37350.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9251820E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.861     M3
+     FLUX BOUNDARY    1:     13.99823     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00216     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3735E+05 S :   -0.1940731E-06
+
+================================================================================
+ ITERATION    75600    TIME: 10 H 30 MIN   0.0000 S   (    37800.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9719690E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.807     M3
+     FLUX BOUNDARY    1:     13.99879     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00395     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3780E+05 S :   -0.1285732E-06
+
+================================================================================
+ ITERATION    76500    TIME: 10 H 37 MIN  30.0000 S   (    38250.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.8788604E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.844     M3
+     FLUX BOUNDARY    1:     14.00500     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00251     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3825E+05 S :   -0.1494545E-06
+
+================================================================================
+ ITERATION    77400    TIME: 10 H 45 MIN   0.0000 S   (    38700.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.8125088E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.850     M3
+     FLUX BOUNDARY    1:     13.99484     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00264     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3870E+05 S :   -0.1305897E-06
+
+================================================================================
+ ITERATION    78300    TIME: 10 H 52 MIN  30.0000 S   (    39150.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.8491671E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.815     M3
+     FLUX BOUNDARY    1:     13.99991     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00479     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3915E+05 S :   -0.1523478E-06
+
+================================================================================
+ ITERATION    79200    TIME: 11 H  0 MIN   0.0000 S   (    39600.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6067480E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.868     M3
+     FLUX BOUNDARY    1:     14.00010     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00249     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3960E+05 S :   -0.1466817E-06
+
+================================================================================
+ ITERATION    80100    TIME: 11 H  7 MIN  30.0000 S   (    40050.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6961704E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.814     M3
+     FLUX BOUNDARY    1:     13.99606     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00338     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.4005E+05 S :   -0.1383278E-06
+
+================================================================================
+ ITERATION    81000    TIME: 11 H 15 MIN   0.0000 S   (    40500.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9819519E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.838     M3
+     FLUX BOUNDARY    1:     14.00862     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00231     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.4050E+05 S :   -0.1552076E-06
+
+================================================================================
+ ITERATION    81900    TIME: 11 H 22 MIN  30.0000 S   (    40950.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6905288E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.869     M3
+     FLUX BOUNDARY    1:     13.99636     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00203     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.4095E+05 S :   -0.1058933E-06
+
+================================================================================
+ ITERATION    82800    TIME: 11 H 30 MIN   0.0000 S   (    41400.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.8234583E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.819     M3
+     FLUX BOUNDARY    1:     13.99843     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00340     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.4140E+05 S :   -0.1374907E-06
+
+================================================================================
+ ITERATION    83700    TIME: 11 H 37 MIN  30.0000 S   (    41850.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9976602E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.833     M3
+     FLUX BOUNDARY    1:     14.00779     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00010     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.4185E+05 S :   -0.1572731E-06
+
+================================================================================
+ ITERATION    84600    TIME: 11 H 45 MIN   0.0000 S   (    42300.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        2 ITERATIONS, RELATIVE PRECISION:   0.9184975E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.848     M3
+     FLUX BOUNDARY    1:     13.99338     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00140     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.4230E+05 S :   -0.1676659E-06
+
+================================================================================
+ ITERATION    85500    TIME: 11 H 52 MIN  30.0000 S   (    42750.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6972019E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.820     M3
+     FLUX BOUNDARY    1:     14.00320     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00382     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.4275E+05 S :   -0.1491138E-06
+
+================================================================================
+ ITERATION    86400    TIME: 12 H  0 MIN   0.0000 S   (    43200.0000 S)
+--------------------------------------------------------------------------------
+                          ADVECTION STEP          
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP    
+ EQUNOR (BIEF) :        3 ITERATIONS, RELATIVE PRECISION:   0.6827967E-04
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME    
+     VOLUME IN THE DOMAIN :    9460.878     M3
+     FLUX BOUNDARY    1:     13.99899     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:    -14.00147     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.4320E+05 S :   -0.1197612E-06
+--------------------------------------------------------------------------------
+                   FINAL BALANCE OF WATER VOLUME  
+
+     RELATIVE ERROR CUMULATED ON VOLUME:   -0.7464682E-02
+
+     INITIAL VOLUME              :     15000.00     M3
+     FINAL VOLUME                :     9460.878     M3
+     VOLUME THAT ENTERED THE DOMAIN:    -5651.092     M3  ( IF <0 EXIT )
+     TOTAL VOLUME LOST             :    -111.9702     M3
+ PRERES: MAXIMUM COURANT NUMBER:    0.2080150    
+
+ END OF TIME LOOP
+
+
+
+
+  
+ EXITING MPI
+  
+
+
+
+ CORRECT END OF RUN
+
+
+
+ ELAPSE TIME : 
+                             36  SECONDS

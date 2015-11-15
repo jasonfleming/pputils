@@ -1,0 +1,75 @@
+ MASTER PROCESSOR NUMBER            0  OF THE GROUP OF            1
+ EXECUTABLE FILE: /home/user/Desktop/pputils_v1.0/examples/uni_pputils/STBTEL_conversion_OK_SER_NOT_OK_PAR/adcirc2slf.cas_2015-07-28-09h33min32s/A.EXE
+ BARRIER PASSED
+
+ LISTING OF STBTEL ------------------------------------------------------------------------------
+
+                 SSSSS  TTTTT  BBBB   TTTTT  EEEEE  L
+                 S        T    B   B    T    E      L
+                 SSSSS    T    BBBB     T    EEEE   L
+                     S    T    B   B    T    E      L
+                 SSSSS    T    BBBB     T    EEEEE  LLLLL
+
+                          VERSION 7.0  FORTRAN 90
+
+ MESH GENERATOR : ADCIRC
+ --------------
+
+ DATAS READ IN THE UNIVERSAL FILE
+ ---------------------------------
+
+ TITLE OF THE MESH                 : ADCIRC
+ REAL NUMBER OF POINTS             :         500
+ MAX. NUMBER GIVEN BY THE MESH GENERATOR:         500
+ TOTAL NUMBER OF ELEMENTS           :         792
+ TYPE OF ELEMENTS                   :      TRIANGLES
+
+ SETTING TELEMAC STANDARD
+ ------------------------
+
+ RENUMBERING DONE :
+              0 POINTS CANCELLED
+              0 ELEMENTS CANCELLED
+ NEW NUMBER OF POINTS   :       500
+ NEW NUMBER OF ELEMENTS :       792
+ NUMBER OF ELEMENTS BADLY ORIENTED :     0
+ NUMBER OF BOUNDARY POINTS      :   206
+ NUMBER OF ISLANDS              :     0
+ TAB(           1 )=           0
+ TAB(           2 )=           0
+ TAB(           3 )=           2
+ TAB(           4 )=           2
+ TAB(           5 )=           4
+ TAB(           6 )=           4
+ TAB(           7 )=         206
+ TAB(           8 )=         206
+ TAB(           9 )=         206
+ TAB(          10 )=         206
+ TAB(          11 )=         206
+ TAB(          12 )=         500
+
+ ELIMINATION OK BACKWARDS DEPENDENCIES
+ ------------------------------------
+
+ BACKWARD DEPENDENCIES ARE CANCELLED AFTER  0 ATTEMPTS
+
+ GENERATING GEOMETRY FILE
+ ------------------------
+ TITLE :ADCIRC                                                                  SERAPHIN
+ WRITING X AND Y
+
+ TREATMENT OF BOUNDARY CONDITIONS
+ --------------------------------
+
+ **************************************************
+ BEWARE: THE UNIVERSAL FILE FORMAT IS ADCIRC
+         BOUNDARY CONDITIONS WILL HAVE TO BE
+         CHECKED IN THE BOUNDARY CONDITIONS FILE
+ **************************************************
+
+ CORRECT END OF RUN
+
+ COMPUTER TIME:            0  SECONDS
+
+ EXITING MPI
+

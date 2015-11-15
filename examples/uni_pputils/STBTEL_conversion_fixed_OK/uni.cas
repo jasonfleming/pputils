@@ -1,0 +1,76 @@
+/---------------------------------------------------------------------
+/ TELEMAC2D Version v6p1 Aug 28, 2011
+/ nom inconnu
+/---------------------------------------------------------------------
+
+
+
+/---------------------------------------------------------------------
+/ EQUATIONS
+/---------------------------------------------------------------------
+
+FRICTION COEFFICIENT   =0.020
+
+LAW OF BOTTOM FRICTION =4
+
+VELOCITY DIFFUSIVITY   =1.E-6
+
+
+/---------------------------------------------------------------------
+/ EQUATIONS, BOUNDARY CONDITIONS
+/---------------------------------------------------------------------
+
+VELOCITY PROFILES            =1;1
+
+PRESCRIBED FLOWRATES         =14;0
+
+PRESCRIBED ELEVATIONS        =0;102
+
+OPTION FOR LIQUID BOUNDARIES =1;1
+
+
+/---------------------------------------------------------------------
+/ EQUATIONS, INITIAL CONDITIONS
+/---------------------------------------------------------------------
+
+INITIAL ELEVATION  =102
+
+INITIAL CONDITIONS ='CONSTANT ELEVATION'
+
+
+/---------------------------------------------------------------------
+/ INPUT-OUTPUT, FILES
+/---------------------------------------------------------------------
+
+LIQUID BOUNDARIES FILE   ='uni.liq'
+
+STEERING FILE            ='uni.cas'
+
+BOUNDARY CONDITIONS FILE ='out_stb.cli'
+
+RESULTS FILE             ='out_stb.res'
+
+GEOMETRY FILE            ='out_stb_fix_fr.slf'
+
+
+/---------------------------------------------------------------------
+/ INPUT-OUTPUT, GRAPHICS AND LISTING
+/---------------------------------------------------------------------
+
+VARIABLES FOR GRAPHIC PRINTOUTS  =U,V,B,H,S,L,Q
+
+MASS-BALANCE                     =true
+
+LISTING PRINTOUT PERIOD          =900
+
+GRAPHIC PRINTOUT PERIOD          =86400
+
+PARALLEL PROCESSORS              =4
+
+/---------------------------------------------------------------------
+/ NUMERICAL PARAMETERS
+/---------------------------------------------------------------------
+
+NUMBER OF TIME STEPS =86400
+
+TIME STEP            =0.5

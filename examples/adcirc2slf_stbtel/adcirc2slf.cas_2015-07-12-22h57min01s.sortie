@@ -1,0 +1,58 @@
+ MASTER PROCESSOR NUMBER            0  OF THE GROUP OF            1
+ EXECUTABLE FILE: /media/pprodano/INT-SEAGATE/stbtel/adcirc2slf.cas_2015-07-12-22h57min01s/A.EXE
+ BARRIER PASSED
+
+ LISTING OF STBTEL ------------------------------------------------------------------------------
+
+                 SSSSS  TTTTT  BBBB   TTTTT  EEEEE  L
+                 S        T    B   B    T    E      L
+                 SSSSS    T    BBBB     T    EEEE   L
+                     S    T    B   B    T    E      L
+                 SSSSS    T    BBBB     T    EEEEE  LLLLL
+
+                          VERSION 7.0  FORTRAN 90
+
+ MESH GENERATOR : ADCIRC
+ --------------
+
+ DATAS READ IN THE UNIVERSAL FILE
+ ---------------------------------
+
+ TITLE OF THE MESH                 : ADCIRC
+ REAL NUMBER OF POINTS             :        1057
+ MAX. NUMBER GIVEN BY THE MESH GENERATOR:        1057
+ TOTAL NUMBER OF ELEMENTS           :        2016
+ TYPE OF ELEMENTS                   :      TRIANGLES
+
+ SETTING TELEMAC STANDARD
+ ------------------------
+
+ RENUMBERING DONE :
+              0 POINTS CANCELLED
+              0 ELEMENTS CANCELLED
+ NEW NUMBER OF POINTS   :      1057
+ NEW NUMBER OF ELEMENTS :      2016
+ NUMBER OF ELEMENTS BADLY ORIENTED :  2016
+ NUMBER OF BOUNDARY POINTS      :   100
+ NUMBER OF ISLANDS              :     2
+
+ GENERATING GEOMETRY FILE
+ ------------------------
+ TITLE :ADCIRC                                                                  SERAPHIN
+ WRITING X AND Y
+
+ TREATMENT OF BOUNDARY CONDITIONS
+ --------------------------------
+
+ **************************************************
+ BEWARE: THE UNIVERSAL FILE FORMAT IS ADCIRC
+         BOUNDARY CONDITIONS WILL HAVE TO BE
+         CHECKED IN THE BOUNDARY CONDITIONS FILE
+ **************************************************
+
+ CORRECT END OF RUN
+
+ COMPUTER TIME:            0  SECONDS
+
+ EXITING MPI
+

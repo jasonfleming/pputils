@@ -1,0 +1,15 @@
+Point(1) = {0.000, 0.000, 100.000, 0.000};
+Point(2) = {0.000, 10.000, 100.000, 0.000};
+Point(3) = {1000.000, 0.000, 101.000, 0.000};
+Point(4) = {1000.000, 10.000, 101.000, 0.000};
+Line(1) = {1, 3};
+Line(2) = {3, 4};
+Line(3) = {4, 2};
+Line(4) = {2, 1};
+Line Loop(1) = {1:4};
+Physical Line(1) = {1:4};
+Plane Surface(1) = {1};
+Physical Surface(1) = {1};
+Transfinite Line {1, 3} = 100 Using Progression 1;
+Transfinite Line {4, 2} = 5 Using Progression 1;
+Transfinite Surface {1} = {1, 3, 4, 2};
