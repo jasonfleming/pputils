@@ -11,10 +11,8 @@
 #
 # Purpose: Script takes in a mesh in ADCIRC format, and renumbers the mesh
 # using John Burkardt's implementation of the Reverse-Cuthill-McKee 
-# algorithm. As I couldn't figure out Python's subprocess module to call
-# executable binaries, this script simply generates a bash script, which
-# has to be executed from the command line afterwards to produce the
-# renumbered mesh.
+# algorithm. The script uses Python's subprocess to call the binaries that
+# were compiled with gfortran.
 #
 # Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
 #
@@ -23,13 +21,7 @@
 # python renumber.py -i out.grd -o renumberMesh.sh
 # where:
 # -i input adcirc mesh file
-# -o output bash script created which is to be executed.
-#
-# Make the script executable:
-# chmod +x renumberMesh.sh
-#
-# then execute the script:
-# ./renumberMesh.sh
+# -o adcirc mesh file renumbered according to Reverse-Cuthill-McKee algorithm
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
@@ -37,6 +29,7 @@
 import os,sys                              # system parameters
 import struct                              # to determine sys architecture
 from ppmodules.readMesh import *           # readMesh functions
+import subprocess
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
@@ -47,7 +40,7 @@ curdir = os.getcwd()
 if len(sys.argv) != 5 :
 	print 'Wrong number of Arguments, stopping now...'
 	print 'Usage:'
-	print 'python renumber.py -i out.grd -o renumberMesh.sh'
+	print 'python renumber.py -i out.grd -o out_rcm'
 	sys.exit()
 	
 dummy1 =  sys.argv[1]
@@ -58,9 +51,6 @@ output_file = sys.argv[4]
 # to create the temporary output files
 fn = open("out_nodes.txt","w")
 fe = open("out_elements.txt","w")
-
-# this is the shell script
-fsh = open(output_file, "w")
 
 # read the adcirc file
 n,e,x,y,z,ikle = readAdcirc(input_file)
@@ -89,69 +79,100 @@ archtype = struct.calcsize("P") * 8
 # prints current directory
 # print 'Current directory: ' + os.getcwd()
 
-# write the front matter of the *.sh file
-fsh.write('#!/bin/bash' + '\n')
-
 if (os.name == 'posix'):
 	
 	# move the temp files to ./renumber/bin
-	# subprocess.call('mv out_nodes.txt out_elements.txt ./renumber/bin',shell=True)
-	fsh.write('mv out_nodes.txt out_elements.txt ./renumber/bin' + '\n')
+	subprocess.call('mv out_nodes.txt out_elements.txt ./renumber/bin',shell=True)
 	
 	# change directory to get to executable
-	#os.chdir('./renumber/bin')
-	fsh.write('cd ./renumber/bin' + '\n')
+	os.chdir('./renumber/bin')
 	
 	# run the binary executable (this was compiled in gfortran)
 	if (archtype == 32):
 		# its 32-bit
-		
 		# make sure the binary is allowed to be executed
-		fsh.write('chmod +x triangulation_rcm_32' + '\n')
+		subprocess.call('chmod +x triangulation_rcm_32',shell=True)
 		
 		# execute the binary to generate the renumbered nodes and elements
-		fsh.write('./triangulation_rcm_32 out' + '\n')
+		subprocess.call(['./triangulation_rcm_32', 'out'])
 		
 		# move the files back
-		fsh.write('mv *.txt ' + curdir + '\n')
+		subprocess.call('mv *.txt ' + curdir, shell=True)
 		
 		# change directory back
-		fsh.write('cd ' + curdir + '\n')
+		os.chdir(curdir)
 		
 		# this is the name of the renumbered *.grd file
 		rcm_grd = input_file.split('.',1)[0] + '_rcm.grd'
 		
-		# now, run ren2adcirc to get the adcirc file back
-		fsh.write('python ren2adcirc.py -i out_rcm_nodes.txt ')
-		fsh.write('out_rcm_elements.txt -o ' + rcm_grd + ' -s ')
-		fsh.write(str(xref) + ' ' + str(yref) + '\n')
+		# use subprocess to call ren2adcirc.py
+		# TODO: port ren2adcirc.py code here, as opposed to calling it 
+		# as a subprocess
+		callstr = str('python ren2adcirc.py -i out_rcm_nodes.txt ' +
+			'out_rcm_elements.txt -o ' + rcm_grd + ' -s ' +
+			str(xref) + ' ' + str(yref))
 		
-		# delete the intermediate files
-		fsh.write('rm out_nodes.txt out_elements.txt out_rcm_nodes.txt ')
-		fsh.write('out_rcm_elements.txt' + '\n')
+		subprocess.call(callstr, shell=True)
+		
+		# remove the intermediate files
+		os.remove("out_nodes.txt")
+		os.remove("out_rcm_nodes.txt")
+		os.remove("out_elements.txt")
+		os.remove("out_rcm_elements.txt")
+		
+		# use subprocess to call adcirc2wkt.py
+		wkt_file = rcm_grd.split('.',1)[0]
+		
+		callstr = str('python adcirc2wkt.py -i ' + rcm_grd + ' -o ' +
+			wkt_file + 'WKT_e.csv ' + wkt_file + 'WKT_n.csv')
+		
+		# this creates a list of the callstr, where each parameter is separed
+		# by a space
+		call_list = callstr.split()
+		
+		subprocess.call(call_list)
 		
 	else:
 		# its 64-bit
 		# make sure the binary is allowed to be executed
-		fsh.write('chmod +x triangulation_rcm_64' + '\n')
+		subprocess.call('chmod +x triangulation_rcm_64',shell=True)
 		
 		# execute the binary to generate the renumbered nodes and elements
-		fsh.write('./triangulation_rcm_64 out' + '\n')
+		subprocess.call(['./triangulation_rcm_64', 'out'])
 		
 		# move the files back
-		fsh.write('mv *.txt ' + curdir + '\n')
+		subprocess.call('mv *.txt ' + curdir, shell=True)
 		
 		# change directory back
-		fsh.write('cd ' + curdir + '\n')
+		os.chdir(curdir)
 		
 		# this is the name of the renumbered *.grd file
 		rcm_grd = input_file.split('.',1)[0] + '_rcm.grd'
 		
-		# now, run ren2adcirc to get the adcirc file back
-		fsh.write('python ren2adcirc.py -i out_rcm_nodes.txt ')
-		fsh.write('out_rcm_elements.txt -o ' + rcm_grd + ' -s ')
-		fsh.write(str(xref) + ' ' + str(yref) + '\n')
+		# use subprocess to call ren2adcirc.py
+		# TODO: port ren2adcirc.py code here, as opposed to calling it 
+		# as a subprocess
+		callstr = str('python ren2adcirc.py -i out_rcm_nodes.txt ' +
+			'out_rcm_elements.txt -o ' + rcm_grd + ' -s ' +
+			str(xref) + ' ' + str(yref))
 		
-		# delete the intermediate files
-		fsh.write('rm out_nodes.txt out_elements.txt out_rcm_nodes.txt ')
-		fsh.write('out_rcm_elements.txt' + '\n')
+		subprocess.call(callstr, shell=True)
+		
+		# remove the intermediate files
+		os.remove("out_nodes.txt")
+		os.remove("out_rcm_nodes.txt")
+		os.remove("out_elements.txt")
+		os.remove("out_rcm_elements.txt")
+		
+		# use subprocess to call adcirc2wkt.py
+		wkt_file = rcm_grd.split('.',1)[0]
+		
+		callstr = str('python adcirc2wkt.py -i ' + rcm_grd + ' -o ' +
+			wkt_file + 'WKT_e.csv ' + wkt_file + 'WKT_n.csv')
+		
+		# this creates a list of the callstr, where each parameter is separed
+		# by a space
+		call_list = callstr.split()
+		
+		subprocess.call(call_list)
+		
