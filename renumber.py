@@ -18,7 +18,7 @@
 #
 # Example:
 #
-# python renumber.py -i out.grd -o renumberMesh.sh
+# python renumber.py -i out.grd -o out_rcm.grd
 # where:
 # -i input adcirc mesh file
 # -o adcirc mesh file renumbered according to Reverse-Cuthill-McKee algorithm
@@ -40,7 +40,7 @@ curdir = os.getcwd()
 if len(sys.argv) != 5 :
 	print 'Wrong number of Arguments, stopping now...'
 	print 'Usage:'
-	print 'python renumber.py -i out.grd -o out_rcm'
+	print 'python renumber.py -i out.grd -o out_rcm.grd'
 	sys.exit()
 	
 dummy1 =  sys.argv[1]
