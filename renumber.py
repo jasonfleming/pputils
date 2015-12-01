@@ -111,13 +111,13 @@ if (os.name == 'posix'):
 	os.chdir(curdir)
 	
 	# this is the name of the renumbered *.grd file
-	rcm_grd = input_file.split('.',1)[0] + '_rcm.grd'
+	# rcm_grd = output_file.split('.',1)[0] + '_rcm.grd'
 	
 	# use subprocess to call ren2adcirc.py
 	# TODO: port ren2adcirc.py code here, as opposed to calling it 
 	# as a subprocess
 	callstr = str('python ren2adcirc.py -i out_rcm_nodes.txt ' +
-		'out_rcm_elements.txt -o ' + rcm_grd + ' -s ' +
+		'out_rcm_elements.txt -o ' + output_file + ' -s ' +
 		str(xref) + ' ' + str(yref))
 	
 	subprocess.call(callstr, shell=True)
@@ -129,9 +129,10 @@ if (os.name == 'posix'):
 	os.remove("out_rcm_elements.txt")
 	
 	# use subprocess to call adcirc2wkt.py
-	wkt_file = rcm_grd.split('.',1)[0]
+	# strip the extension from output file string
+	wkt_file = output_file.split('.',1)[0]
 	
-	callstr = str('python adcirc2wkt.py -i ' + rcm_grd + ' -o ' +
+	callstr = str('python adcirc2wkt.py -i ' + output_file + ' -o ' +
 		wkt_file + 'WKT_e.csv ' + wkt_file + 'WKT_n.csv')
 	
 	# this creates a list of the callstr, where each parameter is separed
