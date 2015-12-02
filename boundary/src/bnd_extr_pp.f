@@ -18,11 +18,10 @@ C        VERSION 2.1  R. Luettich  2/7/96 - for ADCIRC v28.05 and higher       *
 C                                                                              
 C        VERSION 2.2  P. Prodanovic 30/11/15 - 
 C                    -changed to be called as subprocess within pputils        
-C
 C                    -retain only gredit output
-C                    -comment out everything past                              
-C                     open(11,file='adcirc.bnd')                         
-C                    -hard code out.grd as the input grid  
+C                    -comment out everything after open(11,file='adcirc.bnd')  
+C                    -included grid name as the command line input
+C                    -increased MNP to 500000                        
 
 C*******************************************************************************
 C
@@ -57,7 +56,21 @@ C....Enter, locate, open and read the ADCIRC grid file
 C 31   WRITE(*,*) 'Enter the name of the ADCIRC UNIT 14 (grid) file:'
 C      WRITE(*,*) '  '
 C      READ(*,60) GRID
-      GRID = 'out.grd'
+
+C  GET THE NUMBER OF COMMAND LINE ARGUMENTS.
+
+      ARG_NUM = IARGC ( )
+
+C  ARGUMENT 1 IS THE NAME OF THE GRID FILE
+
+      IF ( 1 <= ARG_NUM ) THEN
+        IARG = 1
+        CALL GETARG (IARG, GRID)
+      ELSE
+        WRITE ( *, *) 'PLEASE ENTER THE FILENAME PREFIX.'
+        READ ( *, * ) GRID
+      END IF
+
 C      WRITE(*,*) '  '
       INQUIRE(FILE=GRID,EXIST=FOUND)
       IF(FOUND) GOTO 32
