@@ -1,1 +1,1 @@
-__all__ = ["readMesh","utilities"]
+__all__ = ["readMesh","writeMesh","utilities"]

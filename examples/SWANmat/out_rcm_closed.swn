@@ -1,0 +1,38 @@
+$*************************HEADING************************
+$
+PROJ 'out_rcm_closed' 's01'
+$
+$********************MODEL INPUT*************************
+$
+SET LEVEL 10.0 NAUT
+$
+MODE STATIONARY TWODIMENSIONAL
+$
+CGRID UNSTRUCTURED CIRCLE 36 0.0521 1. 31
+READgrid UNSTRUCtured ADCirc
+$
+$ 22 m/s winds
+WIND 22.0 90
+$
+GEN3
+BREA
+FRIC
+TRIAD
+DIFFRACTION
+$
+NUM STOPC 0.005 0.02 0.005 98 STAT 50 0.01
+$
+$*************************************************************
+$
+BLOCK 'COMPGRID' NOHEAD 'out_rcm_closed.mat' LAY 3 XP YP DEP HS DIR RTP
+$
+$ in python do this
+$ import scipy.io
+$ mat = scipy.io.loadmat('out_rcm_closed.mat')
+$
+TEST 1,0
+COMPUTE
+STOP
+$
+
+

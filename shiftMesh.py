@@ -10,16 +10,16 @@
 # Date: December 1, 2015
 #
 # Purpose: Script takes in an ADCIRC mesh and shifts it according to
-# x_shift and y_shift
+# x_shift and y_shift, and multiplies the z by amounts specified,
 #
 # Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
 #
 # Example:
 #
-# python shiftMesh.py -i out.grd -s -100 -150 -o out_shifted.grd
+# python shiftMesh.py -i out.grd -s -100 -150 -1 -o out_shifted.grd
 # where:
 # -i mesh in ADCIRC format
-# -s amount to shift the x and y coordinates
+# -s translates x and y and multiplies z by the amounts specified
 # -o output mesh that is shifted
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,19 +35,17 @@ from ppmodules.readMesh import *           # to get all readMesh functions
 curdir = os.getcwd()
 #
 # I/O
-if len(sys.argv) != 8 :
+if len(sys.argv) != 9 :
 	print 'Wrong number of Arguments, stopping now...'
 	print 'Usage:'
-	print 'python shiftMesh.py -i out.grd -s -100 -150 -o out_shifted.grd'
+	print 'python shiftMesh.py -i out.grd -s -100 -150 -1 -o out_shifted.grd'
 	sys.exit()
 
-dummy1 =  sys.argv[1]
 input_file = sys.argv[2]
-dummy2 =  sys.argv[3]
 x_shift = int(sys.argv[4])
 y_shift = int(sys.argv[5])
-dummy3 = sys.argv[6]
-output_file = sys.argv[7]
+z_mult = float(sys.argv[6])
+output_file = sys.argv[8]
 
 # read the adcirc mesh file
 n,e,x,y,z,ikle = readAdcirc(input_file)
@@ -62,7 +60,7 @@ fout.write(str(e) + " " + str(n) + "\n")
 # writes the nodes
 for i in range(n):
 	fout.write(str(i+1) + " " + str("{:.3f}".format(x[i] + x_shift)) + " " + 
-		str("{:.3f}".format(y[i]+y_shift)) + " " + str("{:.3f}".format(z[i])) + "\n")
+		str("{:.3f}".format(y[i]+y_shift)) + " " + str("{:.3f}".format(z[i]*z_mult)) + "\n")
 
 # writes the elements
 for i in range(e):
