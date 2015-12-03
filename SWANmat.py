@@ -16,6 +16,9 @@
 #
 # BLOCK 'COMPGRID' NOHEAD 'out.mat' LAY 3 XP YP DEP HS DIR RTP 
 #
+# It assumes that the *.swn steering file is generated using the nautical
+# direction convention (where the wind is coming from).
+#
 # For now, it only works for stationary SWAN simulations.
 # TODO: update for non-stationary output as well
 #
@@ -103,21 +106,15 @@ n,e,x,y,z,ikle = readAdcirc(adcirc_file)
 # name for the adcirc file before the extension
 base_name = adcirc_file.split('.',1)[0]
 
-# create the output files for Hsig, RTpeak and Depth
-f_Hsig = open(base_name + '_Hsig.grd', "w")
-f_RTpeak = open(base_name + '_RTpeak.grd', "w")
-f_Depth = open(base_name + '_Depth.grd', "w")
+# write the adcirc files
+writeAdcirc(n,e,x,y,Hsig[0,:],ikle,base_name + '_Hsig.grd')
+writeAdcirc(n,e,x,y,RTpeak[0,:],ikle,base_name + '_RTpeak.grd')
+writeAdcirc(n,e,x,y,Depth[0,:],ikle,base_name + '_Depth.grd')
 
-# write each adcirc output file
-Hsig_list = writeAdcirc(n,e,x,y,Hsig[0,:],ikle)
-RTpeak_list = writeAdcirc(n,e,x,y,RTpeak[0,:],ikle)
-Depth_list = writeAdcirc(n,e,x,y,Depth[0,:],ikle)
+# write the individual vtk files too
+# these are the field variables from SWAN
+writeVTKscalar(n,e,x,y,Hsig[0,:],ikle,base_name + '_Hsig.vtk', 'Hsig')
+writeVTKscalar(n,e,x,y,RTpeak[0,:],ikle,base_name + '_RTpeak.vtk', 'RTpeak')
+writeVTKscalar(n,e,x,y,Depth[0,:],ikle,base_name + '_Depth.vtk', 'Depth')
 
-for i in range(len(Hsig_list)):
-	f_Hsig.write(Hsig_list[i])
-	f_RTpeak.write(RTpeak_list[i])
-	f_Depth.write(Depth_list[i])
-
-# delete the list variables
-del Hsig_list, RTpeak_list, Depth_list
-
+# these are the vector variables from SWAN
