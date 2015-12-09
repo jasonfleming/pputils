@@ -60,10 +60,10 @@ print 'Operating system: ' + os.name
 if (os.name == 'posix'):
 
 	# change the directory to python27 folder of the local telemac installation
-	os.chdir('/home/pprodano/opentelemac/v7p0r1/scripts/python27')
+	os.chdir('/home/user/opentelemac/v7p0r1/scripts/python27')
 
 	# pass the SYSTELCFG system variable
-	subprocess.call('export SYSTELCFG=/home/pprodano/opentelemac/v7p0r1/configs/systel.cis-debian.cfg', shell=True)
+	subprocess.call('export SYSTELCFG=/home/user/opentelemac/v7p0r1/configs/systel.cis-debian.cfg', shell=True)
 	
 	# runs the stbtel
 	cmd_str = 'python runcode.py stbtel -s ' + curdir + '/adcirc2slf.cas'

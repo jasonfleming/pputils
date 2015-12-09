@@ -168,7 +168,7 @@ elif (wkt_type == 'POLYGON_XYZ'):
 	    else:
 	      tmp = str(temp[j]) + "\n"
 	  
-	    fout.write(str(i) + ',' + tmp)
+	    fout.write(tmp)
 		  
 	# close the temp.txt file
 	fout.close()

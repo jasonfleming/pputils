@@ -68,15 +68,27 @@ m_z = interpolator(m_x, m_y)
 # as the interpolated node
 where_are_NaNs = np.isnan(m_z)
 m_z[where_are_NaNs] = -999.0
-
+'''
 if (np.sum(where_are_NaNs) > 0):
 	print '#####################################################'
 	print ''
 	print 'WARNING: Some nodes are outside of the TIN boundary!!!'
 	print ''
-	print 'A value of -999.0 is assigned to those nodes!'
+	print 'Closest TIN node is assigned to those nodes!'
 	print ''
 	print '#####################################################'
+'''
+
+# rather than assigning -999.0 when the mesh node lines outside the tin,
+# simply assign to that mesh node the elevation of the closest tin.
+for i in range(len(m_x)):
+	if (where_are_NaNs[i] == True):
+		xdist = np.subtract(t_x,m_x[i])
+		ydist = np.subtract(t_y,m_y[i])
+		dist = np.sqrt(np.power(xdist,2.0) + np.power(ydist,2.0))
+		minidx = np.argmin(dist)
+		
+		m_z[i] = t_z[minidx]
 
 # to create the output file
 fout = open(output_file,"w")
