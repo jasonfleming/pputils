@@ -74,6 +74,7 @@ n = len(line)
 sep = ')"'
 
 count = 0
+temp = ''
 tmp = ''
 
 if (wkt_type == 'LINESTRING'):
@@ -167,7 +168,7 @@ elif (wkt_type == 'POLYGON_XYZ'):
 	    else:
 	      tmp = str(temp[j]) + "\n"
 	  
-	    fout.write(tmp)
+	    fout.write(str(i) + ',' + tmp)
 		  
 	# close the temp.txt file
 	fout.close()
@@ -204,7 +205,7 @@ elif (wkt_type == 'POLYGON_ATTR'):
 	fout.close()
 	
 elif (wkt_type == 'POINT'):
-		# ignores the first (header) line in the WKT file
+	# ignores the first (header) line in the WKT file
 	for i in range(1,n):
 	  line[i] = line[i].replace('"POINT (', '')
 	  # ignores everythng past the separator 
@@ -219,6 +220,25 @@ elif (wkt_type == 'POINT'):
 	# close the temp.txt file
 	fout.close()
 	
+elif (wkt_type == 'POINT_XYZ'):
+	
+	val = ''
+	
+	# ignores the first (header) line in the WKT file
+	for i in range(1,n):
+	  line[i] = line[i].replace('"POINT (', '')
+	  # stores the z value as a string
+	  val = line[i].split(')",', 1)[1]	
+	  # ignores everythng past the separator 
+	  line[i] = line[i].split(sep, 1)[0]	
+	  temp = line[i].split(',')
+	
+	  for j in range(len(temp)):
+	    temp[j] = temp[j].replace(' ', ',')
+	    fout.write(str(temp[j] + ',' + val) + "\n")
+		  
+	# close the temp.txt file
+	fout.close()	
 
 # delete temp
 del temp
