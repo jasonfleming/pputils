@@ -87,6 +87,15 @@ for i in range (len(v)):
 # the number of nodes in the file
 num_pts = Hsig.shape[1]
 
+# if the Depth in unstructured SWAN is negative, all output variables
+# are reported as nan
+index = list()
+for i in range(num_pts):
+	if (Depth[0,i] < 0.0):
+		Hsig[0,i] = 0.0
+		RTpeak[0,i] = 0.0
+		Dir[0,i] = 0.0
+
 # writes the SWAN output as a *.csv file
 
 # write the header (var names in first line, units in second)
@@ -106,15 +115,17 @@ n,e,x,y,z,ikle = readAdcirc(adcirc_file)
 # name for the adcirc file before the extension
 base_name = adcirc_file.split('.',1)[0]
 
-# write the adcirc files
-writeAdcirc(n,e,x,y,Hsig[0,:],ikle,base_name + '_Hsig.grd')
-writeAdcirc(n,e,x,y,RTpeak[0,:],ikle,base_name + '_RTpeak.grd')
-writeAdcirc(n,e,x,y,Depth[0,:],ikle,base_name + '_Depth.grd')
+# write the adcirc files (multiply by -1 for BK viewing ...)
+writeAdcirc(n,e,x,y,-1*Hsig[0,:],ikle,base_name + '_Hsig.grd')
+writeAdcirc(n,e,x,y,-1*RTpeak[0,:],ikle,base_name + '_RTpeak.grd')
+writeAdcirc(n,e,x,y,-1*Depth[0,:],ikle,base_name + '_Depth.grd')
+writeAdcirc(n,e,x,y,-1*Dir[0,:],ikle,base_name + '_Dir.grd')
 
+'''
 # write the individual vtk files too
 # these are the field variables from SWAN
 writeVTKscalar(n,e,x,y,Hsig[0,:],ikle,base_name + '_Hsig.vtk', 'Hsig')
 writeVTKscalar(n,e,x,y,RTpeak[0,:],ikle,base_name + '_RTpeak.vtk', 'RTpeak')
 writeVTKscalar(n,e,x,y,Depth[0,:],ikle,base_name + '_Depth.vtk', 'Depth')
-
+'''
 # these are the vector variables from SWAN
