@@ -28,9 +28,7 @@
 import os,sys                              # system parameters
 import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
-import math                                # for the ceil function
 from ppmodules.readMesh import *           # to get all readMesh functions
-import struct
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
@@ -83,29 +81,23 @@ y_regs = yreg[:,1]
 interpolator = mtri.LinearTriInterpolator(tin, z)
 interp_zz = interpolator(xreg, yreg)
 
-print "Shape of array z: " + str(interp_zz.shape[0])
+# print "Shape of array z: " + str(interp_zz.shape[0])
 
-print "Shape of arrays xreg and yreg: " + str(x_regs.shape) + " " + str(y_regs.shape) 
+# print "Shape of arrays xreg and yreg: " + str(x_regs.shape) + " " + str(y_regs.shape) 
 
 where_are_NaNs = np.isnan(interp_zz)
 interp_zz[where_are_NaNs] = -999.0
 
+# write the header string
+header_str = "NCOLS " + str(interp_zz.shape[1]) + "\n"
+header_str = header_str + "NROWS " + str(interp_zz.shape[0]) + "\n"
+header_str = header_str + "XLLCORNER " + str(x_regs[0]) + "\n"
+header_str = header_str + "YLLCORNER " + str(y_regs[0]) + "\n"
+header_str = header_str + "CELLSIZE " + str(spacing) + "\n"
+header_str = header_str + "NODATA_VALUE " + str(-999.00)
+
 #np.savetxt("temp.out", z, fmt='%.2f', delimiter='') # this has no max spaces
-np.savetxt('temp.out', np.flipud(interp_zz), fmt='%10.3f', delimiter='') # this has 10 char spaces, 2 after decimal
+np.savetxt(output_file, np.flipud(interp_zz), fmt='%10.3f', header = header_str, 
+	comments = '', delimiter='') # this has 10 char spaces, 2 after decimal
 
-# open the output *.asc file, and write the header info
-fout.write("NCOLS " + str(interp_zz.shape[1]) + "\n")
-fout.write("NROWS " + str(interp_zz.shape[0]) + "\n")
-fout.write("XLLCORNER " + str(x_regs[0]) + "\n")
-fout.write("YLLCORNER " + str(y_regs[0]) + "\n")
-fout.write("CELLSIZE " + str(spacing) + "\n")
-fout.write("NODATA_VALUE " + str(-999.00) + "\n")
-
-# read the file, and write every line in fout
-with open("temp.out") as fp:
-	for line in fp:
-		fout.write(line);
-# remove the temp file
-print "Removing temporary files ..."
-os.remove("temp.out")
 print "All done!"

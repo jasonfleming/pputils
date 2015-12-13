@@ -29,7 +29,6 @@
 import os,sys                              # system parameters
 import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
-import math                                # for the ceil function
 from ppmodules.readMesh import *           # to get all readMesh functions
 import struct                              # to write binary data to file
 from utils.progressbar import ProgressBar  # progress bar
@@ -110,6 +109,16 @@ fhdr.write("NODATA_VALUE " + str(-999.00) + "\n")
 fhdr.write("BYTEORDER LSBFIRST " + "\n")
 
 print "Writing binary data file ..."
+
+'''
+# this also works too, but can't use progress bar
+num_pts = int(num_x_pts[0]) * int(num_y_pts[0])
+interp_zz_reshaped = np.reshape(np.flipud(interp_zz),num_pts)
+s = struct.pack('f'*num_pts,*interp_zz_reshaped)
+fout.write(s)
+fout.close()
+'''
+
 pbar = ProgressBar(maxval=interp_zz.shape[0]).start()
 for i in range(interp_zz.shape[0]):
 	s = struct.pack('f'*interp_zz.shape[1], *np.flipud(interp_zz)[i,:])
