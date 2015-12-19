@@ -25,7 +25,7 @@
 import os,sys                              # system parameters
 from os import path
 import numpy             as np             # numpy
-from parsers.parserSELAFIN import SELAFIN  
+from ppmodules.selafin_io import *  
 #
 pytel = os.getcwd()
 sys.path.append(path.join(path.dirname(sys.argv[0]),pytel))

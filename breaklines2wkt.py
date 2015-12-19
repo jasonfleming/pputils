@@ -27,7 +27,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os,sys                              # system parameters
 import numpy             as np             # numpy
-from utils.progressbar import ProgressBar  # progress bar
+from ppmodules.ProgressBar import *        # progress bar
 curdir = os.getcwd()
 #
 #

@@ -28,10 +28,7 @@
 import os,sys                              # system parameters
 import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
-import math                                # for the ceil function
-from parsers.parserSELAFIN import SELAFIN 
-curdir = os.getcwd()
-#
+from ppmodules.selafin_io import *
 #
 # I/O
 if len(sys.argv) != 5 :

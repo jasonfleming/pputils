@@ -29,7 +29,7 @@
 #
 # Example:
 #
-# python adcirc2asc.py -i out.grd -b boundary.csv -o out_friction.grd
+# python assign.py -i out.grd -b boundary.csv -o out_friction.grd
 # where:
 #
 # -i input adcirc mesh file
@@ -44,7 +44,7 @@ import os,sys                              # system parameters
 import numpy             as np             # numpy
 from ppmodules.readMesh import *           # to get all readMesh functions
 from ppmodules.utilities import *          # to get the general utilities
-from utils.progressbar import ProgressBar  # progress bar
+from ppmodules.ProgressBar import *
 import timeit
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,7 +57,7 @@ start_time = timeit.default_timer()
 if len(sys.argv) != 7 :
 	print 'Wrong number of Arguments, stopping now...'
 	print 'Usage:'
-	print 'python adcirc2asc.py -i out.grd -b boundary.csv -o out_friction.grd'
+	print 'python assign.py -i out.grd -b boundary.csv -o out_friction.grd'
 	sys.exit()
 dummy1 =  sys.argv[1]
 input_file = sys.argv[2]

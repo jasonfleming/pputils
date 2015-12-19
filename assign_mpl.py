@@ -45,7 +45,7 @@
 import os,sys                              # system parameters
 import numpy             as np             # numpy
 from ppmodules.readMesh import *           # to get all readMesh functions
-from utils.progressbar import ProgressBar  # progress bar
+from ppmodules.ProgressBar import *        # progress bar
 import matplotlib.path as mplPath          # for point in poly test
 import timeit
 # 

@@ -26,13 +26,9 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os,sys                              # system parameters
-import matplotlib.tri    as mtri           # matplotlib triangulations
-import numpy             as np             # numpy
-import math                                # for the ceil function
-from parsers.parserSELAFIN import SELAFIN 
-curdir = os.getcwd()
-#
+import numpy             as np 
+from ppmodules.selafin_io import *
+from ppmodules.ProgressBar import *
 #
 # I/O
 if len(sys.argv) != 6 :
@@ -120,5 +116,4 @@ f = np.zeros(second.NPOIN2)
 f = friction[0,:]
 
 out.appendCoreVarsSLF([z,f])
-
 

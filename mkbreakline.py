@@ -37,7 +37,7 @@ import os,sys                              # system parameters
 import numpy             as np             # numpy
 from collections import OrderedDict        # for removal of duplicate nodes
 from scipy import spatial                  # kd tree for searching coords
-from utils.progressbar import ProgressBar  # progress bar
+from ppmodules.ProgressBar import *        # progress bar
 curdir = os.getcwd()
 #
 #

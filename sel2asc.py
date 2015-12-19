@@ -34,18 +34,13 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os,sys                                 # system parameters
+import os,sys                              # system parameters
 from os import path
 import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
-from numpy import linspace, dtype          # Writing netcdf files
-import math # for the ceil function
-#from math import sqrt, pi, sin, cos, tan, atan2 as arctan2  # math objects for coord trans
-# Importing pytel tools for SELAFIN parser
-pytel = os.getcwd()
-#pytel = '/home/user/opentelemac/v7p0r1/scripts/python27/'
-sys.path.append(path.join(path.dirname(sys.argv[0]),pytel))
-from parsers.parserSELAFIN import SELAFIN  
+from numpy import linspace, dtype          
+import math                                # for the ceil function
+from ppmodules.selafin_io import *
 #
 #
 #{{{

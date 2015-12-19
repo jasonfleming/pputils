@@ -16,6 +16,9 @@
 #
 # So far, works only for 2D output files.
 #
+# Modified: Dec 17, 2015 
+# Made to work on trimmed down version of HRW's selafin io utilities 
+#
 # Using: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
 #
 # Example: python sel2vtk.py -i results.slf -o results.vtk
@@ -23,13 +26,10 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os,sys                                 # system parameters
-from os import path
-import numpy             as np             # numpy
-from numpy import linspace, dtype          # Writing netcdf files
-pytel = os.getcwd()
-sys.path.append(path.join(path.dirname(sys.argv[0]),pytel))
-from parsers.parserSELAFIN import SELAFIN  
+import os,sys
+import numpy             as np
+from ppmodules.selafin_io import *
+from ppmodules.ProgressBar import *
 
 def read_selafin():
 	# Openning the selafin file

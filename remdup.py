@@ -26,19 +26,12 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os,sys                              # system parameters
 from os import path
-#import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
-import math                                # for the ceil function
 from collections import OrderedDict
-
-# Importing pytel tools for SELAFIN parser
-pytel = os.getcwd()
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
-curdir = os.getcwd()
-#
 # I/O
 if len(sys.argv) != 5 :
 	print 'Wrong number of Arguments, stopping now...'
@@ -92,4 +85,4 @@ n_rev = len(mypoints)
 for i in range(n_rev):
 	fout.write(str(mypoints[i][0]) + ',' + str(mypoints[i][1]) + ',' + 
 		str("{:.3f}".format(mypoints[i][2])) + '\n')
-			
+

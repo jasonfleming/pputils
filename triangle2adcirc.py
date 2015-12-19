@@ -26,7 +26,7 @@
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os,sys                              # system parameters
-import matplotlib.tri    as mtri           # matplotlib triangulations
+#import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
 import math                                # for the ceil function
 curdir = os.getcwd()

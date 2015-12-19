@@ -37,7 +37,7 @@
 import os,sys                              # system parameters
 import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
-from parsers.parserSELAFIN import SELAFIN
+from ppmodules.selafin_io import *
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN

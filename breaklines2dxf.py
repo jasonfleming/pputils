@@ -24,7 +24,7 @@
 import os,sys                              # system parameters
 import numpy             as np             # numpy
 from dxfwrite import DXFEngine as dxf      # for dxf export
-from utils.progressbar import ProgressBar  # progress bar
+from ppmodules.ProgressBar import *        # progress bar
 curdir = os.getcwd()
 #
 #

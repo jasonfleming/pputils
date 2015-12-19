@@ -36,7 +36,7 @@ from os import path
 import numpy             as np             # numpy
 import matplotlib.tri    as mtri           # matplotlib triangulations
 from numpy import linspace, dtype          # Writing netcdf files
-from parsers.parserSELAFIN import SELAFIN  # IO for Selafin files 
+from ppmodules.selafin_io import *         # IO for Selafin files 
 from matplotlib import pyplot as plt       # for printing figures
 
 def read_selafin():

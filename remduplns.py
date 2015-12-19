@@ -28,19 +28,12 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os,sys                              # system parameters
 from os import path
-#import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
-import math                                # for the ceil function
 from collections import OrderedDict
-
-# Importing pytel tools for SELAFIN parser
-pytel = os.getcwd()
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
-curdir = os.getcwd()
-#
 # I/O
 if len(sys.argv) != 5 :
 	print 'Wrong number of Arguments, stopping now...'
