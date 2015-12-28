@@ -17,7 +17,7 @@
 #
 # Example:
 #
-# python adcirc2flt.py -i tin.14 -s 10 -o tin.asc
+# python adcirc2flt.py -i tin.grd -s 10 -o tin.flt
 # where:
 # -i input adcirc mesh file
 # -s spacing (in m) of the *.flt grid file
@@ -42,7 +42,7 @@ curdir = os.getcwd()
 if len(sys.argv) != 7 :
 	print 'Wrong number of Arguments, stopping now...'
 	print 'Usage:'
-	print 'python adcirc2flt.py -i tin.14 -s 10 -o tin.flt'
+	print 'python adcirc2flt.py -i tin.grd -s 10 -o tin.flt'
 	sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]

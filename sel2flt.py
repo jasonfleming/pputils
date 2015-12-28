@@ -1,24 +1,21 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 sel2asc.py                           # 
+#                                 sel2flt.py                            # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng. 
 # 
-# Date: May 27, 2015
+# Date: Dec 26, 2015
 #
 # Purpose: Script designed to open 2D telemac binary file, read the
-# the desired output to an ESRI *.asc file for use in displaying within a
-# GIS environment
+# the desired output to an ESRI *.flt file for use in displaying within a
+# GIS environment. Same as my sel2flt.py script.
 # 
-# Script based on sel2ncdf.py by Caio Eadi Stringari, and 
-# sel2ncdf_2014-09-12-2.py by Alex Goater.
-#
 # Using: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
 #
-# Example: python sel2asc.py -i input.slf -v 4 -t 0 -s 2.0 -o output.asc
+# Example: python sel2flt.py -i input.slf -v 4 -t 0 -s 2.0 -o output.flt
 # 
 # where:
 #       --> -i is the *.slf file from which to extract data
@@ -29,18 +26,17 @@
 #       --> -t is the index of the time step to extract; see probl.py for
 #                        index codes of the time steps
 #
-#       --> -o is the *.asc output file
+#       --> -o is the *.flt output file
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os,sys                              # system parameters
-from os import path
 import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
-from numpy import linspace, dtype          
-import math                                # for the ceil function
-from ppmodules.selafin_io import *
+import struct                              # to write binary data to file
+from ppmodules.selafin_io import *         # to read and write *.slf files
+from ppmodules.ProgressBar import *        # progress bar
 #
 #
 #{{{
@@ -150,7 +146,7 @@ def tri2reg(triang,xi,yi,z,method,t,var):
 if len(sys.argv) != 11:
 	print 'Wrong number of Arguments, stopping now...'
 	print 'Usage:'
-	print 'python sel2asc.py -i input.slf -v 4 -t 0 -s 2.0 -o output.asc'
+	print 'python sel2flt.py -i input.slf -v 4 -t 0 -s 2.0 -o output.flt'
 	sys.exit()
 # I/O
 
@@ -158,12 +154,20 @@ input_file = sys.argv[2]         # input *.slf file
 var_index  = int(sys.argv[4])    # index number of grided output variable 
 t = int(sys.argv[6])             # index of time record of the output to use in griding (integer, 0 to n)                                  
 spacing = float(sys.argv[8])     # specified the grid spacing of the output file
-output_file = sys.argv[10]        # output *.asc grid file
+output_file = sys.argv[10]        # output *.flt grid file
+
+# to create the output *.flt file
+fout = open(output_file,"wb")
+
+# the name of the header file (this is asci format)
+header_file = output_file.split('.',1)[0] + '.hdr'
+fhdr = open(header_file,"w")
 
 # Read the header of the selafin result file and get geometry and
 # variable names and units
 slf,x,y,ikle,numvars,nrecs,times = read_selafin()
 variables, units = get_var_names_and_units()
+#res = get_values(0)
 
 # reads all variables for time desired (in the case below, it is t=0)
 master_results = read_all_variables(t)
@@ -200,16 +204,27 @@ print "Shape of arrays xreg and yreg: " + str(x_regs.shape) + " " + str(y_regs.s
 where_are_NaNs = np.isnan(z)
 z[where_are_NaNs] = -999.0
 
-# open the output *.asc file, and write the header info
-header_str = "NCOLS " + str(z.shape[1]) + "\n"
-header_str = header_str + "NROWS " + str(z.shape[0]) + "\n"
-header_str = header_str + "XLLCORNER " + str(x_regs[0]) + "\n"
-header_str = header_str + "YLLCORNER " + str(y_regs[0]) + "\n"
-header_str = header_str + "CELLSIZE " + str(spacing) + "\n"
-header_str = header_str + "NODATA_VALUE " + str(-999.00) + "\n"
-
 #np.savetxt("temp.out", z, fmt='%.2f', delimiter='') # this has no max spaces
-np.savetxt(output_file, np.flipud(z), fmt='%10.3f', header = header_str,
-	comments = '', delimiter='') # this has 10 char spaces, 2 after decimal
+#np.savetxt('temp.out', np.flipud(z), fmt='%10.3f', delimiter='') # this has 10 char spaces, 2 after decimal
 
-print "Done"
+# open the output *.asc file, and write the header info
+fhdr.write("NCOLS " + str(z.shape[1]) + "\n")
+fhdr.write("NROWS " + str(z.shape[0]) + "\n")
+fhdr.write("XLLCORNER " + str(x_regs[0]) + "\n")
+fhdr.write("YLLCORNER " + str(y_regs[0]) + "\n")
+fhdr.write("CELLSIZE " + str(spacing) + "\n")
+fhdr.write("NODATA_VALUE " + str(-999.00) + "\n")
+fhdr.write("BYTEORDER LSBFIRST " + "\n")
+
+print "Writing binary data file ..."
+
+pbar = ProgressBar(maxval=z.shape[0]).start()
+for i in range(z.shape[0]):
+	s = struct.pack('f'*z.shape[1], *np.flipud(z)[i,:])
+	fout.write(s)
+	pbar.update(i+1)
+fout.close()
+pbar.finish()
+
+print "All done!"
+
