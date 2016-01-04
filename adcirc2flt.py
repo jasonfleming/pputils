@@ -31,7 +31,7 @@ import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
 from ppmodules.readMesh import *           # to get all readMesh functions
 import struct                              # to write binary data to file
-from utils.progressbar import ProgressBar  # progress bar
+from ppmodules.ProgressBar import *        # progress bar
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
