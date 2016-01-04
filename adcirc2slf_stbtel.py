@@ -1,7 +1,7 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 adcirc2ren.py                         # 
+#                                 adcirc2slf_stbtel.py                  # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
@@ -12,6 +12,9 @@
 # Purpose: Script takes in a mesh in ADCIRC format, and converts it to
 # TELEMAC's slf file using stbtel. The same is achieved by using 
 # converter.py, which for some reason wouldn't work for me.
+#
+# Note that if coordinates are in UTM, stbtel seems to allow F9.1, which
+# means that some precision is lost in the coordinates!
 #
 # Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
 #

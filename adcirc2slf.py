@@ -72,12 +72,14 @@ if (os.name == 'posix'):
 		subprocess.call(['chmod', '+x', 'bnd_extr_pp_32'])
 		
 		# execute the binary to generate the renumbered nodes and elements
+		print 'Executing bnd_extr_pp program ...'
 		subprocess.call(['./bnd_extr_pp_32', adcirc_file])
 	if (archtype == 64):
 		# make sure the binary is allowed to be executed
 		subprocess.call(['chmod', '+x', 'bnd_extr_pp_64'])
 		
 		# execute the binary to generate the renumbered nodes and elements
+		print 'Executing bnd_extr_pp program ...'
 		subprocess.call(['./bnd_extr_pp_64', adcirc_file])
 
 # move the files back
@@ -103,6 +105,9 @@ with open('gredit.bnd','r') as f:
 	for i in f:
 		master.append(i)
 f.close()
+
+# delete the gredit.bnd file
+os.remove('gredit.bnd')
 
 # this is the number of boundaries read from the gredit.bnd file
 # first line is ADCIRC, second line is num_bnd 
@@ -142,17 +147,20 @@ land_bnd = np.asarray(bnd[0],dtype=np.int32)
 # read the adcirc file
 n,e,x,y,z,ikle = readAdcirc(adcirc_file)
 
+# note that the nodes here are indexed starting at zero
+node = np.arange(n)+1
+
 # find lower left corner of the boundary
 # algorithm is this: find the distance of each land_bnd node from 
-# (-1000000,-1000000)
+# (-10000000,-10000000)
 # the boundary node with the smallest distance is the lower left node
-xdist = np.subtract(x,-1000000.0)
-ydist = np.subtract(y,-1000000.0)
+xdist = np.subtract(x,-10000000.0)
+ydist = np.subtract(y,-10000000.0)
 dist = np.sqrt(np.power(xdist,2.0) + np.power(ydist,2.0))
 
 # find the location of the LL node in the mesh
 LLnode = np.argmin(dist)
-#print 'LL node in mesh is',LLnode+1
+# print 'LL node in mesh is at index: ',LLnode
 
 # find the index of the LLnode in land_bnd
 start_idx = 0
@@ -163,23 +171,6 @@ for i in range(len(land_bnd)):
 
 # this makes sure the LLnode is at the start of the array
 land_bnd_rolled = np.roll(land_bnd, len(land_bnd) - start_idx)
-
-# check if the land_bnd_rolled array is CCW
-x1 = x[land_bnd_rolled[0]]
-y1 = y[land_bnd_rolled[0]]
-
-x2 = x[land_bnd_rolled[1]]
-y2 = y[land_bnd_rolled[1]]
-
-x3 = x[land_bnd_rolled[2]]
-y3 = y[land_bnd_rolled[2]]
-
-# this is Sebastien Bourban's isCCW function (in geometry.py)
-if ((y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)):
-	print 'land_bnd_rolled is CCW'
-else:
-	print 'land_bnd_rolled is CW. Rearranging ...'
-	land_bnd_rolled = np.flipud(land_bnd_rolled)
 
 # return the land_bnd_rolled back to bnd[0]
 for i in range(len(bnd[0])):
@@ -206,38 +197,35 @@ for i in range(num_bnd):
 		fcli.write(cli_base + str(item) + ' ' + str(a+1) + '\n')
 fcli.close()
 
-# note that the nodes here are indexed starting at zero
-node = np.arange(n)+1
-
 # convert all_bnd from a list to a numpy array
 all_bnd_array = np.asarray(all_bnd)
 
+'''
 f = open('all_bnd.txt','w')
 # this is the problem for the time being ...
 for i in range(len(all_bnd)):
 	f.write(str(all_bnd[i]) + '\n')
 f.close()
+'''
 
 # now we can populate the ppIPOB array
 ppIPOB = np.zeros(n,dtype=np.int32)
 
 # we have an all_bnd_array, that lists nodes of the boundary
-# go through each node, and find the index of the all_bnd_array that
-# corresponds to that node
-####
-# the code below doesn't work
-# ppIPOB array is not set correctly!
-####
-for i in range(len(all_bnd_array)):
-	for j in range(len(node)):
-		if (node[j] == all_bnd_array[i]):
-			ppIPOB[j] = i+1
+# this just might work; must test
+ipob_count = 0
 
+for i in range(len(all_bnd)):
+	ipob_count = ipob_count + 1
+	ppIPOB[int(all_bnd[i])-1] = ipob_count
+
+'''
 f = open('ipob.txt','w')
 # this is the problem for the time being ...
 for i in range(len(ppIPOB)):
 	f.write(str(ppIPOB[i]) + '\n')
 f.close()
+'''
 
 # writes the slf2d file
 slf2d = SELAFIN('')
@@ -279,7 +267,8 @@ slf2d.tags['times'].append(0)
 
 #slf2d.tags = { 'times':[0] } # time (sec)
 #slf2d.DATETIME = sel.DATETIME
-slf2d.DATETIME = [2015, 1, 1, 1, 1, 1]
+# Aug 29, 1997 2:15 am EST (date when skynet became self-aware)
+slf2d.DATETIME = [1997, 8, 29, 2, 15, 0]
 #slf2d.tags = { 'cores':[long(0)] } # time frame 
 
 #print '     +> Write SELAFIN headers'

@@ -45,10 +45,13 @@ def read_selafin():
 	ipobo = slf.IPOB2
 	
 	f = open(ipobo_file, 'w')
-	f.write('ipobo,node' + '\n')
+	#f.write('ipobo,node' + '\n')
+	f.write('x,y,ipobo,node' + '\n')
 	for i in range(len(ipobo)):
+		f.write(str('{:.3f}'.format(x[i])) + ',' + str('{:.3f}'.format(y[i]))
+			+ ',' + str('{:5d}'.format(ipobo[i])) + ',' + str('{:5d}'.format(i+1)) 
+			+ '\n')
 		#f.write(str(x[i]) + ',' + str(y[i]) + ',' + str(ipobo[i]) + ',' + str(i+1) + '\n')
-		f.write(str(ipobo[i]) + ',' + str(i+1) + '\n')
 	
 	# Getting Variables
 	print 'Variables in '+input_file+' are:'
