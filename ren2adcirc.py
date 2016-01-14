@@ -32,6 +32,9 @@
 import os,sys                              # system parameters
 import numpy             as np             # numpy
 # 
+# this is the function that returns True if the elements is oriented CCW
+def isCCW((x1,y1),(x2,y2),(x3,y3)):
+   return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
@@ -56,8 +59,8 @@ yref = float(sys.argv[8])
 nodes_data = np.genfromtxt(nodes_file,unpack=True)
 elements_data = np.genfromtxt(elements_file,unpack=True)
 
-print nodes_data.shape
-print elements_data.shape
+# print nodes_data.shape
+# print elements_data.shape
 
 fout = open(adcirc_file,"w")
 
@@ -75,6 +78,26 @@ e2 = e2.astype(np.int32)
 e3 = elements_data[2,:]
 e3 = e3.astype(np.int32)
 
+# construct the ikle numpy array
+ikle = np.column_stack((e1,e2,e3))
+
+# go through each element, and make sure it is oriented in CCW fashion
+for i in range(len(ikle)):
+	
+	# if the element is not CCW then must change its orientation
+	if not isCCW( (x[ikle[i,0]], y[ikle[i,0]]), (x[ikle[i,1]], y[ikle[i,1]]), 
+			(x[ikle[i,2]], y[ikle[i,2]])  ):
+		
+		t0 = ikle[i,0]
+		t1 = ikle[i,1]
+		t2 = ikle[i,2]
+		
+		# switch orientation
+		ikle[i,0] = t2
+		ikle[i,2] = t0
+		
+		# print('re-orienting element ' + str(i+1))
+
 # now to write the adcirc mesh file
 fout.write("ADCIRC" + "\n")
 # writes the number of elements and number of nodes in the header file
@@ -87,6 +110,6 @@ for i in range(0,len(node_id)):
 
 # writes the elements
 for i in range(0,len(e1)):
-	fout.write(str(i+1) + " 3 " + str(e1[i]) + " " + str(e2[i]) + " " + 
-		str(e3[i]) + "\n")	
+	fout.write(str(i+1) + " 3 " + str(ikle[i,0]) + " " + str(ikle[i,1]) + " " + 
+		str(ikle[i,2]) + "\n")	
 

@@ -14,6 +14,9 @@
 # algorithm. The script uses Python's subprocess to call the binaries that
 # were compiled with gfortran.
 #
+# sometime the subprocess module fails to link everything together;
+# TODO: investigate this further.
+#
 # Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
 #
 # Example:
@@ -120,7 +123,9 @@ if (os.name == 'posix'):
 		'out_rcm_elements.txt -o ' + output_file + ' -s ' +
 		str(xref) + ' ' + str(yref))
 	
-	subprocess.call(callstr, shell=True)
+	call_list = callstr.split()
+	
+	subprocess.call(call_list)
 	
 	# remove the intermediate files
 	os.remove("out_nodes.txt")
