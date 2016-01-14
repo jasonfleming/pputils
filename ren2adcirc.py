@@ -33,7 +33,7 @@ import os,sys                              # system parameters
 import numpy             as np             # numpy
 # 
 # this is the function that returns True if the elements is oriented CCW
-def isCCW((x1,y1),(x2,y2),(x3,y3)):
+def CCW((x1,y1),(x2,y2),(x3,y3)):
    return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
@@ -82,11 +82,12 @@ e3 = e3.astype(np.int32)
 ikle = np.column_stack((e1,e2,e3))
 
 # go through each element, and make sure it is oriented in CCW fashion
+
 for i in range(len(ikle)):
 	
 	# if the element is not CCW then must change its orientation
-	if not isCCW( (x[ikle[i,0]], y[ikle[i,0]]), (x[ikle[i,1]], y[ikle[i,1]]), 
-			(x[ikle[i,2]], y[ikle[i,2]])  ):
+	if not CCW( (x[ikle[i,0]-1], y[ikle[i,0]-1]), (x[ikle[i,1]-1], y[ikle[i,1]-1]), 
+		(x[ikle[i,2]-1], y[ikle[i,2]-1]) ):
 		
 		t0 = ikle[i,0]
 		t1 = ikle[i,1]

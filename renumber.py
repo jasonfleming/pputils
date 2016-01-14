@@ -14,8 +14,7 @@
 # algorithm. The script uses Python's subprocess to call the binaries that
 # were compiled with gfortran.
 #
-# sometime the subprocess module fails to link everything together;
-# TODO: investigate this further.
+# Only works on Linux/Unix; TODO: make it work under windows
 #
 # Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
 #
@@ -123,6 +122,8 @@ if (os.name == 'posix'):
 		'out_rcm_elements.txt -o ' + output_file + ' -s ' +
 		str(xref) + ' ' + str(yref))
 	
+	# this creates a list of the callstr, where each parameter is separed
+	# by a space
 	call_list = callstr.split()
 	
 	subprocess.call(call_list)
