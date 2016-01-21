@@ -30,6 +30,10 @@ import struct                              # to determine sys architecture
 import subprocess                          # to execute binaries
 from ppmodules.selafin_io import *         # SELAFIN io
 from ppmodules.readMesh import *           # for the readAdcirc function
+#
+# this is the function that returns True if the elements is oriented CCW
+def CCW((x1,y1),(x2,y2),(x3,y3)):
+   return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
@@ -46,6 +50,8 @@ dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
 dummy2 =  sys.argv[3]
 output_file = sys.argv[4]
+
+
 
 ########################################################################
 # this part of the code uses python's subprocess to call externally
@@ -147,6 +153,21 @@ land_bnd = np.asarray(bnd[0],dtype=np.int32)
 # read the adcirc file
 n,e,x,y,z,ikle = readAdcirc(adcirc_file)
 
+# go through each element, and make sure it is oriented in CCW fashion
+for i in range(len(ikle)):
+	
+	# if the element is not CCW then must change its orientation
+	if not CCW( (x[ikle[i,0]], y[ikle[i,0]]), (x[ikle[i,1]], y[ikle[i,1]]), 
+		(x[ikle[i,2]], y[ikle[i,2]]) ):
+		
+		t0 = ikle[i,0]
+		t1 = ikle[i,1]
+		t2 = ikle[i,2]
+		
+		# switch orientation
+		ikle[i,0] = t2
+		ikle[i,2] = t0
+
 # note that the nodes here are indexed starting at zero
 node = np.arange(n)+1
 
@@ -200,14 +221,6 @@ fcli.close()
 # convert all_bnd from a list to a numpy array
 all_bnd_array = np.asarray(all_bnd)
 
-'''
-f = open('all_bnd.txt','w')
-# this is the problem for the time being ...
-for i in range(len(all_bnd)):
-	f.write(str(all_bnd[i]) + '\n')
-f.close()
-'''
-
 # now we can populate the ppIPOB array
 ppIPOB = np.zeros(n,dtype=np.int32)
 
@@ -218,14 +231,6 @@ ipob_count = 0
 for i in range(len(all_bnd)):
 	ipob_count = ipob_count + 1
 	ppIPOB[int(all_bnd[i])-1] = ipob_count
-
-'''
-f = open('ipob.txt','w')
-# this is the problem for the time being ...
-for i in range(len(ppIPOB)):
-	f.write(str(ppIPOB[i]) + '\n')
-f.close()
-'''
 
 # writes the slf2d file
 slf2d = SELAFIN('')
@@ -275,7 +280,8 @@ slf2d.DATETIME = [1997, 8, 29, 2, 15, 0]
 slf2d.fole.update({ 'hook': open(output_file,'w') })
 slf2d.fole.update({ 'name': 'Converted from ADCIRC with pputils' })
 slf2d.fole.update({ 'endian': ">" })     # big endian
-slf2d.fole.update({ 'float': ('f',4) })  # single precision
+slf2d.fole.update({ 'float': ('f',4) })  # ('f',4) is single precision 
+#                                        # ('f',8) is double precision
 
 slf2d.appendHeaderSLF()
 slf2d.appendCoreTimeSLF(0) 
