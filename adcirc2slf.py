@@ -261,8 +261,6 @@ slf2d.NELEM2 = e
 slf2d.NELEM3 = e
 slf2d.IPARAM = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-slf2d.alterFloat()
-
 #print '     +> Set SELAFIN mesh'
 slf2d.MESHX = x
 slf2d.MESHY = y
