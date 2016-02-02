@@ -88,12 +88,20 @@ if (os.name == 'posix'):
 		print 'Executing bnd_extr_pp program ...'
 		subprocess.call(['./bnd_extr_pp_64', adcirc_file])
 
-# move the files back
-subprocess.call('mv *.bnd ' + curdir, shell=True)
-subprocess.call('mv ' + adcirc_file + ' ' + curdir, shell=True)
+	# move the files back
+	subprocess.call('mv *.bnd ' + curdir, shell=True)
+	subprocess.call('mv ' + adcirc_file + ' ' + curdir, shell=True)
 	
-# change directory back
-os.chdir(curdir)
+	# change directory back
+	os.chdir(curdir)
+	
+if (os.name == 'nt'):
+	# nt is for windows
+	print("Under windows, need more testing ...")
+	sys.exit()
+	# callstr = ".\\boundary\\bin\\bnd_extr_pp_32.exe"
+	# subprocess.call([callstr, adcirc_file])
+	
 ########################################################################
 
 # if we are here, this means gredit.bnd file is generated and moved to 
@@ -253,6 +261,8 @@ slf2d.NELEM2 = e
 slf2d.NELEM3 = e
 slf2d.IPARAM = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+slf2d.alterFloat()
+
 #print '     +> Set SELAFIN mesh'
 slf2d.MESHX = x
 slf2d.MESHY = y
@@ -281,7 +291,7 @@ slf2d.fole.update({ 'hook': open(output_file,'w') })
 slf2d.fole.update({ 'name': 'Converted from ADCIRC with pputils' })
 slf2d.fole.update({ 'endian': ">" })     # big endian
 slf2d.fole.update({ 'float': ('f',4) })  # ('f',4) is single precision 
-#                                        # ('f',8) is double precision
+#                                        # ('d',8) is double precision
 
 slf2d.appendHeaderSLF()
 slf2d.appendCoreTimeSLF(0) 
