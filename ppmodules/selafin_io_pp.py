@@ -45,7 +45,7 @@ class ppSELAFIN:
 		self.float_size = 4
 		
 		self.title = ''
-		self.precision = ''
+		self.precision = 'SELAFIN '
 		self.NBV1 = 0
 		self.NBV2 = 0
 		
@@ -78,10 +78,6 @@ class ppSELAFIN:
 		self.temp = np.zeros((self.NBV1,self.NPOIN))
 		
 	# methods start here
-	def setPrecision(self,ftype, fsize):
-		self.float_type = ftype
-		self.float_size = fsize
-		
 	def readHeader(self):
 		self.f = open(self.slf_file, 'rb')
 		garbage = unpack('>i', self.f.read(4))[0]
@@ -160,6 +156,82 @@ class ppSELAFIN:
 			self.y[i] = unpack('>' + self.float_type, self.f.read(self.float_size))[0]
 		garbage = unpack('>i', self.f.read(4))[0]
 		
+	def writeHeader(self):
+		self.f = open(self.slf_file, 'wb')
+		
+		self.f.write(pack('>i', 80))
+		self.f.write(pack('>72s', self.title))
+		self.f.write(pack('>8s', self.precision))
+		self.f.write(pack('>i', 80))
+		
+		self.f.write(pack('>i', 8))
+		self.f.write(pack('>i', self.NBV1))
+		self.f.write(pack('>i', self.NBV2))
+		self.f.write(pack('>i', 8))
+		
+		# writeHeader() must only be called after setVarUnits and setVarNames
+		for i in range(self.NBV1):
+			self.f.write(pack('>i',32))
+			self.f.write(pack('>16s',self.vnames[i]))
+			self.f.write(pack('>16s',self.vunits[i]))
+			self.f.write(pack('>i',32))
+
+		self.f.write(pack('>i', 40))
+		for i in range(len(self.IPARAM)):
+			self.f.write(pack('>i', self.IPARAM[i]))
+		self.f.write(pack('>i', 40))
+		
+		if (self.IPARAM[-1] == 1):
+			self.f.write(pack('>i', 24))
+			# date is 6 integers stored as a list
+			for i in range(len(self.DATE)):
+				self.f.write(pack('>i', self.DATE[i]))
+			self.f.write(pack('>i', 24))
+			
+		self.f.write(pack('>i', 16))
+		self.f.write(pack('>i', self.NELEM))
+		self.f.write(pack('>i', self.NPOIN))
+		self.f.write(pack('>i', self.NDP))
+		self.f.write(pack('>i', 1)) # NPLAN???
+		self.f.write(pack('>i', 16))
+		
+		self.f.write(pack('>i', 4*self.NELEM*self.NDP))
+		for i in range(self.NELEM):
+			self.f.write(pack('>i', self.IKLE[i,0]))
+			self.f.write(pack('>i', self.IKLE[i,1]))
+			self.f.write(pack('>i', self.IKLE[i,2]))
+		self.f.write(pack('>i', 4*self.NELEM*self.NDP))
+		
+		self.f.write(pack('>i', 4*self.NPOIN))
+		for i in range(len(self.IPOBO)):
+			self.f.write(pack('>i', self.IPOBO[i]))
+		self.f.write(pack('>i', 4*self.NPOIN))
+		
+		self.f.write(pack('>i', self.float_size*self.NPOIN))
+		for i in range(len(self.x)):
+			self.f.write(pack('>'+self.float_type, self.x[i]))
+		self.f.write(pack('>i', self.float_size*self.NPOIN))
+
+		self.f.write(pack('>i', self.float_size*self.NPOIN))
+		for i in range(len(self.y)):
+			self.f.write(pack('>'+self.float_type, self.y[i]))
+		self.f.write(pack('>i', self.float_size*self.NPOIN))
+		
+	def writeVariables(self,time,temp):
+		self.time = time
+		self.temp = temp
+		for i in range(len(self.time)):
+			self.f.write(pack('>i', 4))
+			self.f.write(pack('>'+self.float_type, self.time[i]))
+			self.f.write(pack('>i', 4))
+			
+			for j in range(self.NBV1):
+				self.f.write(pack('>i', self.float_size*self.NPOIN))
+				for k in range(self.NPOIN):
+					self.f.write(pack('>'+self.float_type, self.temp[j,k]))
+				self.f.write(pack('>i', self.float_size*self.NPOIN))
+		self.f.close()
+		
 	def readTimes(self):
 		pos_prior_to_time_reading = self.f.tell()
 		
@@ -183,6 +255,9 @@ class ppSELAFIN:
 		self.f.seek(pos_prior_to_time_reading)
 		
 	def readVariables(self,t_des):
+		print('Desired time: ' + str(t_des) + '\n')
+		pos_prior_to_var_reading = self.f.tell()
+		
 		# reads data for all variables in the *.slf file at desired time t_des
 		self.temp = np.zeros((self.NBV1,self.NPOIN))
 		
@@ -200,7 +275,8 @@ class ppSELAFIN:
 				
 				t = t + 1
 				
-				if ((t_des - t) < 0.1):
+				if (t == t_des):
+					print('slf time: ' + str(t))
 					for i in range(self.NBV1):
 						self.f.seek(4,1)
 						for j in range(self.NPOIN):
@@ -211,13 +287,60 @@ class ppSELAFIN:
 			except:
 				break
 				
+		# need to re-set in case another variable needs to be read!
+		self.f.seek(pos_prior_to_var_reading)		
+
 	# get methods start here			
 	def getTimes(self):
 		return self.time
 		
-	def getVariables(self):
+	def getVarNames(self):
 		return self.vnames
 		
-	def getUnits(self):
-		return self.vunits		
+	def getVarUnits(self):
+		return self.vunits
+	
+	def getVarValues(self):
+		return self.temp
+		
+	# set methods start here
+	def setPrecision(self,ftype, fsize):
+		# for single precision use ftype='f', fsize=4
+		# for double precision use ftype='d', fsize=8
+		self.float_type = ftype
+		self.float_size = fsize	
+		
+		if (ftype == 'd' and fsize == 8):
+			self.precision = 'SELAFIND'
+		if (ftype == 'f' and fsize == 4):
+			self.precision = 'SELAFIN '
+	
+	def setTitle(self,title):
+		self.title = title
+		
+	def setVarNames(self, vnames):
+		self.NBV1 = len(vnames)
+		self.vnames = vnames
+
+	def setVarUnits(self, vunits):
+		self.vunits = vunits
+		
+	def setIPARAM(self, IPARAM):
+		self.IPARAM = IPARAM
+		
+	def setMesh(self, NELEM, NPOIN, NDP, IKLE, IPOBO, x, y):
+		self.NELEM = NELEM
+		self.NPOIN = NPOIN
+		self.NDP = NDP
+		self.IKLE = IKLE
+		self.IPOBO = IPOBO
+		self.x = x
+		self.y = y
+	
+		
+	
+		
+	
+		
+	
 

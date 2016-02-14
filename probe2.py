@@ -1,7 +1,7 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 probe2.py                             # 
+#                                 probe.py                              # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
@@ -9,7 +9,8 @@
 #
 # Date: May 20, 2015; Revised: Feb 13, 2016
 #
-# Purpose: Probes the selafin file, and outputs file's metadata. 
+# Purpose: Probes the selafin file, and outputs file's metadata. Works for
+# Python 2 or Python 3.
 #
 # Uses: Python 2 or 3, Numpy
 #
@@ -47,8 +48,8 @@ slf.readHeader()
 slf.readTimes()
 
 times = slf.getTimes()
-vnames = slf.getVariables()
-vunits = slf.getUnits()
+vnames = slf.getVarNames()
+vunits = slf.getVarUnits()
 
 # prints variable names
 print('#################################')

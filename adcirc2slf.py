@@ -29,6 +29,7 @@ import numpy as np                         # numpy
 import struct                              # to determine sys architecture
 import subprocess                          # to execute binaries
 from ppmodules.selafin_io import *         # SELAFIN io
+from ppmodules.selafin_io_pp import *      # pp's SELAFIN io
 from ppmodules.readMesh import *           # for the readAdcirc function
 #
 # this is the function that returns True if the elements is oriented CCW
@@ -50,8 +51,6 @@ dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
 dummy2 =  sys.argv[3]
 output_file = sys.argv[4]
-
-
 
 ########################################################################
 # this part of the code uses python's subprocess to call externally
@@ -240,6 +239,39 @@ for i in range(len(all_bnd)):
 	ipob_count = ipob_count + 1
 	ppIPOB[int(all_bnd[i])-1] = ipob_count
 
+#######################################################################
+# this doesn't work yet !!!
+'''
+# it gets these from readAdcirc function
+NELEM = e
+NPOIN = n
+NDP = 3 # always 3 for triangular elements
+
+# I can't change ikle and leave the ppIPOB here unaltered; 
+# this is an easy error to fix !!!
+ikle[0,:] = ikle[0,:]+1
+ikle[1,:] = ikle[1,:]+1
+ikle[2,:] = ikle[2,:]+1
+IKLE = ikle	
+
+IPOBO = ppIPOB
+
+slf = ppSELAFIN(output_file)
+slf.setPrecision('f',4) # single precision
+slf.setTitle('testing slf write file project')
+slf.setVarNames(['BOTTOM          '])
+slf.setVarUnits(['M               '])
+slf.setIPARAM([1, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+slf.setMesh(NELEM, NPOIN, NDP, IKLE, IPOBO, x, y)
+slf.writeHeader()
+
+zz = np.zeros((1,NPOIN))
+zz[0,:] = z
+
+slf.writeVariables([0.0], zz)
+'''
+#######################################################################
+
 # writes the slf2d file
 slf2d = SELAFIN('')
 
@@ -294,4 +326,5 @@ slf2d.fole.update({ 'float': ('f',4) })  # ('f',4) is single precision
 slf2d.appendHeaderSLF()
 slf2d.appendCoreTimeSLF(0) 
 slf2d.appendCoreVarsSLF([z])
+
 
