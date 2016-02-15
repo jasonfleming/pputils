@@ -165,7 +165,7 @@ land_bnd = np.asarray(bnd[0],dtype=np.int32)
 n,e,x,y,z,ikle = readAdcirc(adcirc_file)
 
 # the readAdcirc function returns ikle that starts with index 0; to get
-# indexes to start at zero, add 1 to all elements in ikle array
+# indexes to start at one, add 1 to all elements in ikle array
 ikle[:,0] = ikle[:,0]+1
 ikle[:,1] = ikle[:,1]+1
 ikle[:,2] = ikle[:,2]+1
