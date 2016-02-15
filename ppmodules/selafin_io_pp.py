@@ -90,6 +90,13 @@ class ppSELAFIN:
 			self.precision = unpack('>8s', self.f.read(8))[0].decode()
 		garbage = unpack('>i', self.f.read(4))[0]
 		
+		# Need to verify if this is correct!
+		'''
+		# need to manually set precision here in case of double precision
+		if (self.precision == 'SELAFIND') or (self.precision == 'SERAFIND'):
+			self.float_type = 'd' 
+			self.float_size = 8
+		'''
 		garbage = unpack('>i', self.f.read(4))[0]
 		self.NBV1 = unpack('>i', self.f.read(4))[0] # variables
 		self.NBV2 = unpack('>i', self.f.read(4))[0] # quad variables, not used
@@ -160,8 +167,8 @@ class ppSELAFIN:
 		self.f = open(self.slf_file, 'wb')
 		
 		self.f.write(pack('>i', 80))
-		self.f.write(pack('>72s', self.title))
-		self.f.write(pack('>8s', self.precision))
+		self.f.write(pack('>72s', self.title.encode()))
+		self.f.write(pack('>8s', self.precision.encode()))
 		self.f.write(pack('>i', 80))
 		
 		self.f.write(pack('>i', 8))
@@ -172,8 +179,8 @@ class ppSELAFIN:
 		# writeHeader() must only be called after setVarUnits and setVarNames
 		for i in range(self.NBV1):
 			self.f.write(pack('>i',32))
-			self.f.write(pack('>16s',self.vnames[i]))
-			self.f.write(pack('>16s',self.vunits[i]))
+			self.f.write(pack('>16s',self.vnames[i].encode()))
+			self.f.write(pack('>16s',self.vunits[i].encode()))
 			self.f.write(pack('>i',32))
 
 		self.f.write(pack('>i', 40))
@@ -255,7 +262,7 @@ class ppSELAFIN:
 		self.f.seek(pos_prior_to_time_reading)
 		
 	def readVariables(self,t_des):
-		print('Desired time: ' + str(t_des) + '\n')
+		# print('Desired time: ' + str(t_des) + '\n')
 		pos_prior_to_var_reading = self.f.tell()
 		
 		# reads data for all variables in the *.slf file at desired time t_des
@@ -276,7 +283,7 @@ class ppSELAFIN:
 				t = t + 1
 				
 				if (t == t_des):
-					print('slf time: ' + str(t))
+					# print('slf time: ' + str(t))
 					for i in range(self.NBV1):
 						self.f.seek(4,1)
 						for j in range(self.NPOIN):
@@ -299,6 +306,15 @@ class ppSELAFIN:
 		
 	def getVarUnits(self):
 		return self.vunits
+	
+	def getIKLE(self):
+		return self.IKLE
+		
+	def getMeshX(self):
+		return self.x
+		
+	def getMeshY(self):
+		return self.y
 	
 	def getVarValues(self):
 		return self.temp

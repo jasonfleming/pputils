@@ -1,24 +1,23 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 probe.py                              # 
+#                                 probe2.py                             # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 #
-# Date: May 20, 2015; Revised: Feb 13, 2016
+# Date: Feb 13, 2016
 #
 # Purpose: Probes the selafin file, and outputs file's metadata. Works for
-# Python 2 or Python 3.
+# Python 2 or Python 3 as it uses selafin_io_pp class ppSELAFIN.
 #
 # Uses: Python 2 or 3, Numpy
 #
-# Example: python probe.py -i input.slf
+# Example: python probe2.py -i input.slf
 # 
 # where:
 #       --> -i is the telemac *.slf file being probed
-#
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
@@ -35,7 +34,7 @@ from ppmodules.selafin_io_pp import *
 if len(sys.argv) != 3:
 	print('Wrong number of Arguments, stopping now...')
 	print('Example usage:')
-	print('python probe.py -i input.slf')
+	print('python probe2.py -i input.slf')
 	sys.exit()
 
 # I/O

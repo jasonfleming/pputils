@@ -12,7 +12,7 @@
 # Purpose: Script takes in a tin in ADCIRC format, and generates an ESRI *.asc 
 # file for easy visualization by a GIS.
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
 #
@@ -37,9 +37,9 @@ curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 7 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python adcirc2asc.py -i tin.14 -s 10 -o tin.asc'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python adcirc2asc.py -i tin.14 -s 10 -o tin.asc')
 	sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
@@ -68,8 +68,8 @@ max_range = max(range_in_x, range_in_y)
 num_x_pts = divmod(range_in_x, spacing)
 num_y_pts = divmod(range_in_y, spacing)
 
-print "Size of output matrix is : " + str(int(num_x_pts[0])) + " x " + str(int(num_y_pts[0]))
-print "Grid resolution is : " + str(spacing) + " m"
+print("Size of output matrix is : " + str(int(num_x_pts[0])) + " x " + str(int(num_y_pts[0])))
+print("Grid resolution is : " + str(spacing) + " m")
 
 # creates the regular grid
 xreg, yreg = np.meshgrid(np.linspace(x.min(), x.max(), int(num_x_pts[0])),
@@ -100,4 +100,4 @@ header_str = header_str + "NODATA_VALUE " + str(-999.00)
 np.savetxt(output_file, np.flipud(interp_zz), fmt='%10.3f', header = header_str, 
 	comments = '', delimiter='') # this has 10 char spaces, 2 after decimal
 
-print "All done!"
+print("All done!")
