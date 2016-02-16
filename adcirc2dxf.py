@@ -7,12 +7,13 @@
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 # 
-# Date: Sep 12, 2015
+# Date: Feb 15, 2016
 #
 # Purpose: Script takes in a mesh in ADCIRC format, and generates a dxf
 # file of the mesh. Nodes and elements are both written in 3d format.
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+#
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -24,11 +25,13 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os,sys                              # system parameters
+import os,sys,time                         # system parameters
 import numpy             as np             # numpy
 from dxfwrite import DXFEngine as dxf      # for dxf export
-from ppmodules.ProgressBar import *        # progress bar
 from ppmodules.readMesh import *           # to get all readMesh functions
+# uses Rick van Hattem's progressbar 
+# https://github.com/WoLpH/python-progressbar
+from progressbar import ProgressBar, Bar, Percentage, ETA
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
@@ -37,9 +40,9 @@ curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 5 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python adcirc2dxf.py -i out.grd -o out.dxf'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python adcirc2dxf.py -i out.grd -o out.dxf')
 	sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
@@ -55,9 +58,10 @@ n,e,x,y,z,ikle = readAdcirc(adcirc_file)
 
 ############################################################
 # writing nodes
+w = [Percentage(), Bar(), ETA()]
 
-pbar = ProgressBar(maxval=n).start()
-print 'writing nodes'
+pbar = ProgressBar(widgets=w, max_value=n).start()
+print('processing nodes')
 
 # create nodes in the dxf file
 for i in range(n):
@@ -69,8 +73,8 @@ pbar.finish()
 ############################################################
 # writing elements
 
-pbar = ProgressBar(maxval=e).start()
-print 'writing elements'
+pbar = ProgressBar(widgets=w, max_value=e).start()
+print('processing elements')
 # to create elements
 for i in range(e):
 	poly = dxf.polyline()
@@ -87,5 +91,5 @@ for i in range(e):
 pbar.finish()
 
 ############################################################
-
+print('Writing to file ...')
 drawing.save()
