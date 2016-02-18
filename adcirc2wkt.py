@@ -38,9 +38,9 @@ curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 6 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python adcirc2asc.py -i out.grd -o outWKT_e.csv outWKT_n.csv'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python adcirc2asc.py -i out.grd -o outWKT_e.csv outWKT_n.csv')
 	sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]

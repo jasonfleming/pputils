@@ -7,12 +7,12 @@
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 # 
-# Date: June 29, 2015
+# Date: Feb 18, 2016
 #
 # Purpose: Script takes in a mesh in ADCIRC format, and outputs a nodes 
 # and elements file for use in John Burkardt's rcm renumbering algorithm.
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -35,9 +35,9 @@ curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 6 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python adcirc2ren.py -i out.grd -o out_nodes.txt out_elements.txt'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python adcirc2ren.py -i out.grd -o out_nodes.txt out_elements.txt')
 	sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
@@ -65,3 +65,4 @@ for i in range(e):
 	
 fo = open('coord_shift.txt','w')	
 fo.write(str(xref) + ' ' + str(yref))
+

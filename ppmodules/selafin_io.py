@@ -1,5 +1,7 @@
 # This is a trimmed down version of SELAFIN IO reader/writer utilities
 # originally written by HRW for the TELEMAC system
+#
+# Does not work under Python 3
 
 # This was modified to depend only on stuff found in ppmodules
 

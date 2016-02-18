@@ -11,17 +11,19 @@
 #
 # Updated: Oct 24, 2015 - added more -t options
 #
+# Updated: Feb 18, 2016 - made it work under python 2 or 3
+#
 # Purpose: Script takes in WKT (Well Known Text) csv file format (exported 
 # by QGIS) and prepares the csv files for use in pputils
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3
 #
 # Example:
 #
 # python wkt2csv.py -i breaklineWKT.csv -t POINT -o breakline.csv 
 # where:
 # -i input WKT file csv file exported from QGIS
-# -t type of WKT file (either POINT or LINESTRING)
+# -t type of WKT file (either POINT or LINESTRING, or others (see below))
 # -o output csv file according to format used by pputils
 # 
 # If there are attributes in the shapefile, this program ignores them all.
@@ -46,9 +48,9 @@ curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 7 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python wkt2csv.py -i boundaryWKT.csv -t POINT -o boudary.csv'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python wkt2csv.py -i boundaryWKT.csv -t POINT -o boudary.csv')
 	sys.exit()
 dummy1 =  sys.argv[1]
 input_file = sys.argv[2]

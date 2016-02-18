@@ -33,8 +33,13 @@ import os,sys                              # system parameters
 import numpy             as np             # numpy
 # 
 # this is the function that returns True if the elements is oriented CCW
-def CCW((x1,y1),(x2,y2),(x3,y3)):
-   return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)
+#def CCW((x1,y1),(x2,y2),(x3,y3)):
+#   return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)
+
+# this works for python 2 and 3
+def CCW(x1,y1,x2,y2,x3,y3):
+   return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)	
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
@@ -42,9 +47,9 @@ curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 9 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python adcirc2ren.py -i out_nodes.txt out_elements.txt -o out_ren.grd -s xref yref'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python adcirc2ren.py -i out_nodes.txt out_elements.txt -o out_ren.grd -s xref yref')
 	sys.exit()
 dummy1 =  sys.argv[1]
 nodes_file = sys.argv[2]
@@ -86,8 +91,8 @@ ikle = np.column_stack((e1,e2,e3))
 for i in range(len(ikle)):
 	
 	# if the element is not CCW then must change its orientation
-	if not CCW( (x[ikle[i,0]-1], y[ikle[i,0]-1]), (x[ikle[i,1]-1], y[ikle[i,1]-1]), 
-		(x[ikle[i,2]-1], y[ikle[i,2]-1]) ):
+	if not CCW( x[ikle[i,0]-1], y[ikle[i,0]-1], x[ikle[i,1]-1], y[ikle[i,1]-1], 
+		x[ikle[i,2]-1], y[ikle[i,2]-1] ):
 		
 		t0 = ikle[i,0]
 		t1 = ikle[i,1]

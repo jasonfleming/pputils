@@ -7,7 +7,7 @@
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 # 
-# Date: November 29, 2015
+# Date: Feb 18, 2016
 #
 # Purpose: Script takes in a mesh in ADCIRC format, and renumbers the mesh
 # using John Burkardt's implementation of the Reverse-Cuthill-McKee 
@@ -16,7 +16,7 @@
 #
 # Only works on Linux/Unix; TODO: make it work under windows
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3
 #
 # Example:
 #
@@ -37,12 +37,18 @@ import subprocess
 # MAIN
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 curdir = os.getcwd()
+
+# determine which version of python the user is running
+if (sys.version_info > (3, 0)):
+	version = 3
+elif (sys.version_info > (2, 7)):
+	version = 2
 #
 # I/O
 if len(sys.argv) != 5 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python renumber.py -i out.grd -o out_rcm.grd'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python renumber.py -i out.grd -o out_rcm.grd')
 	sys.exit()
 	
 dummy1 =  sys.argv[1]
@@ -118,9 +124,15 @@ if (os.name == 'posix'):
 	# use subprocess to call ren2adcirc.py
 	# TODO: port ren2adcirc.py code here, as opposed to calling it 
 	# as a subprocess
-	callstr = str('python ren2adcirc.py -i out_rcm_nodes.txt ' +
-		'out_rcm_elements.txt -o ' + output_file + ' -s ' +
-		str(xref) + ' ' + str(yref))
+	
+	if (version == 2):
+		callstr = str('python ren2adcirc.py -i out_rcm_nodes.txt ' +
+			'out_rcm_elements.txt -o ' + output_file + ' -s ' +
+			str(xref) + ' ' + str(yref))
+	elif (version == 3):
+		callstr = str('python3 ren2adcirc.py -i out_rcm_nodes.txt ' +
+			'out_rcm_elements.txt -o ' + output_file + ' -s ' +
+			str(xref) + ' ' + str(yref))	
 	
 	# this creates a list of the callstr, where each parameter is separed
 	# by a space
@@ -137,9 +149,13 @@ if (os.name == 'posix'):
 	# use subprocess to call adcirc2wkt.py
 	# strip the extension from output file string
 	wkt_file = output_file.split('.',1)[0]
-	
-	callstr = str('python adcirc2wkt.py -i ' + output_file + ' -o ' +
-		wkt_file + 'WKT_e.csv ' + wkt_file + 'WKT_n.csv')
+
+	if (version == 2):
+		callstr = str('python adcirc2wkt.py -i ' + output_file + ' -o ' +
+			wkt_file + 'WKT_e.csv ' + wkt_file + 'WKT_n.csv')
+	elif (version == 3):
+		callstr = str('python3 adcirc2wkt.py -i ' + output_file + ' -o ' +
+			wkt_file + 'WKT_e.csv ' + wkt_file + 'WKT_n.csv')	
 	
 	# this creates a list of the callstr, where each parameter is separed
 	# by a space
