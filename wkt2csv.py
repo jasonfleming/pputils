@@ -120,6 +120,35 @@ elif (wkt_type == 'LINESTRING_XYZ'):
 		  
 	# close the temp.txt file
 	fout.close()
+	
+# this appends the cross section label from the WKT attribute
+elif (wkt_type == 'LINESTRING_HEC-RAS'):
+	# for wkt type LINESTRING_HEC-RAS, the separator is different
+	attr_sep = ')",'
+
+	# ignores the first (header) line in the WKT file
+	for i in range(1,n):
+		line[i] = line[i].replace('"LINESTRING (', '')
+		
+		# gets the polygon attribute
+		# uses rsplit (gets the value starting from the right)
+		attr = line[i].rsplit(attr_sep)[-1]
+		
+		# strip the \n from each
+		attr = attr.replace('\n', '')
+		
+	  # ignores everythng past the separator 
+		line[i] = line[i].split(attr_sep, 1)[0]
+		
+		#line[i] = line[i].replace(')"', '')
+		temp = line[i].split(',')
+	
+		for j in range(len(temp)):
+			temp[j] = temp[j].replace(' ', ',')
+			fout.write(str(i) + ',' + str(temp[j]) + ',' +  attr + '\n' )
+		  
+	# close the temp.txt file
+	fout.close()
 
 elif (wkt_type == 'POLYGON'):
 	# for wkt type polygon, the separator is different
