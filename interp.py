@@ -9,14 +9,17 @@
 # 
 # Date: June 28, 2015
 #
+# Modified: Feb 21, 2016
+# Made it work under python 2 or 3
+#
 # Purpose: Script takes in a tin and a mesh file (both in ADCIRC format), 
 # and interpolates the nodes of the mesh file from the tin.
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
 #
-# python interp.py -t tin.14 -m mesh.14 -o mesh_interp.14
+# python interp.py -t tin.grd -m mesh.grd -o mesh_interp.grd
 # where:
 # -t tin surface
 # -m mesh (whose nodes are to be interpolated)
@@ -28,7 +31,6 @@
 import os,sys                              # system parameters
 import matplotlib.tri    as mtri           # matplotlib triangulations
 import numpy             as np             # numpy
-import math                                # for the ceil function
 from ppmodules.readMesh import *           # to get all readMesh functions
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,9 +40,9 @@ curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 7 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python interp.py -t tin.14 -m mesh.14 -o mesh_interp.14'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python interp.py -t tin.grd -m mesh.grd -o mesh_interp.grd')
 	sys.exit()
 
 dummy1 =  sys.argv[1]
@@ -106,7 +108,4 @@ for i in range(0,m_n):
 # writes the elements
 for i in range(0,m_e):
 	fout.write(str(i+1) + " 3 " + str(m_ikle[i,0]+1) + " " + str(m_ikle[i,1]+1) + " " + 
-		str(m_ikle[i,2]+1) + "\n")	
-#
-
-
+		str(m_ikle[i,2]+1) + "\n")

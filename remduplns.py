@@ -9,12 +9,15 @@
 # 
 # Date: Sept 2, 2015
 #
+# Modified: Feb 21, 2016
+# Made it work for python 2 or 3
+#
 # Purpose: Script takes in a *.csv of the lines, and removes duplicate nodes
 # from each line using OrderedDict from collections. Running this script
 # automatically eliminates the last node from every closed line. This script
 # ensures no zero length vertices in any one of the lines!
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -26,9 +29,8 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os,sys                              # system parameters
-from os import path
-import numpy             as np             # numpy
+import os,sys
+import numpy as np
 from collections import OrderedDict
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -36,9 +38,9 @@ from collections import OrderedDict
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 # I/O
 if len(sys.argv) != 5 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python remduplns.py -i lines.csv -o lines_remdup.csv'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python remduplns.py -i lines.csv -o lines_remdup.csv')
 	sys.exit()
 dummy1 =  sys.argv[1]
 input_file = sys.argv[2]
@@ -77,9 +79,12 @@ n = len(x)
 # source "http://stackoverflow.com/questions/12698987"
 # ###################################################################
 tmp = OrderedDict()
-for point in zip(id, x, y, z):
-  tmp.setdefault(point[:3], point) # [:3] ==> start to index 3
-mypoints = tmp.values()
+for point in zip(x, y, z, size):
+  tmp.setdefault(point[:2], point)
+
+# in python 3 tmp.values() is a view object that needs to be 
+# converted to a list
+mypoints = list(tmp.values()) 
 # ###################################################################
 
 n_rev = len(mypoints)
@@ -104,14 +109,3 @@ for i in range(n_rev):
 		if (cur_id == prev_id or cur_id == prev_id+1):
 			fout.write(str(mypoints[i][0]) +',' + str(mypoints[i][1]) + ',' + str(mypoints[i][2]) + ',' + 
 				str(mypoints[i][3]) + '\n')
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			

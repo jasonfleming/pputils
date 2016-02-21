@@ -9,10 +9,13 @@
 # 
 # Date: July 23, 2015
 #
-# Purpose: Script takes in a *.csv of the nodes, and removes duplicates using
-# OrderedDict from collections.
+# Updated: Feb 21, 2016
+# Made it work under python 2 or 3
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Purpose: Script takes in a *.csv of the nodes, and removes duplicates
+# using OrderedDict from collections.
+#
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -24,9 +27,8 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os,sys                              # system parameters
-from os import path
-import numpy             as np             # numpy
+import os,sys
+import numpy as np
 from collections import OrderedDict
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,9 +36,9 @@ from collections import OrderedDict
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 # I/O
 if len(sys.argv) != 5 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python remdup.py -i nodes.csv -o nodes_remdup.csv'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python remdup.py -i nodes.csv -o nodes_remdup.csv')
 	sys.exit()
 dummy1 =  sys.argv[1]
 input_file = sys.argv[2]
@@ -74,9 +76,12 @@ n = len(x)
 # source "http://stackoverflow.com/questions/12698987"
 # ###################################################################
 tmp = OrderedDict()
-for point in zip(x, y, z):
+for point in zip(x, y, z, size):
   tmp.setdefault(point[:2], point)
-mypoints = tmp.values()
+
+# in python 3 tmp.values() is a view object that needs to be 
+# converted to a list
+mypoints = list(tmp.values()) 
 # ###################################################################
 
 n_rev = len(mypoints)
@@ -85,4 +90,3 @@ n_rev = len(mypoints)
 for i in range(n_rev):
 	fout.write(str(mypoints[i][0]) + ',' + str(mypoints[i][1]) + ',' + 
 		str("{:.3f}".format(mypoints[i][2])) + '\n')
-

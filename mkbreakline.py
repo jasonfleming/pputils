@@ -9,11 +9,14 @@
 # 
 # Date: Sept 20, 2015
 #
+# Modified: Feb 21, 2016
+# Made it work under python 2 or 3
+#
 # Purpose: Takes in nodes.csv and a pputils lines.csv file, and creates
 # a 3d breakline in pputils csv format. To convert pputils breakline to
 # a 3d breakline in dxf format, use breaklines2dxf.py script!
 # 
-# Uses: Python2.7.9, Numpy v1.8.2 or later
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -37,9 +40,8 @@ import os,sys                              # system parameters
 import numpy             as np             # numpy
 from collections import OrderedDict        # for removal of duplicate nodes
 from scipy import spatial                  # kd tree for searching coords
-from ppmodules.ProgressBar import *        # progress bar
+from progressbar import ProgressBar, Bar, Percentage, ETA
 curdir = os.getcwd()
-#
 #
 # I/O
 if len(sys.argv) == 7 :
@@ -62,9 +64,9 @@ elif len(sys.argv) == 9 :
 	interpolate_flag = sys.argv[8] # interpolate for missing node values
 	interpolate_flag = int(interpolate_flag)
 else:
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python mkbreakline.py -n nodes.csv -l lines.csv -o lines3d.csv'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python mkbreakline.py -n nodes.csv -l lines.csv -o lines3d.csv')
 	sys.exit()
 
 # find out if the nodes file is x,y,z or x,y,x,size
@@ -108,7 +110,10 @@ size = np.around(size,decimals=3)
 tmp = OrderedDict()
 for point in zip(x, y, z, size):
   tmp.setdefault(point[:2], point)
-mypoints = tmp.values()
+
+# in python 3 tmp.values() is a view object that needs to be 
+# converted to a list
+mypoints = list(tmp.values()) 
 # ###################################################################
 n_rev = len(mypoints)
 
@@ -120,8 +125,11 @@ for i in range(n_rev):
 	size[i] = mypoints[i][3]
 n = n_rev
 
+# when I made the change to python 3, had to use np.column_stack
+# http://stackoverflow.com/questions/28551279/error-running-scipy-kdtree-example
+
 # to create the tuples of the master points
-points = zip(x,y)
+points = np.column_stack((x,y))
 tree = spatial.KDTree(points)
 
 shapeid_lns = lines_data[0,:]
@@ -136,7 +144,8 @@ y_lns = np.around(y_lns,decimals=3)
 # number of nodes in the lines file
 n_lns = len(x_lns)
 
-pbar = ProgressBar(maxval=n_lns).start()
+w = [Percentage(), Bar(), ETA()]
+pbar = ProgressBar(widgets=w, maxval=n_lns).start()
 # index for the minimum, for each lines node
 minidx_lns = np.zeros(n_lns,dtype=np.int32) - 1
 
@@ -157,7 +166,7 @@ for i in range(0,n_lns):
 	else:
 		if (interpolate_flag == 0):
 			# simply insert -999.0 as the elevation (useful for finding problem spots
-			print 'Lines node ' + str(x_lns[i]) + ' ' + str(y_lns[i]) + ' not found'
+			print('Lines node ' + str(x_lns[i]) + ' ' + str(y_lns[i]) + ' not found')
 			fout.write(str(shapeid_lns[i]) + "," + str(x_lns[i]) + "," + 
 				str(y_lns[i]) + "," +  str('-999.0') + "\n")
 		else:
@@ -183,6 +192,3 @@ for i in range(0,n_lns):
 	pbar.update(i+1)
 	
 pbar.finish()
-	
-
-	

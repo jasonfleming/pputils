@@ -9,10 +9,13 @@
 # 
 # Date: December 1, 2015
 #
+# Modified: Feb 21, 2016
+# Made it work under python 2 or 3
+#
 # Purpose: Script takes in an ADCIRC mesh and shifts it according to
 # x_shift and y_shift, and multiplies the z by amounts specified,
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -36,9 +39,9 @@ curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 9 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python shiftMesh.py -i out.grd -s -100 -150 -1 -o out_shifted.grd'
+	print('Wrong number of arguments, stopping now...')
+	print('Usage:')
+	print('python shiftMesh.py -i out.grd -s -100 -150 -1 -o out_shifted.grd')
 	sys.exit()
 
 input_file = sys.argv[2]
@@ -66,6 +69,3 @@ for i in range(n):
 for i in range(e):
 	fout.write(str(i+1) + " 3 " + str(ikle[i,0]+1) + " " + str(ikle[i,1]+1) + " " + 
 		str(ikle[i,2]+1) + "\n")	
-
-
-

@@ -1,13 +1,16 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 sel2asc.py                           # 
+#                                 sel2asc.py                            # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng. 
 # 
 # Date: May 27, 2015
+#
+# Modified: Feb 21, 2016
+# Made it work under python 2 or 3
 #
 # Purpose: Script designed to open 2D telemac binary file, read the
 # the desired output to an ESRI *.asc file for use in displaying within a
@@ -16,7 +19,7 @@
 # Script based on sel2ncdf.py by Caio Eadi Stringari, and 
 # sel2ncdf_2014-09-12-2.py by Alex Goater.
 #
-# Using: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Using: Python 2 or 3, Matplotlib, Numpy
 #
 # Example: python sel2asc.py -i input.slf -v 4 -t 0 -s 2.0 -o output.asc
 # 
@@ -34,142 +37,45 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os,sys                              # system parameters
-from os import path
-import matplotlib.tri    as mtri           # matplotlib triangulations
-import numpy             as np             # numpy
+import os,sys
+import matplotlib.tri as mtri
+import numpy as np
 from numpy import linspace, dtype          
-import math                                # for the ceil function
-from ppmodules.selafin_io import *
-#
-#
-#{{{
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-def read_selafin():
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	# Openning the selafin file
-	# This gives the name of the variables, and their index number
-	#
-	slf = SELAFIN(input_file)
-	# Getting coordinates
-	x       = slf.MESHX
-	y       = slf.MESHY
-	# Getting Variables
-	print 'Variables in '+input_file+' are:'
-	for i in range(len(slf.VARNAMES)):
-		print '    ',i, '-->', slf.VARNAMES[i]
-	
-	#for i,name in enumerate(slf.VARNAMES):
-	#	print '    ',i, ' - ',name
-	# Get IKLE for mesh regularization
-	ikle     = np.array(slf.IKLE2)
-	
-	# total number of variables in the input file
-	numvars = len(slf.VARNAMES)
-	
-	# total number of time records in the file 
-	nrecs = len(slf.tags["times"])
-	
-	# an array of size nrecs with values of time steps in the input file
-	times = slf.tags["times"]
-	print "number of records in input file : " + str(nrecs)
-	#print "Available time steps to choose from: "
-	#for i in range(len(times)):
-	#	print str(times[i])
-	
-	#
-	return slf,x,y,ikle,numvars,nrecs,times
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# End of the Function
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-def get_var_names_and_units():
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	# two empty lists
-	variables = []
-	units = []
-	for var_names in slf.VARNAMES[0:numvars]:
-		#print var_names
-		variables.append(var_names)
-	for unit_names in slf.VARUNITS[0:numvars]:
-		units.append(unit_names)
-	return variables, units
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# End of the Function
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#
-#
-def get_values(t):
-	VARIABLES = {} # do this as dictionary
-	for i, n in enumerate(slf.VARNAMES[0:len(variables)]):
-		print "Reading ", n, " for time index ",t
-		values = slf.getVALUES(t)
-		VARIABLES[i] = values[i]
-	return VARIABLES
-	
-def read_all_variables(t):
-	var_out = [] # do this as a list
-	# i is the counter, n is the item
-	for i, n in enumerate(slf.VARNAMES[0:len(variables)]):
-		print "Reading ", n, " for time index ",t
-		values = slf.getVALUES(t)
-		var_out.append(values[i])
-	return var_out
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# End of the Function
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-def tri2reg(triang,xi,yi,z,method,t,var):
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	# Interpolator
-	if method == 'Linear':
-		interpolator = mtri.LinearTriInterpolator(triang, z)
-	elif method == 'Min_E':
-		interpolator = mtri.CubicTriInterpolator(triang, z, kind='min_E')
-	elif method == 'Geom':
-		interpolator = mtri.CubicTriInterpolator(triang, z, kind='geom')
-	else:
-		'Could not find the desired method, stopping now...'
-		sys.exit()
-	# Interpolation
-	zi = interpolator(xi, yi)
-	print 'Interpolation of '+var+' completed for timestep ',t
-	# Return interpolated object
-	return zi
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# End of the Function
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#
-#}}}
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# MAIN
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+from ppmodules.selafin_io_pp import *
 #
 if len(sys.argv) != 11:
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python sel2asc.py -i input.slf -v 4 -t 0 -s 2.0 -o output.asc'
+	print('Wrong number of arguments, stopping now...')
+	print('Usage:')
+	print('python sel2asc.py -i input.slf -v 4 -t 0 -s 2.0 -o output.asc')
 	sys.exit()
-# I/O
 
 input_file = sys.argv[2]         # input *.slf file
 var_index  = int(sys.argv[4])    # index number of grided output variable 
 t = int(sys.argv[6])             # index of time record of the output to use in griding (integer, 0 to n)                                  
 spacing = float(sys.argv[8])     # specified the grid spacing of the output file
-output_file = sys.argv[10]        # output *.asc grid file
+output_file = sys.argv[10]       # output *.asc grid file
 
 # Read the header of the selafin result file and get geometry and
 # variable names and units
-slf,x,y,ikle,numvars,nrecs,times = read_selafin()
-variables, units = get_var_names_and_units()
 
-# reads all variables for time desired (in the case below, it is t=0)
-master_results = read_all_variables(t)
+# use selafin_io_pp class ppSELAFIN
+slf = ppSELAFIN(input_file)
+slf.readHeader()
+slf.readTimes()
+slf.readVariables(t)
+
+# gets some of the mesh properties from the *.slf file
+NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
+
+# the IKLE array starts at element 1, but matplotlib needs it to start
+# at zero
+IKLE[:,:] = IKLE[:,:] - 1
+
+# these are the results for all variables, for time step t
+master_results = slf.getVarValues() 
 
 # creates a triangulation grid using matplotlib function Triangulation
-triang = mtri.Triangulation(x, y, ikle)
+triang = mtri.Triangulation(x, y, IKLE)
 
 # determine the spacing of the regular grid
 range_in_x = x.max() - x.min()
@@ -181,8 +87,8 @@ max_range = max(range_in_x, range_in_y)
 num_x_pts = divmod(range_in_x, spacing)
 num_y_pts = divmod(range_in_y, spacing)
 
-print "Size of output matrix is : " + str(int(num_x_pts[0])) + " x " + str(int(num_y_pts[0]))
-print "Grid resolution is : " + str(spacing) + " m"
+print("Size of output matrix is : " + str(int(num_x_pts[0])) + " x " + str(int(num_y_pts[0])))
+print("Grid resolution is : " + str(spacing) + " m")
 
 # creates the regular grid
 xreg, yreg = np.meshgrid(np.linspace(x.min(), x.max(), int(num_x_pts[0])),
@@ -191,11 +97,11 @@ x_regs = xreg[1,:]
 y_regs = yreg[:,1]
 
 # to interpolate to a reg grid
-z =  tri2reg(triang,xreg,yreg,master_results[var_index],'Linear',0,"Output")
+interpolator = mtri.LinearTriInterpolator(triang, master_results[var_index])
+z = interpolator(xreg,yreg)
 
-print "Shape of array z: " + str(z.shape[0])
-
-print "Shape of arrays xreg and yreg: " + str(x_regs.shape) + " " + str(y_regs.shape) 
+print("Shape of array z: " + str(z.shape[0]))
+print("Shape of arrays xreg and yreg: " + str(x_regs.shape) + " " + str(y_regs.shape))
 
 where_are_NaNs = np.isnan(z)
 z[where_are_NaNs] = -999.0
@@ -212,4 +118,4 @@ header_str = header_str + "NODATA_VALUE " + str(-999.00) + "\n"
 np.savetxt(output_file, np.flipud(z), fmt='%10.3f', header = header_str,
 	comments = '', delimiter='') # this has 10 char spaces, 2 after decimal
 
-print "Done"
+print("All Done")

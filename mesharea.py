@@ -8,13 +8,16 @@
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 # 
 # Date: Sep 6, 2015
+# 
+# Modified: Feb 21, 2016
+# Made it work under python 2 or 3
 #
 # Purpose: Script takes the adcirc grid file, and outputs the areas of 
 # elements within a specified threshold (i.e. < 0.01 m2). This is useful
 # for finding potentially troubling spots in the input topology (i.e., bad
 # breaklines) that cause creation of zero area triangles.
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
 #
@@ -24,22 +27,17 @@
 # -a threshold area (in m2)
 # -o output file with coordinates of elements meeting the area threshold
 #
-# 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os,sys                              # system parameters
-import matplotlib.tri    as mtri           # matplotlib triangulations
-import numpy             as np             # numpy
-from ppmodules.readMesh import *           # to get all readMesh functions
+import os,sys
+import numpy as np
+from ppmodules.readMesh import *
 #
-#
-# 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Functions
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def elemprop(x1,y1,x2,y2,x3,y3):
-	#{{{
 	# element properties - computes area and centroids of each element
 	
 	# signs in eqs work when the elements are CCW (for example Triangle mesh
@@ -50,7 +48,6 @@ def elemprop(x1,y1,x2,y2,x3,y3):
 	
 	xc = (x1 + x2 + x3) / 3.0
 	yc = (y1 + y2 + y3) / 3.0
-	#}}}
 	return area, xc, yc
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,9 +55,9 @@ def elemprop(x1,y1,x2,y2,x3,y3):
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # I/O
 if len(sys.argv) != 7 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python mesharea.py -i out.grd -a 0.01 -o outarea.txt'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python mesharea.py -i out.grd -a 0.01 -o outarea.txt')
 	sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
@@ -87,7 +84,3 @@ for i in range(e):
 	if (area[i] < area_threshold):
 		fout.write(str(xc[i]) + ',' + str(yc[i]) + ',' + str(area[i]) + '\n')
 	
-
-
-	
-

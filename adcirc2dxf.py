@@ -12,7 +12,6 @@
 # Purpose: Script takes in a mesh in ADCIRC format, and generates a dxf
 # file of the mesh. Nodes and elements are both written in 3d format.
 #
-#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:

@@ -9,6 +9,9 @@
 # 
 # Date: June 29, 2015
 #
+# Modified: Feb 21, 2016
+# Made to work under python 2 or 3
+#
 # Purpose: Script takes in a renumbered mesh, and generates the adcirc
 # file back. To prevent modification of the John Burkardt's fortran code
 # a shift of the cordinates has to take place (as he didn't include enough
@@ -16,7 +19,7 @@
 # adcirc via adcirc2ren.py, the coordinate shift is written there. These same 
 # coordinates must be used as input here to get the correct adcirc file.
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
