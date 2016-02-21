@@ -15,6 +15,9 @@
 # pure python. Based on my tests, there is no speed advantage of going 
 # to Matplotlib vs. pure python for point in polygon test.
 #
+# Modified: Feb 21, 2016
+# Changed ProgressBar, and updated for python 2 and 3.
+#
 # Purpose: Script takes in a mesh in ADCIRC format, and a set of closed
 # boundaries in pputils format, and creates another ADCIRC file with
 # node z-values assigned with polygon attributes. This is useful for 
@@ -27,7 +30,8 @@
 # The newly created ADCIRC file has to be converted to *.slf, then be 
 # used in the append.py script to generate the friction file for use in
 # Telemac modeling.
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+#
+# Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
 #
@@ -45,9 +49,9 @@
 import os,sys                              # system parameters
 import numpy             as np             # numpy
 from ppmodules.readMesh import *           # to get all readMesh functions
-from ppmodules.ProgressBar import *        # progress bar
 import matplotlib.path as mplPath          # for point in poly test
 import timeit
+from progressbar import ProgressBar, Bar, Percentage, ETA
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
@@ -59,9 +63,9 @@ start_time = timeit.default_timer()
 #
 # I/O
 if len(sys.argv) != 7 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python adcirc2asc.py -i out.grd -b boundary.csv -o out_friction.grd'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python adcirc2asc.py -i out.grd -b boundary.csv -o out_friction.grd')
 	sys.exit()
 dummy1 =  sys.argv[1]
 input_file = sys.argv[2]
@@ -69,7 +73,6 @@ dummy2 =  sys.argv[3]
 boundary_file = sys.argv[4]
 dummy3 = sys.argv[5]
 output_file = sys.argv[6]
-
 
 # to create the output file
 fout = open(output_file,"w")
@@ -122,7 +125,8 @@ default = 0.0
 f = np.zeros(n) * default # n is number of mesh nodes
 
 # for the progress bar
-pbar = ProgressBar(maxval=n_polygons*n).start()
+w = [Percentage(), Bar(), ETA()]
+pbar = ProgressBar(widgets=w, maxval=n_polygons*n).start()
 count_bar = 0
 
 # loop over all polygons
@@ -163,8 +167,8 @@ pbar.finish()
 outside_test = np.extract(f-default < 0.001,f)
 
 if (len(outside_test) > 0):
-	print 'Warning: some nodes were not within any of the input polygons!'
-	print 'Assigning default value of ' + str(default) + ' as attribute'
+	print('Warning: some nodes were not within any of the input polygons!')
+	print('Assigning default value of ' + str(default) + ' as attribute')
 
 # now to write the adcirc mesh file
 fout.write("ADCIRC" + "\n")

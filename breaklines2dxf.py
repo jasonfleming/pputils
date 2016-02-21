@@ -9,10 +9,13 @@
 # 
 # Date: Sept 12, 2015
 #
+# Modified: Feb 20, 2016
+# Made it work for python 2 and 3
+#
 # Purpose: Takes a pputils 3d breakline and exports it to dxf format. 
 # To create the 3d breakline from xyz and lines.csv, run mkbreakline.py
 # 
-# Uses: Python2.7.9, Numpy v1.8.2 or later
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -24,9 +27,8 @@
 import os,sys                              # system parameters
 import numpy             as np             # numpy
 from dxfwrite import DXFEngine as dxf      # for dxf export
-from ppmodules.ProgressBar import *        # progress bar
+from progressbar import ProgressBar, Bar, Percentage, ETA
 curdir = os.getcwd()
-#
 #
 # I/O
 if len(sys.argv) == 5 :
@@ -35,9 +37,9 @@ if len(sys.argv) == 5 :
 	dummy3 =  sys.argv[3]
 	output_file = sys.argv[4]
 else:
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python breaklines2dxf.py -l lines3d.csv -o lines3d.dxf'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python breaklines2dxf.py -l lines3d.csv -o lines3d.dxf')
 	sys.exit()
 
 # to create the output file
@@ -64,7 +66,8 @@ n_unique_lns = np.unique(shapeid_lns)
 # number of nodes in the lines file
 n_lns = len(x_lns)
 
-pbar = ProgressBar(maxval=n_lns).start()
+w = [Percentage(), Bar(), ETA()]
+pbar = ProgressBar(widgets=w, maxval=n_lns).start()
 
 # write the breaklines
 poly = dxf.polyline()

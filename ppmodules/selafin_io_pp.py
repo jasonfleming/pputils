@@ -237,7 +237,6 @@ class ppSELAFIN:
 				for k in range(self.NPOIN):
 					self.f.write(pack('>'+self.float_type, self.temp[j,k]))
 				self.f.write(pack('>i', self.float_size*self.NPOIN))
-		self.f.close()
 		
 	def readTimes(self):
 		pos_prior_to_time_reading = self.f.tell()
@@ -324,6 +323,9 @@ class ppSELAFIN:
 	
 	def getVarValues(self):
 		return self.temp
+
+	def getIPOBO(self):
+		return self.IPOBO
 		
 	def getMesh(self):
 		return self.NELEM, self.NPOIN, self.NDP, self.IKLE, self.IPOBO, self.x, self.y

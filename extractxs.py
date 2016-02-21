@@ -9,12 +9,15 @@
 # 
 # Date: June 28, 2015
 #
+# Modified: Feb 20, 2016
+# Made it work for python 2 and 3
+#
 # Purpose: Script takes in a tin (in ADCIRC format), and a pputils lines 
 # file (shapeid,x,y), and interpolates z values from tin. The lines file 
 # should be resampled at a large number of nodes (say 100), to get a 
 # proper extracted cross section.
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
 #
@@ -40,9 +43,9 @@ curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 7 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python extractxs.py -t tin.grd -l lines.csv -o lines_z.csv'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python extractxs.py -t tin.grd -l lines.csv -o lines_z.csv')
 	sys.exit()
 
 dummy1 =  sys.argv[1]
@@ -81,13 +84,13 @@ where_are_NaNs = np.isnan(z)
 z[where_are_NaNs] = -999.0
 
 if (np.sum(where_are_NaNs) > 0):
-	print '#####################################################'
-	print ''
-	print 'WARNING: Some nodes are outside of the TIN boundary!!!'
-	print ''
-	print 'A value of -999.0 is assigned to those nodes!'
-	print ''
-	print '#####################################################'
+	print('#####################################################')
+	print('')
+	print('WARNING: Some nodes are outside of the TIN boundary!!!')
+	print('')
+	print('A value of -999.0 is assigned to those nodes!')
+	print('')
+	print('#####################################################')
 
 # to create the output file
 fout = open(output_file,"w")
@@ -129,4 +132,4 @@ for i in range(len(x)):
 	f2.write('river_name,reach_name,' + str(shapeid[i]) + ','+
 		str(x[i]) + ',' + str(y[i]) + ',' + str(z[i]) + '\n')
 
-print 'All done!'
+print('All done!')

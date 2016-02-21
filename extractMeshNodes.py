@@ -9,10 +9,13 @@
 # 
 # Date: December 1, 2015
 #
+# Modified: Feb 20, 2016
+# Made it work for python 2 and 3
+#
 # Purpose: Script takes in a an ADCIRC mesh and extracts the nodes as
 # a *.txt file.
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -34,9 +37,9 @@ from ppmodules.readMesh import *           # to get all readMesh functions
 #
 # I/O
 if len(sys.argv) != 5 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python extractMeshNodes.py -i out.grd -o nodes.txt'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python extractMeshNodes.py -i out.grd -o nodes.txt')
 	sys.exit()
 
 dummy1 =  sys.argv[1]
