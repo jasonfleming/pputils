@@ -297,7 +297,13 @@ class ppSELAFIN:
 		# need to re-set in case another variable needs to be read!
 		self.f.seek(pos_prior_to_var_reading)		
 
-	# get methods start here			
+	# get methods start here
+	def getNPOIN(self):
+		return self.NPOIN
+
+	def getNELEM(self):
+		return self.NELEM
+			
 	def getTimes(self):
 		return self.time
 		
@@ -318,6 +324,9 @@ class ppSELAFIN:
 	
 	def getVarValues(self):
 		return self.temp
+		
+	def getMesh(self):
+		return self.NELEM, self.NPOIN, self.NDP, self.IKLE, self.IPOBO, self.x, self.y
 		
 	# set methods start here
 	def setPrecision(self,ftype, fsize):
@@ -352,11 +361,3 @@ class ppSELAFIN:
 		self.IPOBO = IPOBO
 		self.x = x
 		self.y = y
-	
-		
-	
-		
-	
-		
-	
-

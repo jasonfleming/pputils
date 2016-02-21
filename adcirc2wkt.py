@@ -7,7 +7,7 @@
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 # 
-# Date: June 29, 2015
+# Date: Feb 20, 2016
 #
 # Purpose: Script takes in a mesh in ADCIRC format, and generates two *.csv 
 # files in WKT (well known text) format, one corresponding to elements (this
@@ -15,11 +15,11 @@
 # (this one visualizes the node numbers). The WKT format is essentially equvalent
 # to a shapefile format.
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
-# python adcirc2asc.py -i out.grd -o outWKT_e.csv outWKT_n.csv
+# python adcirc2wkt.py -i out.grd -o outWKT_e.csv outWKT_n.csv
 # where:
 # -i input adcirc mesh file
 # -o generated *.csv WKT files for element polygons and nodes

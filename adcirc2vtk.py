@@ -7,13 +7,13 @@
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 # 
-# Date: June 29, 2015
+# Date: Feb 20, 2016
 #
 # Purpose: Script takes in a mesh in ADCIRC format, and outputs a legacy 
 # *.vtk file for visualization on ParaView. This is useful for viewing
 # TINs in ParaView.
 #
-# Uses: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -36,9 +36,9 @@ curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 5 :
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python adcirc2vtk.py -i out.grd -o out.vtk'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python adcirc2vtk.py -i out.grd -o out.vtk')
 	sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
