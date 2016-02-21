@@ -9,11 +9,14 @@
 # 
 # Date: February 2, 2016
 #
+# Modified: Feb 20, 2016
+# Made it work for python 2 and 3
+#
 # Purpose: Same inputs as gis2triangle.py; calls gis2triangle.py, then
 # uses python's subprocess module to call triangle to create the tin, then calls 
 # triangle2adcirc.py to produce an adcirc tin file.
 #
-# Uses: Python2.7.9, Numpy v1.8.2 or later
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -65,6 +68,13 @@ import subprocess                          # to execute binaries
 from ppmodules.ProgressBar import *        # progress bar
 curdir = os.getcwd()
 #
+#
+# determine which version of python the user is running
+if (sys.version_info > (3, 0)):
+	version = 3
+elif (sys.version_info > (2, 7)):
+	version = 2
+#
 # I/O
 if len(sys.argv) == 11 :
 	dummy1 =  sys.argv[1]
@@ -78,19 +88,24 @@ if len(sys.argv) == 11 :
 	dummy5 =  sys.argv[9]
 	output_file = sys.argv[10]
 else:
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python gis2tin.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -o out.grd'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python gis2tin.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -o out.grd')
 	sys.exit()
 
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
 
 # call gis2triangle.py
-subprocess.call(['python', 'gis2triangle.py', '-n', nodes_file, 
-	'-b', boundary_file, '-l', lines_file, '-h', holes_file, 
-	'-o', 'tin.poly'])
-
+if (version == 2):
+	subprocess.call(['python', 'gis2triangle.py', '-n', nodes_file, 
+		'-b', boundary_file, '-l', lines_file, '-h', holes_file, 
+		'-o', 'tin.poly'])
+elif (version == 3):
+	subprocess.call(['python3', 'gis2triangle.py', '-n', nodes_file, 
+		'-b', boundary_file, '-l', lines_file, '-h', holes_file, 
+		'-o', 'tin.poly'])	
+		
 if (os.name == 'posix'):
 	# this assumes chmod +x has already been applied to the binaries
 	if (archtype == 32):
@@ -105,8 +120,12 @@ else:
 	sys.exit()
 	
 # call triangle2adcirc.py
-subprocess.call(['python', 'triangle2adcirc.py', '-n', 'tin.1.node', 
-	'-e', 'tin.1.ele', '-o', output_file])
+if (version == 2):
+	subprocess.call(['python', 'triangle2adcirc.py', '-n', 'tin.1.node', 
+		'-e', 'tin.1.ele', '-o', output_file])
+elif (version == 3):
+	subprocess.call(['python3', 'triangle2adcirc.py', '-n', 'tin.1.node', 
+		'-e', 'tin.1.ele', '-o', output_file])		
 
 # to remove the temporary files
 os.remove('tin.poly')

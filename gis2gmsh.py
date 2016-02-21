@@ -9,12 +9,14 @@
 # 
 # Date: June 29, 2015
 #
+# Modified: Feb 20, 2016
+# Made it work for python 2 and 3
+#
 # Purpose: Script takes in a text file of the geometry generated in qgis
 # (or any other gis or cad package) and produces geometry files used by
 # gmsh mesh generator program.
 #
-#
-# Uses: Python2.7.9, Numpy v1.8.2
+# Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
@@ -96,9 +98,9 @@ elif (len(sys.argv) == 13):
 	dummy6 = sys.argv[11]
 	duplicates_flag = sys.argv[12]
 else:
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python gis2gmsh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -o out.geo'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python gis2gmsh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -o out.geo')
 	#print 'or, if wanting to turn off duplicate removal algorithm'
 	#print 'python gis2gmsh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -o out.geo -d 0'
 	sys.exit()
@@ -144,7 +146,10 @@ node = np.zeros(n,dtype=np.int32)
 tmp = OrderedDict()
 for point in zip(x, y, z, size):
   tmp.setdefault(point[:2], point)
-mypoints = tmp.values()
+
+# in python 3 tmp.values() is a view object that needs to be 
+# converted to a list
+mypoints = list(tmp.values()) 
 # ###################################################################
 n_rev = len(mypoints)
 

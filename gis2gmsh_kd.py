@@ -9,6 +9,9 @@
 # 
 # Date: August 16, 2015
 #
+# Modified: Feb 20, 2016
+# Made it work for python 2 and 3
+#
 # Purpose: Script takes in a text file of the geometry generated in qgis
 # (or any other gis or cad package) and produces geometry files used by
 # gmsh mesh generator program.
@@ -71,7 +74,6 @@ from collections import OrderedDict        # for removal of duplicate nodes
 from scipy import spatial                  # kd tree for searching coords
 curdir = os.getcwd()
 #
-#
 # I/O
 if len(sys.argv) == 11 :
 	dummy1 =  sys.argv[1]
@@ -100,9 +102,9 @@ elif (len(sys.argv) == 13):
 	dummy6 = sys.argv[11]
 	duplicates_flag = sys.argv[12]
 else:
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python gis2gmsh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -o out.geo'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python gis2gmsh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -o out.geo')
 	#print 'or, if wanting to turn off duplicate removal algorithm'
 	#print 'python gis2gmsh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -o out.geo -d 0'
 	sys.exit()
@@ -154,7 +156,10 @@ size = np.around(size,decimals=3)
 tmp = OrderedDict()
 for point in zip(x, y, z, size):
   tmp.setdefault(point[:2], point)
-mypoints = tmp.values()
+
+# in python 3 tmp.values() is a view object that needs to be 
+# converted to a list
+mypoints = list(tmp.values()) 
 # ###################################################################
 n_rev = len(mypoints)
 
@@ -167,8 +172,11 @@ if (duplicates_flag == 1):
 		size[i] = mypoints[i][3]
 	n = n_rev
 
+# when I made the change to python 3, had to use np.column_stack
+# http://stackoverflow.com/questions/28551279/error-running-scipy-kdtree-example
+
 # to create the tuples of the master points
-points = zip(x,y)
+points = np.column_stack((x,y))
 tree = spatial.KDTree(points)
 
 # if node is part of boundary or lines, then it is not embedded
@@ -243,7 +251,7 @@ for i in range(0,n_bnd):
 	if (len(minidx_temp) > 0):
 		minidx[i] = minidx_temp[0]
 	else:
-		print 'Boundary node ' + str(x_bnd[i]) + ' ' + str(y_bnd[i]) + ' not found'
+		print('Boundary node ' + str(x_bnd[i]) + ' ' + str(y_bnd[i]) + ' not found')
 	
 	# fill in the is_node_emb array 
 	is_node_emb[minidx[i]] = 0
@@ -284,8 +292,8 @@ if (lines_file != 'none'):
 		if (len(minidx_lns_temp) > 0):
 			minidx_lns[i] = minidx_lns_temp[0]
 		else:
-			print 'Lines node ' + str(x_lns[i]) + ' ' + str(y_lns[i]) + ' not found'
-			print 'Exiting ...'
+			print('Lines node ' + str(x_lns[i]) + ' ' + str(y_lns[i]) + ' not found')
+			print('Exiting ...')
 			sys.exit()
 
 		#fout.write(str(i) + " " + str(minidx_lns[i]) + "\n")
@@ -332,8 +340,8 @@ if (holes_file != 'none'):
 		if (len(minidx_hls_temp) > 0):
 			minidx_hls[i] = minidx_hls_temp[0]
 		else:
-			print 'Holes node ' + str(x_hls[i]) + ' ' + str(y_hls[i]) + ' not found'
-			print 'Exiting ...'
+			print('Holes node ' + str(x_hls[i]) + ' ' + str(y_hls[i]) + ' not found')
+			print('Exiting ...')
 			sys.exit()		
 		
 		#fout.write(str(i) + " " + str(minidx_hls[i]) + "\n")
