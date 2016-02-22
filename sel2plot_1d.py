@@ -11,12 +11,14 @@
 #
 # Updated: Oct 31, 2015 - added headers to the output *.csv file.
 #
+# Updated: Feb 22, 2016 - uses selafin_io_pp class (works with python 2 and 3).
+#
 # Purpose: Script designed to take a *.slf results file and a pputils line
 # (i.e., a cross section or a profile line) and drapes the results (from a
 # specified variable) onto the line for all time steps in the *.slf file.
 # It also writes the profile for each time step as a separate *.png file.
 #
-# Using: Python2.7.9, Matplotlib v1.4.2, Numpy v1.8.2
+# Using: Python 2 or 3, Matplotlib, Numpy
 #
 # Example: 
 # python sel2plot_1d.py -i res.slf -v 1 -l profile.csv -o profile_Z.csv
@@ -31,75 +33,11 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os,sys                              # system parameters
-from os import path
-import numpy             as np             # numpy
-import matplotlib.tri    as mtri           # matplotlib triangulations
-from numpy import linspace, dtype          # Writing netcdf files
-from ppmodules.selafin_io import *         # IO for Selafin files 
-from matplotlib import pyplot as plt       # for printing figures
-
-def read_selafin():
-	# Openning the selafin file
-	# This gives the name of the variables, and their index number
-	#
-	slf = SELAFIN(input_file)
-	# Getting coordinates
-	x       = slf.MESHX
-	y       = slf.MESHY
-	# Getting Variables
-	#print 'Variables in '+input_file+' are:'
-	#for i in range(len(slf.VARNAMES)):
-		#print '    ',i, '-->', slf.VARNAMES[i]
-	
-	#for i,name in enumerate(slf.VARNAMES):
-	#	print '    ',i, ' - ',name
-	# Get IKLE for mesh regularization
-	ikle     = np.array(slf.IKLE2)
-	
-	# total number of variables in the input file
-	numvars = len(slf.VARNAMES)
-	
-	# total number of time records in the file 
-	nrecs = len(slf.tags["times"])
-	
-	# an array of size nrecs with values of time steps in the input file
-	times = slf.tags["times"]
-	#print "number of records in input file : " + str(nrecs)
-	#print "Available time steps to choose from: "
-	#for i in range(len(times)):
-	#	print str(times[i])
-	
-	#
-	return slf,x,y,ikle,numvars,nrecs,times
-
-def get_var_names_and_units():
-	# two empty lists
-	variables = []
-	units = []
-	for var_names in slf.VARNAMES[0:numvars]:
-		#print var_names
-		variables.append(var_names)
-	for unit_names in slf.VARUNITS[0:numvars]:
-		units.append(unit_names)
-	return variables, units
-
-def get_values(t):
-	VARIABLES = {} # do this as dictionary
-	for i, n in enumerate(slf.VARNAMES[0:len(variables)]):
-		#print "Reading ", n, " for time index ",t
-		values = slf.getVALUES(t)
-		VARIABLES[i] = values[i]
-	return VARIABLES
-	
-def read_all_variables(t):
-	var_out = [] # do this as a list
-	# i is the counter, n is the item
-	for i, n in enumerate(slf.VARNAMES[0:len(variables)]):
-		#print "Reading ", n, " for time index ",t
-		values = slf.getVALUES(t)
-		var_out.append(values[i])
-	return var_out
+import os,sys
+import numpy as np
+import matplotlib.tri as mtri
+from ppmodules.selafin_io_pp import * 
+from matplotlib import pyplot as plt
 
 if (len(sys.argv) == 9):
 	dummy1 = sys.argv[1]
@@ -121,9 +59,9 @@ elif (len(sys.argv) == 10):
 	dummy3 = sys.argv[8]
 	line_out_file = sys.argv[9]
 else:
-	print 'Wrong number of Arguments, stopping now...'
-	print 'Usage:'
-	print 'python sel2plot_1d.py -i res.slf -v 1 -l profile.csv -o profile_Z.csv'
+	print('Wrong number of Arguments, stopping now...')
+	print('Usage:')
+	print('python sel2plot_1d.py -i res.slf -v 1 -l profile.csv -o profile_Z.csv')
 	sys.exit()
 
 # create the line_out_file 
@@ -155,10 +93,26 @@ for i in range(1,len(lnx)):
 
 # Read the header of the selafin result file and get geometry and
 # variable names and units
-slf,x,y,ikle,numvars,nrecs,times = read_selafin()
-variables, units = get_var_names_and_units()
+res = ppSELAFIN(input_file)
+res.readHeader()
+res.readTimes()
 
-#print 'Number of time steps in result file: ' + str(len(times))
+# get the mesh properties from the resultfile
+NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = res.getMesh()
+
+# the IKLE array starts at element 1, but matplotlib needs it to start at zero
+# note that doing this invalidates the IPOBO array; but we don't need IPOBO here
+IKLE[:,:] = IKLE[:,:] - 1
+
+# variable names and units
+variables = res.getVarNames()
+units = res.getVarUnits()
+
+# number of variables
+numvars = len(variables)
+
+# times list
+times = res.getTimes()
 
 # find the bottom variable (this is needed for the 1d plots of WSE)
 bottom_idx = -1
@@ -167,12 +121,12 @@ for i in range(len(variables)):
 		bottom_idx = i
 
 if (bottom_idx == -1):
-	print 'Variable BOTTOM is not found in the *.slf file!'
+	print('Variable BOTTOM is not found in the *.slf file!')
 	#print 'Exiting'
 	#sys.exit()
 
 # create a result triangulation object
-triang = mtri.Triangulation(x, y, ikle)
+triang = mtri.Triangulation(x, y, IKLE)
 
 # store the interpolated variable as a list, for every time step
 interp_var_list = list()
@@ -181,8 +135,9 @@ if (len(sys.argv) == 9):
 	# if there is only one variable
 	# for every time step in the results file
 	for i in range(len(times)):
-		slf_results = read_all_variables(i)
-		interpolator = mtri.LinearTriInterpolator(triang, slf_results[var_idx])
+		res.readVariables(i)
+		slf_results = res.getVarValues()
+		interpolator = mtri.LinearTriInterpolator(triang, slf_results[var_idx,:])
 		interp_var = interpolator(lnx, lny)
 		
 		# put -999.0 if the line is outside of the results file domain
@@ -194,11 +149,12 @@ elif (len(sys.argv) == 10):
 	# if there are two variables, then compute magnitude
 	# for every time step in the results file
 	for i in range(len(times)):
-		slf_results = read_all_variables(i)
-		interpolator1 = mtri.LinearTriInterpolator(triang, slf_results[var1_idx])
+		res.readVariables(i)
+		slf_results = res.getVarValues()
+		interpolator1 = mtri.LinearTriInterpolator(triang, slf_results[var1_idx,:])
 		interp_var1 = interpolator1(lnx, lny)
 		
-		interpolator2 = mtri.LinearTriInterpolator(triang, slf_results[var2_idx])
+		interpolator2 = mtri.LinearTriInterpolator(triang, slf_results[var2_idx,:])
 		interp_var2 = interpolator2(lnx, lny)
 		
 		# compute magnitude of the two variables
