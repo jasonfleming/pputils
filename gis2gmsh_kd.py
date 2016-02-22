@@ -416,12 +416,4 @@ for i in range(0,n):
 # gmsh option to make sure the elements size extend from boundary
 # write zero when doing a TIN; write one when doing a mesh!
 #fout.write(str("Mesh.CharacteristicLengthExtendFromBoundary = 0;") + "\n")
-
-
-
-	
-	
-	
-	
-	
 	

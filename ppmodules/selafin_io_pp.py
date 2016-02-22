@@ -11,9 +11,9 @@
 #
 # Purpose: Class that reads and writes TELEMAC's SELAFIN files. Based on
 # HRW's class under the same name. Made it so that it works under Python 2
-# and Python 3. TODO: test double precision.
+# and Python 3.
 #
-# Uses: Python, Numpy
+# Uses: Python 2 or 3, Numpy
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
