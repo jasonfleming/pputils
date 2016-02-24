@@ -34,7 +34,7 @@ from ppmodules.selafin_io_pp import *
 if len(sys.argv) != 3:
 	print('Wrong number of Arguments, stopping now...')
 	print('Example usage:')
-	print('python probe2.py -i input.slf')
+	print('python probe.py -i input.slf')
 	sys.exit()
 
 # I/O
@@ -51,6 +51,9 @@ vnames = slf.getVarNames()
 vunits = slf.getVarUnits()
 
 # prints variable names
+#
+print('Precision: ' + str(slf.getPrecision()) )
+print(' ')
 print('#################################')
 print('Variables in '+input_file+' are: ')
 print('---------------------------------')

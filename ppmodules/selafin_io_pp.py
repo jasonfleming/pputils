@@ -81,7 +81,7 @@ class ppSELAFIN:
 	def readHeader(self):
 		self.f = open(self.slf_file, 'rb')
 		garbage = unpack('>i', self.f.read(4))[0]
-		
+			
 		if (self.version == 2):
 			self.title = unpack('>72s', self.f.read(72))[0]
 			self.precision = unpack('>8s', self.f.read(8))[0]
@@ -90,13 +90,6 @@ class ppSELAFIN:
 			self.precision = unpack('>8s', self.f.read(8))[0].decode()
 		garbage = unpack('>i', self.f.read(4))[0]
 		
-		# Need to verify if this is correct!
-		'''
-		# need to manually set precision here in case of double precision
-		if (self.precision == 'SELAFIND') or (self.precision == 'SERAFIND'):
-			self.float_type = 'd' 
-			self.float_size = 8
-		'''
 		garbage = unpack('>i', self.f.read(4))[0]
 		self.NBV1 = unpack('>i', self.f.read(4))[0] # variables
 		self.NBV2 = unpack('>i', self.f.read(4))[0] # quad variables, not used
@@ -152,6 +145,14 @@ class ppSELAFIN:
 		# reads x
 		self.x = np.zeros(self.NPOIN)
 		garbage = unpack('>i', self.f.read(4))[0]
+		
+		# this is where we decide if it is single of double precision
+		# I got this from HRW's getFloatTypeFromFloat method
+		# I would have never gotton this on my own!!!
+		if (garbage != self.float_size * self.NPOIN):
+			self.float_type = 'd'
+			self.float_size = 8	
+		
 		for i in range(self.NPOIN):
 			self.x[i] = unpack('>' + self.float_type, self.f.read(self.float_size))[0]
 		garbage = unpack('>i', self.f.read(4))[0]
@@ -214,6 +215,8 @@ class ppSELAFIN:
 			self.f.write(pack('>i', self.IPOBO[i]))
 		self.f.write(pack('>i', 4*self.NPOIN))
 		
+		# this is the garbage record that determines the float size
+		# I have no idea why this works, but it does!!!
 		self.f.write(pack('>i', self.float_size*self.NPOIN))
 		for i in range(len(self.x)):
 			self.f.write(pack('>'+self.float_type, self.x[i]))
@@ -297,6 +300,15 @@ class ppSELAFIN:
 		self.f.seek(pos_prior_to_var_reading)		
 
 	# get methods start here
+	def getPrecision(self):
+		if (self.float_type == 'f' and self.float_size == 4):
+			precision = 'single'
+		elif (self.float_type == 'd' and self.float_size == 8):
+			precision = 'double'
+		else:
+			precision = 'unknown'
+		return precision
+			
 	def getNPOIN(self):
 		return self.NPOIN
 

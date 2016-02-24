@@ -65,15 +65,16 @@ import numpy             as np             # numpy
 from collections import OrderedDict        # for removal of duplicate nodes
 import struct                              # to determine sys architecture
 import subprocess                          # to execute binaries
-from ppmodules.ProgressBar import *        # progress bar
 curdir = os.getcwd()
 #
 #
 # determine which version of python the user is running
 if (sys.version_info > (3, 0)):
 	version = 3
+	pystr = 'python3'
 elif (sys.version_info > (2, 7)):
 	version = 2
+	pystr = 'python'
 #
 # I/O
 if len(sys.argv) == 11 :
@@ -97,15 +98,10 @@ else:
 archtype = struct.calcsize("P") * 8
 
 # call gis2triangle.py
-if (version == 2):
-	subprocess.call(['python', 'gis2triangle.py', '-n', nodes_file, 
-		'-b', boundary_file, '-l', lines_file, '-h', holes_file, 
-		'-o', 'tin.poly'])
-elif (version == 3):
-	subprocess.call(['python3', 'gis2triangle.py', '-n', nodes_file, 
-		'-b', boundary_file, '-l', lines_file, '-h', holes_file, 
-		'-o', 'tin.poly'])	
-		
+subprocess.call([pystr, 'gis2triangle_kd.py', '-n', nodes_file, 
+	'-b', boundary_file, '-l', lines_file, '-h', holes_file, 
+	'-o', 'tin.poly'])
+
 if (os.name == 'posix'):
 	# this assumes chmod +x has already been applied to the binaries
 	if (archtype == 32):
@@ -120,12 +116,8 @@ else:
 	sys.exit()
 	
 # call triangle2adcirc.py
-if (version == 2):
-	subprocess.call(['python', 'triangle2adcirc.py', '-n', 'tin.1.node', 
-		'-e', 'tin.1.ele', '-o', output_file])
-elif (version == 3):
-	subprocess.call(['python3', 'triangle2adcirc.py', '-n', 'tin.1.node', 
-		'-e', 'tin.1.ele', '-o', output_file])		
+subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'tin.1.node', 
+	'-e', 'tin.1.ele', '-o', output_file])
 
 # to remove the temporary files
 os.remove('tin.poly')
