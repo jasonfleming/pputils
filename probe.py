@@ -49,18 +49,27 @@ slf.readTimes()
 times = slf.getTimes()
 vnames = slf.getVarNames()
 vunits = slf.getVarUnits()
+ftype,fsize = slf.getPrecision()
+
+if(ftype == 'f' and fsize == 4):
+	precision = 'single'
+elif(ftype == 'd' and fsize == 8):
+	precision = 'double'
+else:
+	precision = 'unknown'
+
 
 # prints variable names
 #
-print('Precision: ' + str(slf.getPrecision()) )
+print('Precision: ' + precision )
 print(' ')
 print('#################################')
 print('Variables in '+input_file+' are: ')
 print('---------------------------------')
-print('     v     variable_name'         )
+print('     v     variable       unit'   )
 print('---------------------------------')
 for i in range(len(vnames)):
-	print('    ',i, '-->', vnames[i])
+	print('    ',i, '-->', vnames[i] + '[' + vunits[i].strip() + ']')
 print('#################################')
 
 # prints times

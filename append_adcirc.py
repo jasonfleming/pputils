@@ -82,4 +82,4 @@ bf = np.zeros((2,NPOIN))
 bf[0,:] = z1
 bf[1,:] = z2
 
-out.writeVariables([0.0], bf)
+out.writeVariables(0.0, bf)

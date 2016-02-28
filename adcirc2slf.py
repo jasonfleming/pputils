@@ -273,6 +273,6 @@ slf.writeHeader()
 zz = np.zeros((1,NPOIN))
 zz[0,:] = z
 
-slf.writeVariables([0.0], zz)
+slf.writeVariables(0.0, zz)
 #######################################################################
 

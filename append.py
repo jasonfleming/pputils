@@ -79,4 +79,4 @@ friction = slf2.getVarValues()
 bf[0,:] = bathy[0,:]
 bf[1,:] = friction[0,:]
 
-out.writeVariables([0.0], bf)
+out.writeVariables(0.0, bf)

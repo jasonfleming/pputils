@@ -228,18 +228,23 @@ class ppSELAFIN:
 		self.f.write(pack('>i', self.float_size*self.NPOIN))
 		
 	def writeVariables(self,time,temp):
-		self.time = time
+		# appends object's time 
+		self.time.append(time)
+		
+		# keeps only the current 2d array in object's memory
 		self.temp = temp
-		for i in range(len(self.time)):
-			self.f.write(pack('>i', 4))
-			self.f.write(pack('>'+self.float_type, self.time[i]))
-			self.f.write(pack('>i', 4))
-			
-			for j in range(self.NBV1):
-				self.f.write(pack('>i', self.float_size*self.NPOIN))
-				for k in range(self.NPOIN):
-					self.f.write(pack('>'+self.float_type, self.temp[j,k]))
-				self.f.write(pack('>i', self.float_size*self.NPOIN))
+		
+		# write the time 
+		self.f.write(pack('>i', 4))
+		self.f.write(pack('>'+self.float_type, time))
+		self.f.write(pack('>i', 4))
+		
+		# writes the rest of the variables
+		for j in range(self.NBV1):
+			self.f.write(pack('>i', self.float_size*self.NPOIN))
+			for k in range(self.NPOIN):
+				self.f.write(pack('>'+self.float_type, self.temp[j,k]))
+			self.f.write(pack('>i', self.float_size*self.NPOIN))
 		
 	def readTimes(self):
 		pos_prior_to_time_reading = self.f.tell()
@@ -301,14 +306,8 @@ class ppSELAFIN:
 
 	# get methods start here
 	def getPrecision(self):
-		if (self.float_type == 'f' and self.float_size == 4):
-			precision = 'single'
-		elif (self.float_type == 'd' and self.float_size == 8):
-			precision = 'double'
-		else:
-			precision = 'unknown'
-		return precision
-			
+		return self.float_type,self.float_size
+		
 	def getNPOIN(self):
 		return self.NPOIN
 
