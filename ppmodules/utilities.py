@@ -46,6 +46,140 @@ def point_in_poly(x,y,poly):
    if inside: return "IN"
    else: return "OUT"
    
+# identical to my fortran code idwm.f90
+# takes as input an xyz array, and a coordinate x,y, and outputs the 
+# z values of the input coordinate using my idwm algorithm.
+def idwm(elev,x,y):
+
+	# define some presets
+	# set min_prev vars to large numbers
+	min1cur = 99999.9
+	min2cur = 99999.9
+	min3cur = 99999.9
+	min4cur = 99999.9
+	
+	min1pre = 99999.9
+	min2pre = 99999.9
+	min3pre = 99999.9
+	min4pre = 99999.9
+	
+	# initialize min_loc
+	min1loc = -1
+	min2loc = -1
+	min3loc = -1
+	min4loc = -1
+	
+	# finds min and max of the elev data
+	# print(np.amin(elev[2,:]), np.amax(elev[2,:]))
+
+	# number of points in the elev data
+	n = len(elev[0,:])
+
+	dist = np.zeros(n)
+	xdist = np.subtract(elev[0,:],x)
+	ydist = np.subtract(elev[1,:],y)
+	
+	dist = np.sqrt(np.power(xdist,2.0) + np.power(ydist,2.0))
+	
+	# this is the loop that is really computationally expensive
+	for i in range(n):
+		# quadrant 1
+		if (elev[0,i] >= x and elev[1,i] >= y):
+			if (dist[i] < min1pre):
+				min1cur = dist[i]
+				min1loc = i
+		
+		# quadrant 2
+		if (elev[0,i] < x and elev[1,i] >= y):
+			if (dist[i] < min2pre):
+				min2cur = dist[i]
+				min2loc = i
+		
+		# quadrant 3
+		if (elev[0,i] < x and elev[1,i] < y):
+			if (dist[i] < min3pre):
+				min3cur = dist[i]
+				min3loc = i
+    
+		# quadrant 4
+		if (elev[0,i] > x and elev[1,i] < y):
+			if (dist[i] < min4pre):
+				min4cur = dist[i]
+				min4loc = i
+				
+		min1pre = min1cur
+		min2pre = min2cur
+		min3pre = min3cur
+		min4pre = min4cur
+	
+	# to fix the division by zero error (if the point (x,y) is exactly
+	# on a node of elev array	
+	if (min1cur < 1.0E-6):
+		min1cur = 1.0E-6
+
+	if (min2cur < 1.0E-6):
+		min2cur = 1.0E-6
+		
+	if (min3cur < 1.0E-6):
+		min3cur = 1.0E-6
+		
+	if (min4cur < 1.0E-6):
+		min4cur = 1.0E-6		
+
+	# calculate the weights
+	den = (1.0/(min1cur**2)) +(1.0/(min2cur**2)) +(1.0/(min3cur**2)) +\
+		(1.0/(min4cur**2))
+	
+	#print('distances')
+	#print(min1cur,min2cur,min3cur,min4cur)
+	
+	#print('Den ' + str(den))	
+		
+	# to calculate the weights
+	w1 = (1.0/(min1cur**2))/den
+	w2 = (1.0/(min2cur**2))/den
+	w3 = (1.0/(min3cur**2))/den
+	w4 = (1.0/(min4cur**2))/den	
+	
+	#print('weights')
+	#print(w1,w2,w3,w4)
+	
+	#print('elevations')
+	#print(elev[2,min1loc], elev[2,min2loc], elev[2,min3loc], elev[2,min4loc])
+	
+	#print('distances')
+	#print(min1cur,min2cur,min3cur,min4cur)
+	
+	#print('minxloc')
+	#print(min1loc,min2loc,min3loc,min4loc)
+	
+	# if minxloc is negative, I don't want to let python use the last
+	# item in the array in the calculation (which is what it would do)
+	
+	if min1loc < 0:
+		tmp1 = 0.0
+	else:
+		tmp1 = elev[2,min1loc]
+		
+	if min2loc < 0:
+		tmp2 = 0.0
+	else:
+		tmp2 = elev[2,min2loc]
+		
+	if min3loc < 0:
+		tmp3 = 0.0
+	else:
+		tmp3 = elev[2,min3loc]
+
+	if min4loc < 0:
+		tmp4 = 0.0
+	else:
+		tmp4 = elev[2,min4loc]
+
+	z = w1*tmp1+w2*tmp2+ w3*tmp3+w4*tmp4
+		
+	return z
+   
 # this works for python 2 and 3
 def CCW(x1,y1,x2,y2,x3,y3):
    return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)

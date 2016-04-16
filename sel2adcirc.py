@@ -1,7 +1,7 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 slf2adcirc.py                         # 
+#                                 sel2adcirc.py                         # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
@@ -21,7 +21,7 @@
 # Example:
 # 
 # when extracting 1 variable
-# python slf2adcirc.py -i input.slf -v 2 -t 23 -o output.grd
+# python sel2adcirc.py -i input.slf -v 2 -t 23 -o output.grd
 #
 # where:
 #       --> -i is the *.slf file from which to extract data
@@ -56,7 +56,7 @@ if len(sys.argv) == 9:
 else:
 	print('Wrong number of arguments ... stopping now ...')
 	print(' ')
-	print('python slf2adcirc.py -i input.slf -v 2 -t 23 -o output.grd')
+	print('python sel2adcirc.py -i input.slf -v 2 -t 23 -o output.grd')
 	sys.exit()
 
 # create the output file
