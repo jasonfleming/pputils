@@ -58,7 +58,8 @@ output_file = sys.argv[6] # output *.flt grid
 fout = open(output_file,"wb")
 
 # the name of the header file (this is asci format)
-header_file = output_file.split('.',1)[0] + '.hdr'
+# use reverse split!
+header_file = output_file.rsplit('.',1)[0] + '.hdr'
 fhdr = open(header_file,"w")
 
 # read the adcirc file
