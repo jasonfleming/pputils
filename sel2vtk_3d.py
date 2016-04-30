@@ -1,29 +1,21 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 sel2vtk.py                            # 
+#                                 sel2vtk_3d.py                         # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng. 
 # 
-# Date: Oct 27, 2015
+# Date: Apr 30, 2016
 #
-# Purpose: Script designed to convert *.slf file to *.vtk. As the old
-# slf2vtk.f90 did, it writes a text based file for each time record.
-# The script uses pure python to write files, which can be a bit slow
-# for large models with many time steps. 
-#
-# Revised: Dec 17, 2015 
-# Made to work on trimmed down version of HRW's selafin_io utilities. But
-# selafin_io utilities do not work for python 3.
-#
-# Revised: Feb 21, 2016
-# Use selafin_io_pp utilities, which work under python 2 and 3.
+# Purpose: Same as my sel2vtk.py, but made to work specifically for 3d
+# *.slf files. TODO: merge the 3d version in the sel2vtk.py script by adding
+# appropriate conditional flags
 #
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
-# Example: python sel2vtk.py -i results.slf -o results.vtk
+# Example: python sel2vtk_3d.py -i results.slf -o results.vtk
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
@@ -55,6 +47,9 @@ slf.readTimes()
 times = slf.getTimes()
 variables = slf.getVarNames()
 
+#print(times)
+#print(variables)
+
 # gets some of the mesh properties from the *.slf file
 NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
 
@@ -75,7 +70,7 @@ count = 0
 filenames = list()
 for i in range(len(times)):
 	filenames.append(output_file.split('.',1)[0] + "{:0>5d}".format(i) + '.vtk')
-	
+
 # to create the multiple output files
 for item in filenames:
 	file_out.append(item)
@@ -97,22 +92,25 @@ for item in filenames:
 	file_out[count].write('POINTS ' + str(len(x)) + ' float' + '\n')
 
 	# to write the node coordinates
+	# this assumes the first variable in the 3d *.slf file is the 'ELEVATION' or 'COTE'
 	for i in range(len(x)):
 		file_out[count].write(str("{:.3f}".format(x[i])) + ' ' + 
-			str("{:.3f}".format(y[i])) + ' ' + str("{:.3f}".format(0.0)) + 
+			str("{:.3f}".format(y[i])) + ' ' + str("{:.3f}".format(master_results[0][i])) + 
 			'\n')
 		
-	# to write the node connectivity table
-	file_out[count].write('CELLS ' + str(len(ikle)) + ' ' + str(len(ikle)*4) + '\n')
+	# to write the node connectivity table                         for 3d this is 7
+	file_out[count].write('CELLS ' + str(len(ikle)) + ' ' + str(len(ikle)*7) + '\n')
 
 	for i in range(len(ikle)):
-		file_out[count].write('3 ' + str(ikle[i][0]) + ' ' + str(ikle[i][1]) + ' ' + 
-			str(ikle[i][2]) + '\n')
+		# for 3d this is how it has to go
+		file_out[count].write('6 ' + str(ikle[i][0]) + ' ' + str(ikle[i][1]) + ' ' + 
+			str(ikle[i][2]) + ' '+  str(ikle[i][3]) + ' ' + str(ikle[i][4]) + ' ' + 
+			str(ikle[i][5]) + '\n')
 		
 	# to write the cell types
 	file_out[count].write('CELL_TYPES ' + str(len(ikle)) + '\n')
 	for i in range(len(ikle)):
-		file_out[count].write('5' + '\n')
+		file_out[count].write('13' + '\n')
 	
 	# write the empty line
 	file_out[count].write('' + '\n')
@@ -123,6 +121,7 @@ for item in filenames:
 	idx_written = list()
 	idx_vel_u = -1000
 	idx_vel_v = -1000
+	idx_vel_z = -1000
 
 	# from the list of variables, find v and u
 	for i in range(len(variables)):
@@ -130,22 +129,27 @@ for item in filenames:
 			idx_vel_u = i
 		elif (variables[i].find('VELOCITY V') > -1):
 			idx_vel_v = i
+		elif (variables[i].find('VELOCITY W') > -1):
+			idx_vel_z = i
 		
 		# in case the variables are in french
 		if (variables[i].find('VITESSE U') > -1):
 			idx_vel_u = i
 		elif (variables[i].find('VITESSE V') > -1):
 			idx_vel_v = i
+		elif (variables[i].find('VITESSE W') > -1):
+			idx_vel_z = i
 			
 	if ( (idx_vel_u > -1000) and (idx_vel_v > -1000) ):
-		idx_written.append(idx_vel_u)
-		idx_written.append(idx_vel_v)
+		#idx_written.append(idx_vel_u)
+		#idx_written.append(idx_vel_v)
 		# write velocity vectors data 
 		file_out[count].write('VECTORS Velocity float' + '\n')
 	
 		for i in range(len(x)):
 			file_out[count].write(str("{:.4f}".format(master_results[idx_vel_u][i])) + ' ' + 
-				str("{:.4f}".format(master_results[idx_vel_v][i])) + ' 0.0' + '\n')
+				str("{:.4f}".format(master_results[idx_vel_v][i])) + ' ' + 
+				str("{:.4f}".format(master_results[idx_vel_z][i])) + '\n')
 			
 	# write the rest of the variables
 	for i in range(len(variables)):
@@ -158,4 +162,3 @@ for item in filenames:
 	
 	file_out[count].close()
 	count = count + 1
-	

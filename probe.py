@@ -12,6 +12,9 @@
 # Purpose: Probes the selafin file, and outputs file's metadata. Works for
 # Python 2 or Python 3 as it uses selafin_io_pp class ppSELAFIN.
 #
+# Revised: Apr 30, 2016
+# Added ability to probe 3d *.slf files.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example: python probe2.py -i input.slf
@@ -22,6 +25,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# need future for backward compatibility with python2
 from __future__ import absolute_import, division, print_function
 import sys
 import numpy as np             
@@ -39,6 +43,7 @@ if len(sys.argv) != 3:
 
 # I/O
 input_file = sys.argv[2]   # input *.slf file
+print('#################################')
 print("The input file being probed: " + input_file)
 #
 # constructor for pp_SELAFIN class
@@ -50,6 +55,12 @@ times = slf.getTimes()
 vnames = slf.getVarNames()
 vunits = slf.getVarUnits()
 ftype,fsize = slf.getPrecision()
+nplan = slf.getNPLAN()
+
+if (nplan > 1):
+	slf_type = '3d'
+else:
+	slf_type = '2d'
 
 if(ftype == 'f' and fsize == 4):
 	precision = 'single'
@@ -58,10 +69,9 @@ elif(ftype == 'd' and fsize == 8):
 else:
 	precision = 'unknown'
 
-
 # prints variable names
-#
 print('Precision: ' + precision )
+print('File type: ' + slf_type )
 print(' ')
 print('#################################')
 print('Variables in '+input_file+' are: ')
@@ -70,6 +80,7 @@ print('     v     variable       unit'   )
 print('---------------------------------')
 for i in range(len(vnames)):
 	print('    ',i, '-->', vnames[i] + '[' + vunits[i].strip() + ']')
+print(' ')
 print('#################################')
 
 # prints times

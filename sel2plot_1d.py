@@ -13,7 +13,7 @@
 #
 # Updated: Feb 22, 2016 - uses selafin_io_pp class (works with python 2 and 3).
 #
-# Purpose: Script designed to take a *.slf results file and a pputils line
+# Purpose: Script designed to take a 2d *.slf results file and a pputils line
 # (i.e., a cross section or a profile line) and drapes the results (from a
 # specified variable) onto the line for all time steps in the *.slf file.
 # It also writes the profile for each time step as a separate *.png file.

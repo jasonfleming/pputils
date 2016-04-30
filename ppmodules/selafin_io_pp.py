@@ -7,11 +7,15 @@
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 # 
-# Date: Feb 13, 2015
+# Date: Feb 13, 2016
 #
 # Purpose: Class that reads and writes TELEMAC's SELAFIN files. Based on
 # HRW's class under the same name. Made it so that it works under Python 2
 # and Python 3.
+#
+# Revised: Apr 30, 2016
+# Added ability to read 3d *.slf files.
+# Can not write 3d *.slf files yet, but this could be added in the future.
 #
 # Uses: Python 2 or 3, Numpy
 #
@@ -56,6 +60,8 @@ class ppSELAFIN:
 		self.vunits = []
 		
 		self.IPARAM = []
+		
+		self.NPLAN = 0 # number of vertical planes; =1 for 2d; >1 for 3d
 		
 		# Aug 29, 1997 2:15 am EST (date when skynet became self-aware)
 		self.DATE = [1997, 8, 29, 2, 15, 0] 
@@ -118,6 +124,13 @@ class ppSELAFIN:
 			self.DATE = unpack('>6i', self.f.read(6*4))
 			garbage = unpack('>i', self.f.read(4))[0]
 		
+		if (self.IPARAM[6] > 1):
+			# the *.slf file is 3d
+			self.NPLAN = self.IPARAM[6]
+		else:
+			# the *.slf file is 2d (this is the default)
+			self.NPLAN = 1
+		
 		# uses python's long instead of integer 
 		garbage = unpack('>i', self.f.read(4))[0]
 		self.NELEM = unpack('>l', self.f.read(4))[0]
@@ -130,9 +143,8 @@ class ppSELAFIN:
 		
 		garbage = unpack('>i', self.f.read(4))[0]
 		for i in range(self.NELEM):
-			self.IKLE[i,0] = unpack('>l', self.f.read(4))[0]
-			self.IKLE[i,1] = unpack('>l', self.f.read(4))[0]
-			self.IKLE[i,2] = unpack('>l', self.f.read(4))[0]
+			for j in range(self.NDP):
+				self.IKLE[i,j] = unpack('>l', self.f.read(4))[0]
 		garbage = unpack('>i', self.f.read(4))[0]		
 		
 		self.IPOBO = np.zeros(self.NPOIN, dtype=np.int32)
@@ -322,6 +334,9 @@ class ppSELAFIN:
 		
 	def getVarUnits(self):
 		return self.vunits
+		
+	def getNPLAN(self):
+		return self.NPLAN
 	
 	def getIKLE(self):
 		return self.IKLE
