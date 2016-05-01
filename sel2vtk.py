@@ -21,6 +21,9 @@
 # Revised: Feb 21, 2016
 # Use selafin_io_pp utilities, which work under python 2 and 3.
 #
+# Revised: May 1, 2016
+# Now works for 2d and 3d *.slf files
+#
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
 # Example: python sel2vtk.py -i results.slf -o results.vtk
@@ -58,6 +61,22 @@ variables = slf.getVarNames()
 # gets some of the mesh properties from the *.slf file
 NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
 
+# determine if the *.slf file is 2d or 3d by reading how many planes it has
+NPLAN = slf.getNPLAN()
+
+# verify that variable ELEVATION or COTE are in the *.slf file 
+if (NPLAN > 1):
+	el_idx = -1
+	for i in range(len(variables)):
+		if ((variables[i].find('ELEVATION') > -1)): 
+			el_idx = i
+		elif ((variables[i].find('COTE Z') > -1)):
+			el_idx = i
+		#else:
+		#	print('Variable ELEVATION not in *.slf file')
+		#	print(el_idx)
+		#	sys.exit()
+
 # the IKLE array starts at element 1, but matplotlib needs it to start
 # at zero
 IKLE[:,:] = IKLE[:,:] - 1
@@ -79,7 +98,7 @@ for i in range(len(times)):
 # to create the multiple output files
 for item in filenames:
 	file_out.append(item)
-	file_out.append(item)
+	#file_out.append(item)
 	file_out[count] = open(item,'w')
 	
 	# item is the actual file name, which corresponds to each time step
@@ -98,21 +117,39 @@ for item in filenames:
 
 	# to write the node coordinates
 	for i in range(len(x)):
-		file_out[count].write(str("{:.3f}".format(x[i])) + ' ' + 
-			str("{:.3f}".format(y[i])) + ' ' + str("{:.3f}".format(0.0)) + 
-			'\n')
+		if (NPLAN > 1):
+			# 3d file
+			file_out[count].write(str("{:.3f}".format(x[i])) + ' ' + 
+				str("{:.3f}".format(y[i])) + ' ' + 
+				str("{:.3f}".format(master_results[el_idx][i])) + '\n')
+		else:
+			# 2d file
+			file_out[count].write(str("{:.3f}".format(x[i])) + ' ' + 
+				str("{:.3f}".format(y[i])) + ' ' + str("{:.3f}".format(0.0)) + 
+				'\n')
 		
 	# to write the node connectivity table
-	file_out[count].write('CELLS ' + str(len(ikle)) + ' ' + str(len(ikle)*4) + '\n')
-
+	if (NPLAN > 1):
+		file_out[count].write('CELLS ' + str(len(ikle)) + ' ' + str(len(ikle)*7) + '\n')
+	else:	
+		file_out[count].write('CELLS ' + str(len(ikle)) + ' ' + str(len(ikle)*4) + '\n')
+	
 	for i in range(len(ikle)):
-		file_out[count].write('3 ' + str(ikle[i][0]) + ' ' + str(ikle[i][1]) + ' ' + 
-			str(ikle[i][2]) + '\n')
+		if (NPLAN > 1):
+			file_out[count].write('6 ' + str(ikle[i][0]) + ' ' + str(ikle[i][1]) + ' ' + 
+				str(ikle[i][2]) + ' '+  str(ikle[i][3]) + ' ' + str(ikle[i][4]) + ' ' + 
+				str(ikle[i][5]) + '\n')
+		else:	
+			file_out[count].write('3 ' + str(ikle[i][0]) + ' ' + str(ikle[i][1]) + ' ' + 
+				str(ikle[i][2]) + '\n')
 		
 	# to write the cell types
 	file_out[count].write('CELL_TYPES ' + str(len(ikle)) + '\n')
 	for i in range(len(ikle)):
-		file_out[count].write('5' + '\n')
+		if (NPLAN > 1):
+			file_out[count].write('13' + '\n')
+		else:
+			file_out[count].write('5' + '\n')
 	
 	# write the empty line
 	file_out[count].write('' + '\n')
@@ -123,29 +160,50 @@ for item in filenames:
 	idx_written = list()
 	idx_vel_u = -1000
 	idx_vel_v = -1000
+	idx_vel_z = -1000
 
 	# from the list of variables, find v and u
 	for i in range(len(variables)):
-		if (variables[i].find('VELOCITY U') > -1):
-			idx_vel_u = i
-		elif (variables[i].find('VELOCITY V') > -1):
-			idx_vel_v = i
+		if (NPLAN > 1):
+			if (variables[i].find('VELOCITY U') > -1):
+				idx_vel_u = i
+			elif (variables[i].find('VELOCITY V') > -1):
+				idx_vel_v = i
+			elif (variables[i].find('VELOCITY W') > -1):
+				idx_vel_z = i
+		else:
+			if (variables[i].find('VELOCITY U') > -1):
+				idx_vel_u = i
+			elif (variables[i].find('VELOCITY V') > -1):
+				idx_vel_v = i
 		
 		# in case the variables are in french
-		if (variables[i].find('VITESSE U') > -1):
-			idx_vel_u = i
-		elif (variables[i].find('VITESSE V') > -1):
-			idx_vel_v = i
+	for i in range(len(variables)):
+		if (NPLAN > 1):
+			if (variables[i].find('VITESSE U') > -1):
+				idx_vel_u = i
+			elif (variables[i].find('VITESSE V') > -1):
+				idx_vel_v = i
+			elif (variables[i].find('VITESSE W') > -1):
+				idx_vel_z = i
+		else:
+			if (variables[i].find('VITESSE U') > -1):
+				idx_vel_u = i
+			elif (variables[i].find('VITESSE V') > -1):
+				idx_vel_v = i
 			
 	if ( (idx_vel_u > -1000) and (idx_vel_v > -1000) ):
-		idx_written.append(idx_vel_u)
-		idx_written.append(idx_vel_v)
 		# write velocity vectors data 
 		file_out[count].write('VECTORS Velocity float' + '\n')
 	
 		for i in range(len(x)):
-			file_out[count].write(str("{:.4f}".format(master_results[idx_vel_u][i])) + ' ' + 
-				str("{:.4f}".format(master_results[idx_vel_v][i])) + ' 0.0' + '\n')
+			if (NPLAN > 1):
+				file_out[count].write(str("{:.4f}".format(master_results[idx_vel_u][i])) + ' ' + 
+					str("{:.4f}".format(master_results[idx_vel_v][i])) + ' ' + 
+					str("{:.4f}".format(master_results[idx_vel_z][i])) + '\n')				
+			else:
+				file_out[count].write(str("{:.4f}".format(master_results[idx_vel_u][i])) + ' ' + 
+					str("{:.4f}".format(master_results[idx_vel_v][i])) + ' 0.0' + '\n')
 			
 	# write the rest of the variables
 	for i in range(len(variables)):

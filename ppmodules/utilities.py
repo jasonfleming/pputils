@@ -186,7 +186,7 @@ def CCW(x1,y1,x2,y2,x3,y3):
 
 # this method takes in an adcirc file, and returns the IPOBO and IKLE arrays
 # and also generates temp.cli file
-# This method is exactly as what is in my adcirc2slf.py code ... 
+# This method is exactly as what is in my adcirc2sel.py code ... 
 # I will keep the code duplication until I fully test it ...
 def getIPOBO_IKLE(adcirc_file):	
 	########################################################################
@@ -236,10 +236,10 @@ def getIPOBO_IKLE(adcirc_file):
 		
 	if (os.name == 'nt'):
 		# nt is for windows
-		print("Under windows, need more testing ...")
-		sys.exit()
-		# callstr = ".\\boundary\\bin\\bnd_extr_pp_32.exe"
-		# subprocess.call([callstr, adcirc_file])
+		#print("Under windows, need more testing ...")
+		#sys.exit()
+		callstr = ".\\boundary\\bin\\bnd_extr_pp_32.exe"
+		subprocess.call([callstr, adcirc_file])
 		
 	########################################################################
 	

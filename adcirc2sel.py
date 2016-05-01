@@ -1,7 +1,7 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 adcirc2slf.py                         # 
+#                                 adcirc2sel.py                         # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
@@ -17,7 +17,7 @@
 #
 # Example:
 #
-# python adcirc2slf.py -i mesh.grd -o mesh.slf
+# python adcirc2sel.py -i mesh.grd -o mesh.slf
 # where:
 # -i input adcirc mesh file
 # -o converted *.slf mesh file
@@ -100,10 +100,8 @@ if (os.name == 'posix'):
 	
 if (os.name == 'nt'):
 	# nt is for windows
-	print("Under windows, need more testing ...")
-	sys.exit()
-	# callstr = ".\\boundary\\bin\\bnd_extr_pp_32.exe"
-	# subprocess.call([callstr, adcirc_file])
+	callstr = ".\\boundary\\bin\\bnd_extr_pp_32.exe"
+	subprocess.call([callstr, adcirc_file])
 	
 ########################################################################
 

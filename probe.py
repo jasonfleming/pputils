@@ -76,10 +76,10 @@ print(' ')
 print('#################################')
 print('Variables in '+input_file+' are: ')
 print('---------------------------------')
-print('     v     variable       unit'   )
+print('     v     variable        unit'   )
 print('---------------------------------')
 for i in range(len(vnames)):
-	print('    ',i, '-->', vnames[i] + '[' + vunits[i].strip() + ']')
+	print('    ',i, '-->', vnames[i] + ' [' + vunits[i].strip() + ']')
 print(' ')
 print('#################################')
 
