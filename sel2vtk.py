@@ -22,7 +22,8 @@
 # Use selafin_io_pp utilities, which work under python 2 and 3.
 #
 # Revised: May 1, 2016
-# Now works for 2d and 3d *.slf files
+# Now works for 2d and 3d *.slf files. Added ability to write only selected
+# time steps from the *.slf file.
 #
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
@@ -34,21 +35,18 @@
 import os,sys
 import numpy as np
 from ppmodules.selafin_io_pp import *
-from progressbar import ProgressBar, Bar, Percentage, ETA
+#from progressbar import ProgressBar, Bar, Percentage, ETA
 
-if len(sys.argv) != 5:
+if len(sys.argv) == 5:
+	input_file = sys.argv[2]
+	output_file = sys.argv[4]
+else:
 	print('Wrong number of Arguments, stopping now...')
 	print('Usage:')
 	print('python sel2vtk.py -i results.slf -o results.vtk')
 	sys.exit()
-
-dummy1 = sys.argv[1]
-input_file = sys.argv[2]
-dummy2 = sys.argv[3]
-output_file = sys.argv[4]
-
+	
 # we are going to have one file per time record in the slf file
-
 # use selafin_io_pp class ppSELAFIN
 slf = ppSELAFIN(input_file)
 slf.readHeader()
@@ -72,10 +70,9 @@ if (NPLAN > 1):
 			el_idx = i
 		elif ((variables[i].find('COTE Z') > -1)):
 			el_idx = i
-		#else:
-		#	print('Variable ELEVATION not in *.slf file')
-		#	print(el_idx)
-		#	sys.exit()
+	if (el_idx < 0):
+		print('Variable \'ELEVATION Z\' or \'COTE Z\' not in *.slf file')
+		sys.exit()
 
 # the IKLE array starts at element 1, but matplotlib needs it to start
 # at zero
@@ -89,6 +86,10 @@ file_out = list()
 
 # initialize the counter
 count = 0
+
+# for the progress bar
+#w = [Percentage(), Bar(), ETA()]
+#pbar = ProgressBar(widgets=w, maxval=len(times)).start()
 
 # create a list of filenames based on time records in the slf file
 filenames = list()
@@ -214,6 +215,12 @@ for item in filenames:
 		for j in range(len(x)):
 			file_out[count].write(str("{:.3f}".format(master_results[i][j])) + '\n')
 	
+	# update the progress bar
+	#pbar.update(count+1)
+	
 	file_out[count].close()
 	count = count + 1
 	
+# finish the progress bar
+#pbar.finish()
+
