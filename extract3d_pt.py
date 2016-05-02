@@ -59,6 +59,9 @@ slf.readTimes()
 # get times of the selafin file, and the variable names
 times = slf.getTimes()
 variables = slf.getVarNames()
+units = slf.getVarUnits()
+
+NVAR = len(variables)
 
 # gets some of the mesh properties from the *.slf file
 NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
@@ -95,26 +98,36 @@ for i in range(1,NPLAN,1):
 	idx_all[i] = idx_all[i-1] + (NPOIN / NPLAN)
 
 # now we are ready to output the results
-t = len(times)-1 # index of the last time step
+# to write the header of the output file
+for i in range(NVAR):
+	fout.write(variables[i] + ', ')
+fout.write('\n')
 
-# read the results for all variables
-slf.readVariables(t)
+for i in range(NVAR):
+	fout.write(units[i] + ', ')
+fout.write('\n')
 
-# these are the results for all variables, for time step count
-master_results = slf.getVarValues() 
-
-# to store the extracted results in an array of its own
-extracted_results = np.zeros((len(variables),NPLAN))
-
-# print all variables for the time step t
-# this is not finished yet !!!
-for i in range(len(variables)):
-	fout.write(variables[i] + ' ' + 'time ' + str(t) + '\n')
-	for j in range(len(idx_all)):
-		extracted_results[i][j] = master_results[i][idx_all[j]]
-		fout.write(str(master_results[i][idx_all[j]]) + '\n')
-
-#for i in range(len(variables)):
-#	for j in range(len(idx_all)):
-#		fout.write(str(extracted_results[i][j]) + '\n')
+# read the results for all variables, for all times
+for t in range(len(times)):
+	# read variable
+	slf.readVariables(t)
+	
+	# these are the results for all variables, for time step count
+	master_results = slf.getVarValues() 
+	
+	# to store the extracted results in an array of its own
+	extracted_results = np.zeros((NVAR,NPLAN))
+	
+	for i in range(NVAR):
+		for j in range(len(idx_all)):
+			extracted_results[i][j] = master_results[i][idx_all[j]]
+	
+	# transpose the extracted_results 
+	extracted_results_tr = np.transpose(extracted_results)
+	
+	fout.write('TIME: ' + str("{:.3f}").format(times[t]) + '\n')
+	for i in range(NPLAN):
+		for j in range(NVAR):
+			fout.write(str("{:.4f}").format(extracted_results_tr[i][j]) + ', ')
+		fout.write('\n')
 
