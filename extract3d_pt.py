@@ -61,7 +61,13 @@ times = slf.getTimes()
 variables = slf.getVarNames()
 units = slf.getVarUnits()
 
+# number of variables
 NVAR = len(variables)
+
+# to remove duplicate spaces from variables and units
+for i in range(NVAR):
+	variables[i] = ' '.join(variables[i].split())
+	units[i] = ' '.join(units[i].split())
 
 # gets some of the mesh properties from the *.slf file
 NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()

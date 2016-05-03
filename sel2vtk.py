@@ -40,10 +40,19 @@ from ppmodules.selafin_io_pp import *
 if len(sys.argv) == 5:
 	input_file = sys.argv[2]
 	output_file = sys.argv[4]
+	t_start = 0
+	t_end = 0
+elif len(sys.argv) == 9:
+	input_file = sys.argv[2]
+	output_file = sys.argv[4]
+	t_start = int(sys.argv[6])
+	t_end = int(sys.argv[8])	
 else:
 	print('Wrong number of Arguments, stopping now...')
 	print('Usage:')
 	print('python sel2vtk.py -i results.slf -o results.vtk')
+	print('or')
+	print('python sel2vtk.py -i results.slf -o results.vtk -t_start 0 -t_end 5')
 	sys.exit()
 	
 # we are going to have one file per time record in the slf file
@@ -56,8 +65,18 @@ slf.readTimes()
 times = slf.getTimes()
 variables = slf.getVarNames()
 
+# update the index of t_end
+# len(times) gives total number of items in the array
+# len(times) - 1 is the index of the last element
+if len(sys.argv) == 5:
+	t_end = len(times)-1
+
 # gets some of the mesh properties from the *.slf file
 NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
+
+# to remove duplicate spaces from variables
+for i in range(len(variables)):
+	variables[i] = ' '.join(variables[i].split())
 
 # determine if the *.slf file is 2d or 3d by reading how many planes it has
 NPLAN = slf.getNPLAN()
@@ -84,8 +103,8 @@ ikle = IKLE
 # to create a list of files
 file_out = list()
 
-# initialize the counter
-count = 0
+# initialize the indes list of time steps to extract
+idx_list = list()
 
 # for the progress bar
 #w = [Percentage(), Bar(), ETA()]
@@ -93,13 +112,13 @@ count = 0
 
 # create a list of filenames based on time records in the slf file
 filenames = list()
-for i in range(len(times)):
+for i in range(t_start, t_end+1, 1):
 	filenames.append(output_file.split('.',1)[0] + "{:0>5d}".format(i) + '.vtk')
-	
+	idx_list.append(i)
+
 # to create the multiple output files
-for item in filenames:
+for count, item in enumerate(filenames):
 	file_out.append(item)
-	#file_out.append(item)
 	file_out[count] = open(item,'w')
 	
 	# item is the actual file name, which corresponds to each time step
@@ -217,9 +236,8 @@ for item in filenames:
 	
 	# update the progress bar
 	#pbar.update(count+1)
-	
+
 	file_out[count].close()
-	count = count + 1
 	
 # finish the progress bar
 #pbar.finish()
