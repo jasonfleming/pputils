@@ -25,6 +25,12 @@
 # Now works for 2d and 3d *.slf files. Added ability to write only selected
 # time steps from the *.slf file.
 #
+# Revised: May 4, 2016
+# Corrected a bug with extraction of selected time steps. Rather than having
+# slf.readVariables(count) I changed it to slf.readVariables(idx_list[count])
+# This now ensures proper time steps are read from *.slf file and written to
+# Paraview's *.vtk file.
+#
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
 # Example: python sel2vtk.py -i results.slf -o results.vtk
@@ -118,11 +124,12 @@ for i in range(t_start, t_end+1, 1):
 
 # to create the multiple output files
 for count, item in enumerate(filenames):
+	print('Writting file: ' + item)
 	file_out.append(item)
 	file_out[count] = open(item,'w')
 	
 	# item is the actual file name, which corresponds to each time step
-	slf.readVariables(count)
+	slf.readVariables(idx_list[count])
 	
 	# these are the results for all variables, for time step count
 	master_results = slf.getVarValues() 
@@ -241,4 +248,5 @@ for count, item in enumerate(filenames):
 	
 # finish the progress bar
 #pbar.finish()
+print('All done!')
 
