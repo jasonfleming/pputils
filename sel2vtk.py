@@ -31,6 +31,12 @@
 # This now ensures proper time steps are read from *.slf file and written to
 # Paraview's *.vtk file.
 #
+# Revised: May 12, 2016
+# Added an ability to display TOMAWAC's mean direction variable as vectors.
+# For the wave directions to be displayed properly in Paraview, the TOMAWAC
+# mean direction variable has to be in TOMAWAC's nautical direction 
+# convention (which is different that SWAN's nautical direction convetion).
+#
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
 # Example: python sel2vtk.py -i results.slf -o results.vtk
@@ -188,6 +194,9 @@ for count, item in enumerate(filenames):
 	idx_vel_u = -1000
 	idx_vel_v = -1000
 	idx_vel_z = -1000
+	
+	idx_mean_dir = -1000
+	idx_wave_height = -1000
 
 	# from the list of variables, find v and u
 	for i in range(len(variables)):
@@ -203,6 +212,10 @@ for count, item in enumerate(filenames):
 				idx_vel_u = i
 			elif (variables[i].find('VELOCITY V') > -1):
 				idx_vel_v = i
+			elif (variables[i].find('MEAN DIRECTION') > -1):
+				idx_mean_dir = i
+			elif (variables[i].find('WAVE HEIGHT HM0') > -1):
+				idx_wave_height = i
 		
 		# in case the variables are in french
 	for i in range(len(variables)):
@@ -218,6 +231,10 @@ for count, item in enumerate(filenames):
 				idx_vel_u = i
 			elif (variables[i].find('VITESSE V') > -1):
 				idx_vel_v = i
+			elif (variables[i].find('DIRECTION MOY') > -1):
+				idx_mean_dir = i
+			elif (variables[i].find('HAUTEUR HM0') > -1):
+				idx_wave_height = i
 			
 	if ( (idx_vel_u > -1000) and (idx_vel_v > -1000) ):
 		# write velocity vectors data 
@@ -231,7 +248,18 @@ for count, item in enumerate(filenames):
 			else:
 				file_out[count].write(str("{:.4f}".format(master_results[idx_vel_u][i])) + ' ' + 
 					str("{:.4f}".format(master_results[idx_vel_v][i])) + ' 0.0' + '\n')
+				
+	if ( (idx_mean_dir > -1000) and (idx_wave_height > -1000) ):
+		# write wave height vectors data 
+		file_out[count].write('VECTORS Wavedir float' + '\n')		
+		
+		for i in range(len(x)):
+			wave_x = np.sin(master_results[idx_mean_dir][i] * np.pi / 180.0) * master_results[idx_wave_height][i]
+			wave_y = np.cos(master_results[idx_mean_dir][i] * np.pi / 180.0) * master_results[idx_wave_height][i]
 			
+			file_out[count].write(str("{:.4f}".format(wave_x)) + ' ' + 
+				str("{:.4f}".format(wave_y)) + ' 0.0' + '\n')
+		
 	# write the rest of the variables
 	for i in range(len(variables)):
 		#if (i != idx_written[0]) and (i != idx_written[1]):
