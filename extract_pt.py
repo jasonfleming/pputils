@@ -1,7 +1,7 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 extract3d_pt.py                       # 
+#                                 extract_pt.py                         # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
@@ -9,17 +9,17 @@
 # 
 # Date: May 2, 2016
 #
-# Purpose: Script takes in a 3d *.slf file, and x,y node coordinates, and
-# extracts all values along the water column for that node, for all time
-# steps in the file. 
+# Purpose: Script takes in a *.slf file, and x,y node coordinates, and
+# extracts all values for that node, for all time steps in the file. Works
+# equally well for *.slf 2d and 3d files.
 #
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
 #
-# python extract3d_pt.py -i in.slf -x 100.0 -y 200.0 -o out.txt
+# python extract_pt.py -i in.slf -x 100.0 -y 200.0 -o out.txt
 # where:
-# -i input 3d *.slf file
+# -i input *.slf file
 # -x, y coordinates of the node for which to extract data
 # -o output text file
 #
@@ -40,7 +40,7 @@ curdir = os.getcwd()
 if len(sys.argv) != 9 :
 	print('Wrong number of Arguments, stopping now...')
 	print('Usage:')
-	print('python extract3d_pt.py -i in.slf -x 100.0 -y 200.0 -o out.txt')
+	print('python extract_pt.py -i in.slf -x 100.0 -y 200.0 -o out.txt')
 	sys.exit()
 
 input_file = sys.argv[2]
@@ -77,10 +77,10 @@ NPLAN = slf.getNPLAN()
 
 fout.write('The file has ' + str(NPLAN) + ' planes' + '\n')
 
-if NPLAN < 2:
-	print('Input file: ' + input_file + ' is not a valid 3d *.slf file!')
-	print('Exiting')
-	sys.exit()
+# if NPLAN < 2:
+	# print('Input file: ' + input_file + ' is not a valid 3d *.slf file!')
+	# print('Exiting')
+	# sys.exit()
 	
 # store just the x and y coords
 x2d = x[0:len(x)/NPLAN]
@@ -105,10 +105,12 @@ for i in range(1,NPLAN,1):
 
 # now we are ready to output the results
 # to write the header of the output file
+fout.write('TIME, ')
 for i in range(NVAR):
 	fout.write(variables[i] + ', ')
 fout.write('\n')
 
+fout.write('S, ')
 for i in range(NVAR):
 	fout.write(units[i] + ', ')
 fout.write('\n')
@@ -131,8 +133,9 @@ for t in range(len(times)):
 	# transpose the extracted_results 
 	extracted_results_tr = np.transpose(extracted_results)
 	
-	fout.write('TIME: ' + str("{:.3f}").format(times[t]) + '\n')
+	
 	for i in range(NPLAN):
+		fout.write(str("{:.3f}").format(times[t]) + ', ')
 		for j in range(NVAR):
 			fout.write(str("{:.4f}").format(extracted_results_tr[i][j]) + ', ')
 		fout.write('\n')
