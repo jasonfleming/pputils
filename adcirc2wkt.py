@@ -15,11 +15,16 @@
 # (this one visualizes the node numbers). The WKT format is essentially equvalent
 # to a shapefile format.
 #
+# Revised: May 14, 2016
+# Changed the required number of output files from two to one at the command 
+# line. The script now automatically writes the nodes and elements WKT file
+# separately.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
-# python adcirc2wkt.py -i out.grd -o outWKT_e.csv outWKT_n.csv
+# python adcirc2wkt.py -i out.grd -o outWKT.csv
 # where:
 # -i input adcirc mesh file
 # -o generated *.csv WKT files for element polygons and nodes
@@ -37,16 +42,19 @@ from ppmodules.readMesh import *           # to get all readMesh functions
 curdir = os.getcwd()
 #
 # I/O
-if len(sys.argv) != 6 :
+if len(sys.argv) != 5 :
 	print('Wrong number of Arguments, stopping now...')
 	print('Usage:')
-	print('python adcirc2asc.py -i out.grd -o outWKT_e.csv outWKT_n.csv')
+	print('python adcirc2asc.py -i out.grd -o outWKT.csv')
 	sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
 dummy2 =  sys.argv[3]
-output_file_e = sys.argv[4] # output *.csv WKT_e file
-output_file_n = sys.argv[5] # output *.csv WKT_n file
+output_file = sys.argv[4] # output *.csv WKT file
+
+# create the element and node output files
+output_file_e = output_file.rsplit('.',1)[0] + '_e.csv'
+output_file_n = output_file.rsplit('.',1)[0] + '_n.csv'
 
 # to create the output file
 fout = open(output_file_e,"w")
