@@ -17,13 +17,17 @@
 # hot start files. If the meshes are the same, no need to run this script,
 # but simply run chop.py (which already exists in Telemac python scripts).
 #
-# WARNING #
-# Note the mesh.slf should be completely enclosed within the results file.
-# Otherwise, this script will just assign 0.0 to that part of the mesh
-# that lies outside the boundary of the results file. There is no warning
-# given to the user when this happens!
+# Revised: May 17, 2016
+# Updated so that if the node of the mesh lies outside of the boundary of the 
+# results file, the closest results file node is assigned to the mesh node. It 
+# uses kdtree from scipy to do this. 
 #
-# Uses: Python 2 or 3, Matplotlib, Numpy
+# TODO: the script has problems when interpolating a variable like direction
+# that takes on values from 0 to 360. In this case, we have to convert from
+# direction to vectors, interpolate, then re-create the direction variable
+# on the interpolated mesh.
+#
+# Uses: Python 2 or 3, Matplotlib, Numpy, Scipy
 #
 # Example:
 #
@@ -40,6 +44,7 @@
 import os,sys
 import matplotlib.tri as mtri
 import numpy as np
+from scipy import spatial
 from ppmodules.selafin_io_pp import *
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -73,6 +78,7 @@ res.readVariables(t)
 times = res.getTimes()
 vnames = res.getVarNames()
 vunits = res.getVarUnits()
+float_type,float_size = res.getPrecision()
 
 numvars = len(vnames)
 
@@ -102,17 +108,21 @@ triang = mtri.Triangulation(x_r,y_r,IKLE_r)
 for i in range(numvars):
 	interpolator = mtri.LinearTriInterpolator(triang, results[i,:])
 	mesh_results[i,:] = interpolator(x_m, y_m)
-	
-# in case the transposed mesh node lies outside the result mesh, assign zero
-# to that node, and write user a warning ...
+
+# create a KDTree object
+source = np.column_stack((x_r,y_r))
+tree = spatial.KDTree(source)
+
 for i in range(numvars):
 	for j in range(NPOIN_m):
 		if (np.isnan(mesh_results[i,j])):
-			mesh_results[i,j] = 0.0
+			# rather than assigning zero, assign a value from a closest non-nan node
+			d, idx = tree.query((x_m[j],y_m[j]), k = 1)
+			mesh_results[i,j] = results[i][idx]
 	
 # now write the interpolated results to a file
 mres = ppSELAFIN(output_file)
-mres.setPrecision('f',4)
+mres.setPrecision(float_type,float_size)
 mres.setTitle('created with pputils')
 mres.setVarNames(vnames)
 mres.setVarUnits(vunits)
@@ -120,5 +130,5 @@ mres.setIPARAM([1, 0, 0, 0, 0, 0, 0, 0, 0, 1])
 mres.setMesh(NELEM_m, NPOIN_m, NDP_m, IKLE_m, IPOBO_m, x_m, y_m)
 mres.writeHeader()
 
-mres.writeVariables([0.0], mesh_results)
+mres.writeVariables(0.0, mesh_results)
 
