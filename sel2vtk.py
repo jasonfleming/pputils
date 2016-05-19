@@ -37,6 +37,10 @@
 # mean direction variable has to be in TOMAWAC's nautical direction 
 # convention (which is different that SWAN's nautical direction convetion).
 #
+# Revised: May 12, 2016
+# Fixed a bug related to extraction of selected time steps (added an if
+# statement that checks if the start and end times are valid).
+#
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
 # Example: python sel2vtk.py -i results.slf -o results.vtk
@@ -115,7 +119,10 @@ ikle = IKLE
 # to create a list of files
 file_out = list()
 
-# initialize the indes list of time steps to extract
+# list of time indices in *.slf file
+idx_times = np.arange(len(times))
+
+# initialize the index list of time steps to extract
 idx_list = list()
 
 # for the progress bar
@@ -127,6 +134,14 @@ filenames = list()
 for i in range(t_start, t_end+1, 1):
 	filenames.append(output_file.split('.',1)[0] + "{:0>5d}".format(i) + '.vtk')
 	idx_list.append(i)
+
+# to check if the idx_list is within times list
+if (idx_list[0] not in idx_times):
+	print('Starting time specified not in *.slf file. Exiting.')
+	sys.exit()
+elif (idx_list[-1] not in idx_times):
+	print('Ending time specified not in *.slf file. Exiting.')
+	sys.exit()
 
 # to create the multiple output files
 for count, item in enumerate(filenames):
