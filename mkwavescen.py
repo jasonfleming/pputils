@@ -20,11 +20,12 @@
 #
 # python mkwavescen.py -i base.cas -s scenarios.csv
 # where:
-# -i input TOMAWAC base case scenario
+# -i input TOMAWAC steering file (*.cas) for the base case scenario
 # -s scenarios to include in the generation of library *.cas files; it must
 # have first row with the following columns: 
 # id,water_level,wave_dir,wave_height,wave_period
-# the scenario file must be comma delimited
+# the scenario file must be comma delimited; id column is integer, rest
+# are reals
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
@@ -106,6 +107,6 @@ for item in filenames:
 fs = open("run_scenarios.sh", "w")
 for item in filenames:
 	fs.write("python runModule.py tomawac " + item + "\n")
-	#fs.write("rm *.prt*" + "\n")
+	fs.write("rm *.sortie" + "\n")
 
 

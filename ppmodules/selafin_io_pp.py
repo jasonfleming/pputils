@@ -160,7 +160,7 @@ class ppSELAFIN:
 		
 		# this is where we decide if it is single of double precision
 		# I got this from HRW's getFloatTypeFromFloat method
-		# I would have never gotton this on my own!!!
+		# I would have never gotten this on my own!!!
 		if (garbage != self.float_size * self.NPOIN):
 			self.float_type = 'd'
 			self.float_size = 8	
@@ -389,3 +389,6 @@ class ppSELAFIN:
 		self.IPOBO = IPOBO
 		self.x = x
 		self.y = y
+		
+	def close(self):
+		self.f.close()
