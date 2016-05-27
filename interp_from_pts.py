@@ -14,6 +14,11 @@
 # file. It uses scipy's kdtree to assign to the mesh node the point in
 # the xyz dataset that is closest.
 #
+# Revised: May 27, 2016
+# Made it such that a number of scipy neighbours is an input argument. If
+# closest node is wanted, just use 1 neighbour. Note that this interpolation
+# script is good only when data points file is very dense.
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
@@ -39,15 +44,21 @@ from progressbar import ProgressBar, Bar, Percentage, ETA
 curdir = os.getcwd()
 #
 # I/O
-if len(sys.argv) != 7 :
+if len(sys.argv) != 9 :
 	print('Wrong number of Arguments, stopping now...')
 	print('Usage:')
-	print('python interp_from_pts.py -f points.csv -m mesh.grd -o mesh_interp.grd')
+	print('python interp_from_pts.py -f points.csv -m mesh.grd -o mesh_interp.grd -n 10')
 	sys.exit()
 
 pts_file = sys.argv[2]
 mesh_file = sys.argv[4]
 output_file = sys.argv[6] # interp_mesh
+neigh = int(sys.argv[8]) # the number of nearest neighbours
+
+# I am imposing a limit on neigh to be between 1 and 10
+if ((neigh < 1) or (neigh > 10)):
+	print('Number of neighbours must be between 1 and 10. Exiting.')
+	sys.exit(0)
 
 print('Reading input data')
 # read the points file
@@ -65,12 +76,39 @@ print('Constructing KDTree object')
 source = np.column_stack((x,y))
 tree = spatial.KDTree(source)
 
+den = 0.0
+tmp_sum = 0.0
+
 print('Interpolating')
 w = [Percentage(), Bar(), ETA()]
 pbar = ProgressBar(widgets=w, maxval=m_n).start()
 for i in range(m_n):
-	d,idx = tree.query((m_x[i],m_y[i]), k = 1)
-	m_z[i] = z[idx]
+	d,idx = tree.query((m_x[i],m_y[i]), k = neigh)
+	
+	# calculate the denominator
+	if neigh > 1:
+		for j in range(neigh):
+			den = den + (1.0 / (d[j]**2))
+	else:
+		den = den + (1.0 / (d**2))
+		
+	# calculate the weights
+	weights = (1.0 / d**2) / den
+	
+	# to assign the interpolated value
+	if neigh > 1:
+		for j in range(neigh):
+			tmp_sum = tmp_sum + weights[j]*z[idx[j]]
+	else:
+		tmp_sum = weights * z[idx]
+		
+	# now assign the value	
+	m_z[i] = tmp_sum
+	
+	# reset the denominator
+	den = 0.0
+	tmp_sum = 0.0
+	
 	pbar.update(i+1)
 pbar.finish()
 
