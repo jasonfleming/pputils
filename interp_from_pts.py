@@ -23,9 +23,9 @@
 #
 # Example:
 #
-# python interp_from_pts.py -f points.csv -m mesh.grd -o mesh_interp.grd
+# python interp_from_pts.py -p points.csv -m mesh.grd -o mesh_interp.grd -n 10
 # where:
-# -f xyz points file, no headers, comma delimited
+# -p xyz points file, no headers, comma delimited
 # -m mesh (whose nodes are to be interpolated)
 # -o interpolated mesh
 # 
@@ -47,7 +47,7 @@ curdir = os.getcwd()
 if len(sys.argv) != 9 :
 	print('Wrong number of Arguments, stopping now...')
 	print('Usage:')
-	print('python interp_from_pts.py -f points.csv -m mesh.grd -o mesh_interp.grd -n 10')
+	print('python interp_from_pts.py -p points.csv -m mesh.grd -o mesh_interp.grd -n 10')
 	sys.exit()
 
 pts_file = sys.argv[2]
