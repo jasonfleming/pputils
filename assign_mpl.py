@@ -9,15 +9,6 @@
 # 
 # Date: Oct 25, 2015
 #
-# Modified: Oct 26, 2015
-# The original version assumed that each polygon has a distinct attribute.
-# This version uses Matplotlib for the point in polygon test, instead of
-# pure python. Based on my tests, there is no speed advantage of going 
-# to Matplotlib vs. pure python for point in polygon test.
-#
-# Modified: Feb 21, 2016
-# Changed ProgressBar, and updated for python 2 and 3.
-#
 # Purpose: Script takes in a mesh in ADCIRC format, and a set of closed
 # boundaries in pputils format, and creates another ADCIRC file with
 # node z-values assigned with polygon attributes. This is useful for 
@@ -31,11 +22,20 @@
 # used in the append.py script to generate the friction file for use in
 # Telemac modeling.
 #
+# Revised: Oct 26, 2015
+# The original version assumed that each polygon has a distinct attribute.
+# This version uses Matplotlib for the point in polygon test, instead of
+# pure python. Based on my tests, there is no speed advantage of going 
+# to Matplotlib vs. pure python for point in polygon test.
+#
+# Revised: Feb 21, 2016
+# Changed ProgressBar, and updated for python 2 and 3.
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
 #
-# python adcirc2asc.py -i out.grd -b boundary.csv -o out_friction.grd
+# python assign_mpl.py -i out.grd -b boundary.csv -o out_friction.grd
 # where:
 #
 # -i input adcirc mesh file
