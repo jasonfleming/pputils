@@ -152,10 +152,10 @@ if (os.name == 'posix'):
 
 	if (version == 2):
 		callstr = str('python adcirc2wkt.py -i ' + output_file + ' -o ' +
-			wkt_file + 'WKT_e.csv ' + wkt_file + 'WKT_n.csv')
+			wkt_file + 'WKT.csv')
 	elif (version == 3):
 		callstr = str('python3 adcirc2wkt.py -i ' + output_file + ' -o ' +
-			wkt_file + 'WKT_e.csv ' + wkt_file + 'WKT_n.csv')	
+			wkt_file + 'WKT.csv')	
 	
 	# this creates a list of the callstr, where each parameter is separed
 	# by a space
