@@ -39,15 +39,14 @@
 # -o is the output *.slf file created from the master library file 
 #    corresponding to each time step in the time series file.
 #
-# Note this script has no input parameters; it uses python's glob function
-# to get a list of all *.slf files in the present directory.
-#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os,sys
+import random
 import numpy as np
 from ppmodules.selafin_io_pp import *
+from progressbar import ProgressBar, Bar, Percentage, ETA
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
@@ -65,12 +64,6 @@ else:
 	print('python mkwavelibts.py -i wave_lib.slf -t offshore_ts.csv')
 	print('     -k lib_dict.csv -o wave_lib_ts.slf')
 	sys.exit()
-
-# prints the data files that were read
-print(master_lib_file)
-print(offshore_ts_file)
-print(lib_dict_file)
-print(output_file)
 
 # read the *.csv data first
 offshore_ts_data = np.loadtxt(offshore_ts_file, delimiter=',', skiprows=1, unpack=True)
@@ -97,21 +90,59 @@ lib_wdir = lib_dict_data[2,:]
 lib_hm0 = lib_dict_data[3,:]
 lib_tp = lib_dict_data[4,:]
 
+# reads the input wave lib file
+lib = ppSELAFIN(master_lib_file)
+lib.readHeader()
+lib.readTimes()
+
+# gets some of the mesh properties from the *.slf file
+times = lib.getTimes()
+vnames = lib.getVarNames()
+vunits = lib.getVarUnits()
+float_type,float_size = lib.getPrecision()
+NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = lib.getMesh()
+
+# number of variables
+numvars = len(vnames)
+
+# results array that holds all outputs for a particular time step
+#lib_results = np.zeros((numvars, NPOIN))
+
+# writes the output *.slf file for the offshore time series
+res = ppSELAFIN(output_file)
+res.setPrecision(float_type,float_size)
+res.setTitle('created with pputils')
+res.setVarNames(vnames)
+res.setVarUnits(vunits)
+res.setIPARAM([1, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+res.setMesh(NELEM, NPOIN, NDP, IKLE, IPOBO, x, y)
+res.writeHeader()
+
 # now we have to use the data from the *.csv files to extract from the 
 # master wave library file a record that corresponds to each time step in
 # the offshore time series file
 
-# I did this in my SWAN wave library files ...
-
+# number of time steps in the offshore data
 num_ts_points = len(yyyy)
+num_ts_points = 27*24 # for testing execution times
+
+# distance array
 dist = np.zeros(num_ts_points)
+
+# record to extract for a particular time step
 rec = 0
 
+# output file that tells us which lib case was selected for each time
+# step in the final output
 fout = open('wave_lib_temp_output.csv','w')
 header_str = 'yyyy,mm,dd,hh,minute,t2d_time,wl,hm0,tp,wdir,'
 header_str = header_str + 'lib_id,lib_wl,lib_hm0,lib_tp,lib_wdir'
 
 fout.write(header_str + '\n')
+
+# widget for the progress bar
+w = [Percentage(), Bar(), ETA()]
+pbar = ProgressBar(widgets=w, maxval=num_ts_points).start()
 
 for i in range(num_ts_points):
 	if ( (wl[i] < -900) or (hm0[i] < -900) or (tp[i] < -999) or (wdir[i] < 0) ):
@@ -124,7 +155,13 @@ for i in range(num_ts_points):
 			(lib_tp - tp[i])**2  )
 		# this is the record in the master library file that correspons	
 		# to the time step i
+		# rec is the index of the minimum dist
 		rec = np.argmin(dist)
+		
+		# this is garbage, but will allow me to complete writing this script
+		# before having the full library file
+		# this must be deleted afterwards!!!
+		rec = random.randint(0,len(times))
 		
 		# write temporary output to a text file
 		fout.write(str(yyyy[i]) + ',' + str(mm[i]) + ',' + str(dd[i]) + ',' +
@@ -133,7 +170,22 @@ for i in range(num_ts_points):
 			str(wdir[i]) + ',' + str(lib_id[rec]) + ',' + str(lib_wl[rec]) + ',' + 
 			str(lib_hm0[rec]) + ',' +str(lib_tp[rec]) + ',' + str(lib_wdir[rec]) + '\n')
 		
+		# reads rec from the wave library file
+		lib.readVariables(rec)
+		lib_res = lib.getVarValues()
+		
+		#print('writing time ' + str(i+1) + ' out of ' + str(num_ts_points)) 
+		
+		# writes the above record to the output *.slf file
+		res.writeVariables(t2d_time[i],lib_res)
+		
+		pbar.update(i+1)
+		
+# close the *.slf files
+lib.close()
+res.close()
 
+pbar.finish()
 
 
 
