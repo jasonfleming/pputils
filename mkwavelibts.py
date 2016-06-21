@@ -124,7 +124,6 @@ res.writeHeader()
 
 # number of time steps in the offshore data
 num_ts_points = len(yyyy)
-num_ts_points = 27*24 # for testing execution times
 
 # distance array
 dist = np.zeros(num_ts_points)
@@ -157,12 +156,7 @@ for i in range(num_ts_points):
 		# to the time step i
 		# rec is the index of the minimum dist
 		rec = np.argmin(dist)
-		
-		# this is garbage, but will allow me to complete writing this script
-		# before having the full library file
-		# this must be deleted afterwards!!!
-		rec = random.randint(0,len(times))
-		
+			
 		# write temporary output to a text file
 		fout.write(str(yyyy[i]) + ',' + str(mm[i]) + ',' + str(dd[i]) + ',' +
 			str(hh[i]) + ',' + str(minute[i]) + ',' + str(t2d_time[i]) + ',' +
