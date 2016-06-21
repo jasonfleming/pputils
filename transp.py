@@ -37,6 +37,9 @@
 # arrow starts at origin and points outward, with zero being a wave from
 # the south). Note that TOMAWAC's nautical convention is different than
 # SWAN's nautical convention.
+# 
+# Revised: Jun 21, 2016
+# Added progress bar widget
 #
 # Uses: Python 2 or 3, Matplotlib, Numpy, Scipy
 #
@@ -56,6 +59,7 @@ import matplotlib.tri as mtri
 import numpy as np
 from scipy import spatial
 from ppmodules.selafin_io_pp import *
+from progressbar import ProgressBar, Bar, Percentage, ETA
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
@@ -166,10 +170,15 @@ mres.setIPARAM([1, 0, 0, 0, 0, 0, 0, 0, 0, 1])
 mres.setMesh(NELEM_m, NPOIN_m, NDP_m, IKLE_m, IPOBO_m, x_m, y_m)
 mres.writeHeader()
 
+# for the progress bar
+w = [Percentage(), Bar(), ETA()]
+pbar = ProgressBar(widgets=w, maxval=len(times)).start()
+
 # to perform triangulation for each variable in the result file, 
 # for each time step
 for t in range(len(times)):
-	print('Writing time step: ' + str(t))
+	pbar.update(t+1)
+	# print('Writing time step: ' + str(t))
 	# this is the master transposed array, for time step t
 	mesh_results = np.zeros((numvars, NPOIN_m))
 	
@@ -220,4 +229,4 @@ for t in range(len(times)):
 					mesh_results[i,j] = results[i][idx]
 
 	mres.writeVariables(times[t], mesh_results)
-
+pbar.finish()
