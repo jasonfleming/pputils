@@ -13,6 +13,10 @@
 # extracts all values for that node, for all time steps in the file. Works
 # equally well for *.slf 2d and 3d files.
 #
+# Revised: Jun 21, 2016
+# Added a method in selafin_io_pp.py that significantly improves the 
+# speed of data extraction at a single point.
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
@@ -77,11 +81,6 @@ NPLAN = slf.getNPLAN()
 
 fout.write('The file has ' + str(NPLAN) + ' planes' + '\n')
 
-# if NPLAN < 2:
-	# print('Input file: ' + input_file + ' is not a valid 3d *.slf file!')
-	# print('Exiting')
-	# sys.exit()
-	
 # store just the x and y coords
 x2d = x[0:len(x)/NPLAN]
 y2d = y[0:len(x)/NPLAN]
@@ -115,6 +114,27 @@ for i in range(NVAR):
 	fout.write(units[i] + ', ')
 fout.write('\n')
 
+########################################################################
+# extract results for every plane (if there are multiple planes that is)
+for p in range(NPLAN):
+	slf.readVariablesAtNode(idx_all[p])
+	results = slf.getVarValuesAtNode()
+
+	# outputs the results
+	for i in range(len(times)):
+		fout.write(str("{:.3f}").format(times[i]) + ', ')
+		for j in range(NVAR):
+			fout.write(str("{:.4f}").format(results[i][j]) + ', ')
+		fout.write('\n')
+########################################################################
+
+
+# below is what I had previously
+# it has a more logical output for 3d files
+# if wanting to rely on previous, uncomment between ### and replace with
+# code below
+
+'''
 # read the results for all variables, for all times
 for t in range(len(times)):
 	# read variable
@@ -139,4 +159,5 @@ for t in range(len(times)):
 		for j in range(NVAR):
 			fout.write(str("{:.4f}").format(extracted_results_tr[i][j]) + ', ')
 		fout.write('\n')
+'''
 

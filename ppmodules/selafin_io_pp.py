@@ -17,6 +17,10 @@
 # Added ability to read 3d *.slf files.
 # Can not write 3d *.slf files yet, but this could be added in the future.
 #
+# Revised: Jun 21, 2016
+# Added a method readVariablesAtNode() that works super fast at extracting
+# values from *.slf files
+#
 # Uses: Python 2 or 3, Numpy
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -82,6 +86,8 @@ class ppSELAFIN:
 		# temporary array that hold results read for a single time step
 		# for each variable in the file
 		self.temp = np.zeros((self.NBV1,self.NPOIN))
+		
+		self.tempAtNode = np.zeros((0,0))
 		
 	# methods start here
 	def readHeader(self):
@@ -316,6 +322,45 @@ class ppSELAFIN:
 		# need to re-set in case another variable needs to be read!
 		self.f.seek(pos_prior_to_var_reading)		
 
+	def readVariablesAtNode(self,node):
+		
+		# node is the desired node from which to extract results for
+		numTimes = len(self.time)
+		
+		pos_prior_to_var_reading = self.f.tell()
+		
+		# reads data for all variables in the *.slf file at desired time t_des
+		self.tempAtNode = np.zeros((numTimes, self.NBV1))
+		
+		# it reads the time again, but this it is not used
+		time2 = []
+		
+		# time index
+		t = -1
+		
+		while True:
+			try:
+				self.f.seek(4,1)
+				time2.append( unpack('>'+self.float_type, self.f.read(self.float_size))[0] )
+				self.f.seek(4,1)
+				
+				# this is the time step index
+				t = t + 1
+				
+				for i in range(self.NBV1):
+					self.f.seek(4,1)
+					
+					self.f.seek( (node)*self.float_size, 1)
+					self.tempAtNode[t,i] = unpack('>'+self.float_type, self.f.read(self.float_size))[0]
+					self.f.seek ((self.NPOIN - node -1)*self.float_size , 1)
+							
+					self.f.seek(4,1)
+			except:
+				break
+				
+		# need to re-set in case another variable needs to be read!
+		self.f.seek(pos_prior_to_var_reading)	
+		
 	# get methods start here
 	def getPrecision(self):
 		return self.float_type,self.float_size
@@ -349,6 +394,9 @@ class ppSELAFIN:
 	
 	def getVarValues(self):
 		return self.temp
+		
+	def getVarValuesAtNode(self):
+		return self.tempAtNode
 
 	def getIPOBO(self):
 		return self.IPOBO
