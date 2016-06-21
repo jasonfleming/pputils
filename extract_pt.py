@@ -128,13 +128,17 @@ for p in range(NPLAN):
 		fout.write('\n')
 ########################################################################
 
+# close the output file
+fout.close()
 
 # below is what I had previously
 # it has a more logical output for 3d files
 # if wanting to rely on previous, uncomment between ### and replace with
-# code below
+# code below; if using the code below, also uncomment everything after
+# if NPLAN > 1
 
 '''
+###############################################################################
 # read the results for all variables, for all times
 for t in range(len(times)):
 	# read variable
@@ -159,5 +163,61 @@ for t in range(len(times)):
 		for j in range(NVAR):
 			fout.write(str("{:.4f}").format(extracted_results_tr[i][j]) + ', ')
 		fout.write('\n')
+###############################################################################
 '''
+
+# the code below is simply to format the output for 3d *.slf files to make it
+# more human readable 
+
+if NPLAN > 1:
+	fout2 = open('temp.txt','w')
+
+	master = list() # data as read from the file
+	master2 = list() # the one with the trailing comma removed, and headers removed
+	
+	# use python to read the results file
+	# first three lines are headers
+	
+	header_str = ''
+	count = 0
+	
+	with open(output_file, 'r') as f1:
+		for i in f1:
+			master.append(i)
+			if (count < 3):
+				header_str = header_str + master[count]
+				count = count + 1
+				
+	# remove the output file
+	os.remove(output_file)
+
+	for i in range(len(master)):
+		if i > 2:
+			master2.append(master[i].rsplit(',',1)[0])
+			
+	for i in range(len(master2)):
+		fout2.write(master2[i] + '\n')
+	
+	# close the temp file	
+	fout2.close()
+	
+	# use numpy to read the temp file
+	temp_data = np.loadtxt('temp.txt', delimiter=',',skiprows=0,unpack=True)
+	
+	temp_data_tr = np.transpose(temp_data)
+	
+	# now use np.lexsort to sort the data by columns
+	elev_col = temp_data_tr[:,1]
+	time_col = temp_data_tr[:,0]
+	
+	ind = np.lexsort( (elev_col, time_col))
+	
+	temp_data_sorted = temp_data_tr[ind,:]
+	
+	# now write the final output file
+	np.savetxt(output_file, temp_data_sorted, fmt='%10.4f', header = header_str, 
+		comments = '', delimiter=',')
+
+	# remove the temp file
+	os.remove('temp.txt')
 
