@@ -101,12 +101,12 @@ if len(sys.argv) == 10:
 	fout.write('x, y, ' + vnames[var1_idx] + ', ' + vnames[var2_idx] + '\n')
 	for i in range(len(var1)):
 		fout.write(str("{:.3f}".format(x[i])) + ", " + str("{:.3f}".format(y[i])) +
-			", " + str("{:.3f}".format(var1[i])) + ", " +
-			str("{:.3f}".format(var2[i])) + "\n")
+			", " + str("{:.12f}".format(var1[i])) + ", " +
+			str("{:.12f}".format(var2[i])) + "\n")
 elif len(sys.argv) == 9:
 		fout.write('x, y, ' + vnames[var1_idx] + '\n')
 		for i in range(len(var1)):
 			fout.write(str("{:.3f}".format(x[i])) + ", " + str("{:.3f}".format(y[i])) +
-				", " + str("{:.3f}".format(var1[i])) + "\n")
+				", " + str("{:.12f}".format(var1[i])) + "\n")
 
 # print("All Done!")

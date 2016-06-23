@@ -21,6 +21,10 @@
 # Added a method readVariablesAtNode() that works super fast at extracting
 # values from *.slf files
 #
+# Revised: Jun 23, 2016
+# Made sure that title, precision, variable names and units are padded with
+# spaces. This change is made in the writeHeader() method. 
+#
 # Uses: Python 2 or 3, Numpy
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -185,6 +189,19 @@ class ppSELAFIN:
 	def writeHeader(self):
 		self.f = open(self.slf_file, 'wb')
 		
+		# added on 2016.06.23 thanks to Yoann Audouin
+		# before writing the variable names, make sure they are padded with spaces!
+		
+		# make sure title and precision is padded
+		self.title = '{:<72}'.format(self.title)
+		self.precision = '{:<8}'.format(self.precision)
+		
+		# make sure that variable names and units are paded
+		for i in range(self.NBV1):
+			self.vnames[i] = '{:<16}'.format(self.vnames[i])
+			self.vunits[i] = '{:<16}'.format(self.vunits[i])
+		
+		# now we are ready to write the data
 		self.f.write(pack('>i', 80))
 		self.f.write(pack('>72s', self.title.encode()))
 		self.f.write(pack('>8s', self.precision.encode()))
