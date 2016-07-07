@@ -25,6 +25,11 @@
 # Made sure that title, precision, variable names and units are padded with
 # spaces. This change is made in the writeHeader() method. 
 #
+# Revised: Jul 06, 2016
+# Made sure that title, precision, variable names and units are padded with
+# spaces. This change is made in the readHeader() method. Paraview legacy
+# reader for *.vtk files did not like junk after variable names.
+#
 # Uses: Python 2 or 3, Numpy
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -123,7 +128,26 @@ class ppSELAFIN:
 		for i in range(self.NBV1):
 			self.vnames.append(self.vars[i][0:15])
 			self.vunits.append(self.vars[i][16:31])
+		
+		# added on 2016.07.06 
+		# after reading the variable names, make sure they are padded with spaces!
+		# Paraview legacy *.vtk reader doesn't like this junk after variable names!!!
+		
+		# make sure title and precision is padded
+		self.title = '{:<72}'.format(self.title)
+		self.precision = '{:<8}'.format(self.precision)
+		
+		# make sure that variable names and units are paded
+		for i in range(self.NBV1):
+			# sometimes sisyphe vnames and vunits would have this garbage
+			# part of the strings, which have to be removed.
+			self.vnames[i] = self.vnames[i].replace('\x00', '')	
+			self.vunits[i] = self.vunits[i].replace('\x00', '')
 			
+			# pad it with spaces
+			self.vnames[i] = '{:<16}'.format(self.vnames[i])
+			self.vunits[i] = '{:<16}'.format(self.vunits[i])		
+		
 		garbage = unpack('>i', self.f.read(4))[0]
 		self.IPARAM = unpack('>10i', self.f.read(10*4))
 		garbage = unpack('>i', self.f.read(4))[0]
