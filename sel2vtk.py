@@ -41,6 +41,10 @@
 # Fixed a bug related to extraction of selected time steps (added an if
 # statement that checks if the start and end times are valid).
 #
+# Revised: Jul 15, 2016
+# Does not fix number of decimal points in the output. It results in slightly
+# larger ASCII files, but now small variable values are correctly written.
+#
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
 # Example: python sel2vtk.py -i results.slf -o results.vtk
@@ -257,12 +261,12 @@ for count, item in enumerate(filenames):
 	
 		for i in range(len(x)):
 			if (NPLAN > 1):
-				file_out[count].write(str("{:.4f}".format(master_results[idx_vel_u][i])) + ' ' + 
-					str("{:.4f}".format(master_results[idx_vel_v][i])) + ' ' + 
-					str("{:.4f}".format(master_results[idx_vel_z][i])) + '\n')				
+				file_out[count].write(str(master_results[idx_vel_u][i]) + ' ' + 
+					str(master_results[idx_vel_v][i]) + ' ' + 
+					str(master_results[idx_vel_z][i]) + '\n')				
 			else:
-				file_out[count].write(str("{:.4f}".format(master_results[idx_vel_u][i])) + ' ' + 
-					str("{:.4f}".format(master_results[idx_vel_v][i])) + ' 0.0' + '\n')
+				file_out[count].write(str(master_results[idx_vel_u][i]) + ' ' + 
+					str(master_results[idx_vel_v][i]) + ' 0.0' + '\n')
 				
 	if ( (idx_mean_dir > -1000) and (idx_wave_height > -1000) ):
 		# write wave height vectors data 
@@ -272,8 +276,7 @@ for count, item in enumerate(filenames):
 			wave_x = np.sin(master_results[idx_mean_dir][i] * np.pi / 180.0) * master_results[idx_wave_height][i]
 			wave_y = np.cos(master_results[idx_mean_dir][i] * np.pi / 180.0) * master_results[idx_wave_height][i]
 			
-			file_out[count].write(str("{:.4f}".format(wave_x)) + ' ' + 
-				str("{:.4f}".format(wave_y)) + ' 0.0' + '\n')
+			file_out[count].write(str(wave_x) + ' ' + str(wave_y) + ' 0.0' + '\n')
 		
 	# write the rest of the variables
 	for i in range(len(variables)):
@@ -282,7 +285,7 @@ for count, item in enumerate(filenames):
 		file_out[count].write('float' + '\n')
 		file_out[count].write('LOOKUP_TABLE default' + '\n')
 		for j in range(len(x)):
-			file_out[count].write(str("{:.3f}".format(master_results[i][j])) + '\n')
+			file_out[count].write(str(master_results[i][j]) + '\n')
 	
 	# update the progress bar
 	#pbar.update(count+1)
