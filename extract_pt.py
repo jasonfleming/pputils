@@ -17,6 +17,10 @@
 # Added a method in selafin_io_pp.py that significantly improves the 
 # speed of data extraction at a single point.
 #
+# Revised: Jul 18, 2016
+# Changed the formatting of the output data (i.e., made the output 
+# variables have 12 digits after the decimal point).
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
@@ -124,7 +128,7 @@ for p in range(NPLAN):
 	for i in range(len(times)):
 		fout.write(str("{:.3f}").format(times[i]) + ', ')
 		for j in range(NVAR):
-			fout.write(str("{:.4f}").format(results[i][j]) + ', ')
+			fout.write(str("{:.12f}").format(results[i][j]) + ', ')
 		fout.write('\n')
 ########################################################################
 
@@ -215,7 +219,7 @@ if NPLAN > 1:
 	temp_data_sorted = temp_data_tr[ind,:]
 	
 	# now write the final output file
-	np.savetxt(output_file, temp_data_sorted, fmt='%10.4f', header = header_str, 
+	np.savetxt(output_file, temp_data_sorted, fmt='%10.12f', header = header_str, 
 		comments = '', delimiter=',')
 
 	# remove the temp file
