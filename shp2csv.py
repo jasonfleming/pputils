@@ -7,12 +7,11 @@
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 # 
-# Date: Oct 30, 2016
+# Date: Nov 1, 2016
 #
 # Purpose: Takes a shapefile of types polyline, polygon, polylinez, or
-# polygonz and converts it to a pputils lines file. This utility uses
-# pyshp (https://github.com/GeospatialPython/pyshp). This script does 
-# not yet read z values in polylineZ or polygonZ or pointZ types.
+# polygonz and converts it to a pputils lines file. This script uses
+# Joel Lawhead's pyshp (https://github.com/GeospatialPython/pyshp).
 #
 # Uses: Python 2 or 3
 #
@@ -42,11 +41,6 @@ fout = open(output_file, 'w')
 # read the shapefile using pyshp reader
 sf = Reader(input_file)
 
-# get properties of each shape
-shapes = sf.shapes()
-
-print(len(shapes))
-
 # these are the type ids for shapefiles
 POINT = 1
 POLYLINE = 3
@@ -57,8 +51,14 @@ POLYLINEZ = 13
 POLYGONZ = 15
 
 # print the type of the first object
-print('The shapefile type of first shape is: ')
-print(shapes[0].shapeType)
+shape_type = sf.shape(0).shapeType
+print('The shapefile type of first shape is: ' + str(shape_type))
+
+# write node files too in case of polygons or polylines
+if (shape_type == 3 or shape_type == 5 or shape_type == 13 or shape_type == 15):
+	nodes_file = output_file.rsplit('.',1)[0] + '_nodes.csv'
+	fout2 = open(nodes_file, 'w')
+	
 
 # -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 # these are the fields (or attributes)
@@ -81,86 +81,82 @@ print('The shapefile has the following attributes:')
 print(attr)
 print(' ')
 
-# find 'z' attribute in the attr list
+# find 'z' or 'friction' attribute in the attr list
 # if it finds it, assign index of the attr, otherwise the index is -1000
+
+# this means that a user can not have both z and friction attributes in the file
+# warn the user that friction attributes must be done with polygon files only!
+
 for i in range(len(attr)):
-	if (attr[i].find('z') > -1):
+	if (attr[i].find('z') > -1) or (attr[i].find('friction') > -1):
 		locz = i
 		break
 	else:
 		locz = -1000
 
-# to print if the z attr is found
-if (locz != -1000):
-	print('attr z is found at: ' + str(locz))
-else:
-	print('attr z is not found')
+# to print if the attr is found
+# if (locz != -1000):
+# 	print('attr is found at: ' + str(locz))
+# else:
+# 	print('attr is not found')
 # -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+		
 
 
-# each shape has values for each attribute
+# each shape has a value for each attribute
 records = sf.records()
 
 # shapeid is initialized here
-shapeid = 0
+shapeid = -1
 
-for i in range(len(shapes)):
-	# increment the shapeid counter
+# set up an iterator (thanks to Joel Lawhead's email!)
+for s in sf.iterShapes():
+	
+	# this is just a counter
 	shapeid = shapeid + 1
 	
-	# gets all of the coordinates as a list	
-	lst = shapes[i].points
-
-	# these are polyline and polygon
-	if (shapes[i].shapeType == POLYLINE) or (shapes[i].shapeType == POLYGON):
-		if (locz != -1000):
-			
-			# if shapefile has the z attribute, write z with the coordinates
-			# this is useful when the shapefiles are contours
-			
-			# writes the coordinates to the pputils lines file, with z attr
-			for j in range(len(lst)):
-				fout.write(str(shapeid) + ',' + str(lst[j][0]) + ',' + \
-					str(lst[j][1]) +  ',' + str(records[i][locz]) + '\n')
-		else:
-			# writes the coordinates to the pputils lines file, no z attr
-			for j in range(len(lst)):
-				fout.write(str(shapeid) + ',' + str(lst[j][0]) + ',' + \
-					str(lst[j][1]) + '\n')
-	
-	elif (shapes[i].shapeType == POINT):
-		if (locz != -1000):
-			
-			# if shapefile has the z attribute, write z with the coordinates
-			# this is useful when the shapefiles are contours
-			
-			# writes the coordinates to the pputils points file, with z attr
-			for j in range(len(lst)):
-				fout.write(str(lst[j][0]) + ',' + str(lst[j][1]) +  ',' + str(records[i][locz]) + '\n')
-		else:
-			# writes the coordinates to the pputils lines file, no z attr
-			# I can't think of the situation that a shapefile of type POINT
-			# would be used without a z attribute in pputils, but its included
-			# here for completeness
-			for j in range(len(lst)):
-				fout.write(str(lst[j][0]) + ',' + \
-					str(lst[j][1]) + ',' + '0.0' + '\n')	
-				
-	# these are polylinez and polygonz
-	# these will not need to have attributes assigned to them, as they have
-	# z values associated with each node
-	if (shapes[i].shapeType == POLYLINEZ) or (shapes[i].shapeType == POLYGONZ):
+	if (shape_type == POINTZ):
+		xyz = s.points[0]
+		xyz.append(s.z[0])
 		
-		# writes the coordinates to the pputils lines file, no z attr
-		for j in range(len(lst)):
-			fout.write(str(shapeid) + ',' + str(lst[j][0]) + ',' + \
-				str(lst[j][1]) + ',' + str(0.0) + '\n')			
-
-	elif (shapes[i].shapeType == POINTZ):
-		for j in range(len(lst)):
-			fout.write(str(lst[j][0]) + ',' + \
-				str(lst[j][1]) + ',' + '0.0' + '\n')
+		fout.write(str(xyz[0]) + ',' +str(xyz[1]) + ',' +str(xyz[2]) + '\n')
 		
+	elif (shape_type == POINT):
+		xyz = s.points[0]
+		
+		# if the data has an attribute z
+		if (locz != -1000):
+			fout.write(str(xyz[0]) + ',' +str(xyz[1]) + ',' + \
+				str(records[shapeid][locz]) + '\n')
+		else:
+			fout.write(str(xyz[0]) + ',' +str(xyz[1]) + ',' +str(0.0) + '\n')
+			
+	if (shape_type == POLYLINE) or (shape_type == POLYGON):
+		xyz = s.points
+		
+		# if the data has an attribute z write it to all nodes of each line
+		# this is useful when processing contours with shapefiles
+		if (locz != -1000):
+			for j in range(len(xyz)):
+				fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + \
+					str(xyz[j][1]) + ',' +str(records[shapeid][locz]) + '\n')
 				
+				fout2.write(str(xyz[j][0]) + ',' + \
+					str(xyz[j][1]) + ',' +str(records[shapeid][locz]) + '\n')
+		else:
+			for j in range(len(xyz)):
+				fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' +str(xyz[j][1]) + '\n')
+				
+				fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + str(0,0) + '\n')
+				
+	if (shape_type == POLYLINEZ) or (shape_type == POLYGONZ):				
+		xyz = s.points
+		
+		# polylineZ and polygonZ shapefiles are assumed not to have attributes
+		for j in range(len(xyz)):
+			fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' +str(xyz[j][1]) + \
+				',' + str(s.z[j]) + '\n')
+			
+			fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + ',' + str(s.z[j]) + '\n')
+
 print('All done!')
 

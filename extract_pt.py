@@ -19,7 +19,8 @@
 #
 # Revised: Jul 18, 2016
 # Changed the formatting of the output data (i.e., made the output 
-# variables have 12 digits after the decimal point).
+# variables have 12 digits after the decimal point). Added the coordinate
+# location to the output file.
 #
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
@@ -82,7 +83,6 @@ NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
 
 # determine if the *.slf file is 2d or 3d by reading how many planes it has
 NPLAN = slf.getNPLAN()
-
 fout.write('The file has ' + str(NPLAN) + ' planes' + '\n')
 
 # store just the x and y coords
@@ -95,6 +95,10 @@ tree = spatial.KDTree(source)
 
 # find the index of the node the user is seeking
 d, idx = tree.query((xu,yu), k = 1)
+
+# print the node location to the output file
+fout.write('Extraction performed at: ' + str(x[idx]) + ' ' + str(y[idx]) + '\n')
+fout.write('Note this is the closest node to the input coordinate!' + '\n')
 
 # now we need this index for all planes
 idx_all = np.zeros(NPLAN,dtype=np.int32)
