@@ -146,7 +146,7 @@ for s in sf.iterShapes():
 			for j in range(len(xyz)):
 				fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' +str(xyz[j][1]) + '\n')
 				
-				fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + str(0,0) + '\n')
+				fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + str(0.0) + '\n')
 				
 	if (shape_type == POLYLINEZ) or (shape_type == POLYGONZ):				
 		xyz = s.points
