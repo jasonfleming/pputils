@@ -92,3 +92,67 @@ def readAdcirc(adcirc_file):
 	#}}}
 	return n,e,xx,yy,zz,ikle
 
+def readPly(ply_file):
+	#{{{
+	# define lists
+	x = list()
+	y = list()
+	z = list()
+	e1 = list()
+	e2 = list()
+	e3 = list()
+	
+	# each line in the file is a list object
+	line = list()
+	with open(ply_file, 'r') as f1:
+		for i in f1:
+			line.append(i)
+	
+	# reads the nodes from		
+	n = line[3].split()[2]
+	n = int(n)
+	e = line[7].split()[2]
+	e = int(e)
+	
+	node_str = str("")
+	# read nodes from file
+	for i in range(10,n+10):
+		node_str = line[i]
+		node_str_list = node_str.split()
+		x.append(node_str_list[0])
+		y.append(node_str_list[1])
+		z.append(node_str_list[2])
+		
+	
+	# write the temp elements file
+	for i in range(n+10,n+10+e):
+		ele_str = line[i]
+		ele_str_list = ele_str.split()
+		e1.append(ele_str_list[1])
+		e2.append(ele_str_list[2])
+		e3.append(ele_str_list[3])
+		
+	# turn these into numpy arrays
+	xx = np.zeros(n)
+	yy = np.zeros(n)
+	zz = np.zeros(n)
+	e11 = np.zeros(e)
+	e22 = np.zeros(e)
+	e33 = np.zeros(e)
+	
+	for i in range(0,n):
+		xx[i] = x[i]
+		yy[i] = y[i]
+		zz[i] = z[i]
+		
+	# +1 to change index of elements to match
+	for i in range(0,e):
+		e11[i] = int(e1[i])+1
+		e22[i] = int(e2[i])+1
+		e33[i] = int(e3[i])+1
+		
+	# stack the elements
+	ikle = np.column_stack((e11,e22,e33))  
+	ikle = ikle.astype(np.int32)
+	
+	return n,e,xx,yy,zz,ikle

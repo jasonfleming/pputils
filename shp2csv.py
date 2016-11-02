@@ -9,9 +9,12 @@
 # 
 # Date: Nov 1, 2016
 #
-# Purpose: Takes a shapefile of types polyline, polygon, polylinez, or
-# polygonz and converts it to a pputils lines file. This script uses
-# Joel Lawhead's pyshp (https://github.com/GeospatialPython/pyshp).
+# Purpose: Takes a shapefile of types POINT, POLYLINE, POLYGON, 
+# POINTZ, POLYLINEZ, or POLYGONZ and converts it to a pputils file(s).
+# The script also automatically creates the nodes file (in case the
+# input file is a lines file (POLYLINE, POLYGON, POLYLINE, and POLYGONZ).
+# This script uses Joel Lawhead's pyshp, available through GitHub on:
+# https://github.com/GeospatialPython/pyshp
 #
 # Uses: Python 2 or 3
 #
@@ -94,13 +97,7 @@ for i in range(len(attr)):
 	else:
 		locz = -1000
 
-# to print if the attr is found
-# if (locz != -1000):
-# 	print('attr is found at: ' + str(locz))
-# else:
-# 	print('attr is not found')
 # -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+		
-
 
 # each shape has a value for each attribute
 records = sf.records()
