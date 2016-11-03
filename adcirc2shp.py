@@ -7,7 +7,7 @@
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 # 
-# Date: Feb 20, 2016
+# Date: Nov 3, 2016
 #
 # Purpose: Script takes in a mesh in ADCIRC format, and generates a shp
 # file using pyshp. The projection is not included, and will have to be
@@ -60,25 +60,21 @@ out_n = Writer(shapeType=1) # this is POINT
 n,e,x,y,z,ikle = readAdcirc(adcirc_file)
 
 # write the nodes shapefile
-out_n.field('id')
-out_n.field('z')
+out_n.field('id', )
+out_n.field('z', 'N', 12, 3)
 for i in range(n):
 	out_n.point(x[i],y[i])
 	out_n.record(id=i+1, z=z[i])
 
 out_n.save(output_file_n)	
 
-
 # write the polygon shapefile
-
-
-
-'''
+out_e.field('id', 'C', 10, 0)
 for i in range(e):
-	fout.write('"POLYGON ((')
-	fout.write(str(x[ikle[i,0]]) + ' ' + str(y[ikle[i,0]]) + ' ' + str(z[ikle[i,0]]) + ',' +
-		str(x[ikle[i,1]]) + ' ' + str(y[ikle[i,1]]) + ' ' + str(z[ikle[i,1]]) + ',' +
-		str(x[ikle[i,2]]) + ' ' + str(y[ikle[i,2]]) + ' ' + str(z[ikle[i,2]]) + ',' +
-		str(x[ikle[i,0]]) + ' ' + str(y[ikle[i,0]]) + ' ' + str(z[ikle[i,0]]) + '))",' + str(i+1) + '\n')
-	
-'''
+	out_e.poly(parts=[[[x[ikle[i,0]],y[ikle[i,0]]],\
+		[x[ikle[i,1]],y[ikle[i,1]]],\
+		[x[ikle[i,2]],y[ikle[i,2]]]]])
+	out_e.record(id=i+1)
+
+out_e.save(output_file_e)
+print('All done!')
