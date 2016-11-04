@@ -13,7 +13,9 @@
 # file using pyshp. The projection is not included, and will have to be
 # specified by the user when loading the data to a GIS package. Similar
 # to the adcirc2wkt.py, this script generates two different shapefiles 
-# (one for the elements, and one for the nodes)
+# (one for the elements, and one for the nodes). The elements file is a
+# 3D shapefile of type POLYGONZ, while the nodes is a 2D shapefile of
+# type POINT.
 #
 # Uses: Python 2 or 3, Numpy
 #
@@ -53,14 +55,14 @@ output_file_e = output_file.rsplit('.',1)[0] + '_e.shp'
 output_file_n = output_file.rsplit('.',1)[0] + '_n.shp'
 
 # to create the output file
-out_e = Writer(shapeType=15) # this is POLYGON
+out_e = Writer(shapeType=15) # this is POLYGONZ
 out_n = Writer(shapeType=1) # this is POINT
 
 # read the adcirc file
 n,e,x,y,z,ikle = readAdcirc(adcirc_file)
 
 # write the nodes shapefile
-out_n.field('id', )
+out_n.field('id','C', 10, 0 )
 out_n.field('z', 'N', 12, 3)
 for i in range(n):
 	out_n.point(x[i],y[i])
@@ -71,9 +73,32 @@ out_n.save(output_file_n)
 # write the polygon shapefile
 out_e.field('id', 'C', 10, 0)
 for i in range(e):
-	out_e.poly(parts=[[[x[ikle[i,0]],y[ikle[i,0]]],\
-		[x[ikle[i,1]],y[ikle[i,1]]],\
-		[x[ikle[i,2]],y[ikle[i,2]]]]])
+	# this is how it is covered in:
+	# Learning Geospatial Analysis with Python, J Lawhead (2013), p.261.
+	part=[]
+	x0 = x[ikle[i,0]]
+	y0 = y[ikle[i,0]]
+	z0 = z[ikle[i,0]]
+	
+	x1 = x[ikle[i,1]]
+	y1 = y[ikle[i,1]]
+	z1 = z[ikle[i,1]]
+	
+	x2 = x[ikle[i,2]]
+	y2 = y[ikle[i,2]]
+	z2 = z[ikle[i,2]]
+	
+	part.append([x0,y0,z0,0])
+	part.append([x1,y1,z1,0])
+	part.append([x2,y2,z2,0])
+	
+	out_e.poly(parts=[part])
+	
+	# this would write a polygon (2d) shapefile
+	#out_e.poly(parts=[[[x[ikle[i,0]],y[ikle[i,0]]],\
+	#	[x[ikle[i,1]],y[ikle[i,1]]],\
+	#	[x[ikle[i,2]],y[ikle[i,2]]]]])
+		
 	out_e.record(id=i+1)
 
 out_e.save(output_file_e)

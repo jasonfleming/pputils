@@ -141,19 +141,22 @@ for s in sf.iterShapes():
 					str(xyz[j][1]) + ',' +str(records[shapeid][locz]) + '\n')
 		else:
 			for j in range(len(xyz)):
-				fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + str(xyz[j][1]) + '\n')
+				fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + \
+					str(xyz[j][1]) + ',' + str(0.0) + '\n')
 				
-				fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + ',' + str(0.0) + '\n')
+				fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + ',' + \
+					str(0.0) + '\n')
 				
 	if (shape_type == POLYLINEZ) or (shape_type == POLYGONZ):				
 		xyz = s.points
 		
 		# polylineZ and polygonZ shapefiles are assumed not to have attributes
 		for j in range(len(xyz)):
-			fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' +str(xyz[j][1]) + \
-				',' + str(s.z[j]) + '\n')
+			fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + \
+				str(xyz[j][1]) + ',' + str(s.z[j]) + '\n')
 			
-			fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + ',' + str(s.z[j]) + '\n')
+			fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + ',' + \
+				str(s.z[j]) + '\n')
 
 print('All done!')
 
