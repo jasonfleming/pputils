@@ -81,8 +81,8 @@ if (np.sum(where_are_NaNs) > 0):
 	print '#####################################################'
 '''
 
-# rather than assigning -999.0 when the mesh node lines outside the tin,
-# simply assign to that mesh node the elevation of the closest tin.
+# rather than keeping the -999.0 as the mesh node value outside the tin,
+# simply assign to that mesh node the elevation of the closest tin node.
 for i in range(len(m_x)):
 	if (where_are_NaNs[i] == True):
 		xdist = np.subtract(t_x,m_x[i])
