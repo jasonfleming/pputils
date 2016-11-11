@@ -9,6 +9,11 @@
 # 
 # Date: Nov 1, 2016
 #
+# Modified: Nov 10, 2016
+# Rather than searching for 'z' as the field name, write all field names
+# for all records in the shapefile (only for 2D shapefile types). 3D
+# shapefiles are assumed not have any field names!
+#
 # Purpose: Takes a shapefile of types POINT, POLYLINE, POLYGON, 
 # POINTZ, POLYLINEZ, or POLYGONZ and converts it to a pputils file(s).
 # The script also automatically creates the nodes file (in case the
@@ -64,7 +69,7 @@ if (shape_type == 3 or shape_type == 5 or shape_type == 13 or shape_type == 15):
 	
 
 # -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-# these are the fields (or attributes)
+# these are the fields
 fields = sf.fields
 
 # ignore the first (the first one is a dummy)
@@ -73,33 +78,20 @@ fields = fields[1:]
 # number of fields
 nf = len(fields)
 
-# the list of attributes
-attr = list()
+# the list of field names
+field_names = list()
 
-# assigns the attributes to the list
+# assigns the fields to the list of field names
 for i in range(nf):
-	attr.append(fields[i][0])
+	field_names.append(fields[i][0])
 
-print('The shapefile has the following attributes:')
-print(attr)
+print('The shapefile has the following fields:')
+print(field_names)
 print(' ')
-
-# find 'z' or 'friction' attribute in the attr list
-# if it finds it, assign index of the attr, otherwise the index is -1000
-
-# this means that a user can not have both z and friction attributes in the file
-# warn the user that friction attributes must be done with polygon files only!
-
-for i in range(len(attr)):
-	if (attr[i].find('z') > -1) or (attr[i].find('friction') > -1):
-		locz = i
-		break
-	else:
-		locz = -1000
 
 # -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+		
 
-# each shape has a value for each attribute
+# each shape has a value for each field name
 records = sf.records()
 
 # shapeid is initialized here
@@ -111,6 +103,7 @@ for s in sf.iterShapes():
 	# this is just a counter
 	shapeid = shapeid + 1
 	
+	# if the shapefile is of type POINTZ, field names are not written
 	if (shape_type == POINTZ):
 		xyz = s.points[0]
 		xyz.append(s.z[0])
@@ -120,37 +113,49 @@ for s in sf.iterShapes():
 	elif (shape_type == POINT):
 		xyz = s.points[0]
 		
-		# if the data has an attribute z
-		if (locz != -1000):
-			fout.write(str(xyz[0]) + ',' +str(xyz[1]) + ',' + \
-				str(records[shapeid][locz]) + '\n')
+		# write all fields for all records in the POINT file
+		# write the coordinates
+		fout.write(str(xyz[0]) + ',' +str(xyz[1]))
+		
+		if (len(field_names) > 0):
+			for i in range(len(field_names)):
+				fout.write(',' + str(records[shapeid][i]))
+				if (i == len(field_names)-1):
+					fout.write('\n')
 		else:
-			fout.write(str(xyz[0]) + ',' +str(xyz[1]) + ',' +str(0.0) + '\n')
+			fout.write(',' + str(0.0) + '\n')
 			
 	if (shape_type == POLYLINE) or (shape_type == POLYGON):
 		xyz = s.points
 		
 		# if the data has an attribute z write it to all nodes of each line
 		# this is useful when processing contours with shapefiles
-		if (locz != -1000):
-			for j in range(len(xyz)):
-				fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + \
-					str(xyz[j][1]) + ',' +str(records[shapeid][locz]) + '\n')
+
+		for j in range(len(xyz)):
+			fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + str(xyz[j][1]))
+			if (len(field_names) > 0):
+				for i in range(len(field_names)):
+					fout.write(',' + str(records[shapeid][i]))
+					if (i == len(field_names)-1):
+						fout.write('\n')
+			else:
+				fout.write(',' + str(0.0) + '\n')			
 				
-				fout2.write(str(xyz[j][0]) + ',' + \
-					str(xyz[j][1]) + ',' +str(records[shapeid][locz]) + '\n')
-		else:
-			for j in range(len(xyz)):
-				fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + \
-					str(xyz[j][1]) + ',' + str(0.0) + '\n')
-				
-				fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + ',' + \
-					str(0.0) + '\n')
-				
+		# to write the nodes file (same as above, but without shapeid)
+		for j in range(len(xyz)):
+			fout2.write(str(xyz[j][0]) + ',' + str(xyz[j][1]))
+			if (len(field_names) > 1):
+				for i in range(len(field_names)):
+					fout2.write(',' + str(records[shapeid][i]))
+					if (i == len(field_names)-1):
+						fout2.write('\n')
+			else:
+				fout2.write(',' + str(0.0) + '\n')			
+			
 	if (shape_type == POLYLINEZ) or (shape_type == POLYGONZ):				
 		xyz = s.points
 		
-		# polylineZ and polygonZ shapefiles are assumed not to have attributes
+		# polylineZ and polygonZ shapefiles are assumed not to have fields
 		for j in range(len(xyz)):
 			fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + \
 				str(xyz[j][1]) + ',' + str(s.z[j]) + '\n')
