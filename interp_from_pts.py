@@ -19,6 +19,10 @@
 # closest node is wanted, just use 1 neighbour. Note that this interpolation
 # script is good only when data points file is very dense.
 #
+# Revised: Nov 13, 2016
+# Fixed a division by zero error if the distance is exactly zero in the
+# kdTree algorithm.
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
@@ -88,8 +92,12 @@ for i in range(m_n):
 	# calculate the denominator
 	if neigh > 1:
 		for j in range(neigh):
+			if (d[j] < 1.0E-6):
+				d[j] = 1.0E-6
 			den = den + (1.0 / (d[j]**2))
 	else:
+		if (d < 1.0E-6):
+			d = 1.0E-6
 		den = den + (1.0 / (d**2))
 		
 	# calculate the weights

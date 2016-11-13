@@ -16,10 +16,13 @@
 # the interpMesh_from_pts.py, except rather than a mesh, the input is a
 # breakline file. Used primarily to assign nodes to a TIN crop boundary.
 # If wanting to interpolate breaklines from a TIN, use interpBreakline.py
-# script. 
+# script. This script does exactly the same thing as the mkbreakline.py 
+# script with the interpolation flag on, but does it in a slightly 
+# different way.
 #
-# This script does exactly the same thing as the mkbreakline.py script
-# with the interpolation flag on, but does it in a slightly different way.
+# Revised: Nov 13, 2016
+# Fixed a division by zero error if the distance is exactly zero in the
+# kdTree algorithm.
 #
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
@@ -95,8 +98,12 @@ for i in range(len(lns_x)):
 	# calculate the denominator
 	if neigh > 1:
 		for j in range(neigh):
+			if (d[j] < 1.0E-6):
+				d[j] = 1.0E-6			
 			den = den + (1.0 / (d[j]**2))
 	else:
+		if (d < 1.0E-6):
+			d = 1.0E-6		
 		den = den + (1.0 / (d**2))
 		
 	# calculate the weights

@@ -9,11 +9,14 @@
 # 
 # Date: December 1, 2015
 #
-# Modified: Feb 21, 2016
-# Made it work under python 2 or 3
-#
 # Purpose: Script takes in an ADCIRC mesh and shifts it according to
 # x_shift and y_shift, and multiplies the z by amounts specified,
+#
+# Modified: Feb 21, 2016
+# Made it work under python 2 or 3
+# 
+# Modified: Nov 13, 2016
+# Made the x_shift and y_shift as doubles rather than integers.
 #
 # Uses: Python 2 or 3, Numpy
 #
@@ -45,8 +48,8 @@ if len(sys.argv) != 9 :
 	sys.exit()
 
 input_file = sys.argv[2]
-x_shift = int(sys.argv[4])
-y_shift = int(sys.argv[5])
+x_shift = float(sys.argv[4])
+y_shift = float(sys.argv[5])
 z_mult = float(sys.argv[6])
 output_file = sys.argv[8]
 

@@ -23,6 +23,11 @@
 #
 # Revised: Nov 12, 2016
 # Changed the format of the holes file from holesid,x,y to x,y.
+#
+# Revised: Nov 13, 2016
+# Changed how the script searches for points. Got rid of 
+# tree.query_ball_point(), and replaced it with tree.query(). This has
+# the effect of speeding up computations significantly!
 # 
 # Uses: Python 2 or 3, Numpy
 #
@@ -224,7 +229,6 @@ count_lns = 0
 # writes the *.poly header data for nodes
 fout.write(str(n) + " " + str("2 1 0") + "\n") 
 
-
 # writes the nodes in triangle format 
 for i in range(0,n):
 	fout.write(str(i+1) + " " + str("{:.3f}".format(x[i])) +
@@ -300,20 +304,16 @@ for i in range(0,n_bnd):
 	pt_bnd.append(x_bnd[i])
 	pt_bnd.append(y_bnd[i])
 	
-	# find the index of the 
-	minidx_temp = tree.query_ball_point(pt_bnd, 0.01)
+	# find the index of the min point
+	d,minidx_temp = tree.query(pt_bnd, 1)
 	
-	if (len(minidx_temp) > 0):
-		minidx[i] = minidx_temp[0]
-		if (minidx[i] < 0):
-			print('Python outputs a negative index ... converting to positive')
-			print('Negative index of ', minidx[i], ' converted to')
-			minidx[i] = minidx[i] * -1 + 1
-			print(minidx[i], '\n')
+	minidx[i] = minidx_temp
+	if (minidx[i] < 0):
+		print('Python outputs a negative index ... converting to positive')
+		print('Negative index of ', minidx[i], ' converted to')
+		minidx[i] = minidx[i] * -1 + 1
+		print(minidx[i], '\n')
 			
-	else:
-		print('Boundary node ' + str(x_bnd[i]) + ' ' + str(y_bnd[i]) + ' not found')
-	
 	#fout.write(str(i) + " " + str(minidx[i]) + "\n")
 	
 	# fill in the is_node_emb array 
@@ -351,14 +351,9 @@ if (lines_file != 'none'):
 		pt_lns.append(y_lns[i])
 		
 		# find the index of each lines point
-		minidx_lns_temp = tree.query_ball_point(pt_lns, 0.01)
+		d, minidx_lns_temp = tree.query(pt_lns, 1)
 		
-		if (len(minidx_lns_temp) > 0):
-			minidx_lns[i] = minidx_lns_temp[0]
-		else:
-			print('Lines node ' + str(x_lns[i]) + ' ' + str(y_lns[i]) + ' not found')
-			print('Exiting ...')
-			sys.exit()
+		minidx_lns[i] = minidx_lns_temp
 			
 		#fout.write(str(i) + " " + str(minidx_lns[i]) + "\n")
 		

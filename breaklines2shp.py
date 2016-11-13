@@ -11,12 +11,23 @@
 #
 # Purpose: Takes a pputils 3d breakline and exports it to shp format
 # using the pyshp code.
+#
+# Modified: Nov 13, 2016
+# Added an option for letting the user chose to write a 2d or a 3d shp
+# format. The 2d shp format is useful when cleaning the breaklines has
+# to be done with GRASS v.clean tool to ensure proper geometry is 
+# produced that will make a valid tin for matplotlib.tri object.
 # 
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
-# python breaklines2shp.py -l lines3d.csv -o lines3d.shp
+# python breaklines2shp.py -l lines3d.csv -t 3d -o lines3d.shp
+# 
+# where
+# -l is the lines file in pputils format
+# -t is the type of the shapefile that will be created (2d or 3d)
+# -o output shapefile
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
@@ -27,15 +38,14 @@ from pyshp.shapefile import *              # pyshp class
 from progressbar import ProgressBar, Bar, Percentage, ETA
 #
 # I/O
-if len(sys.argv) == 5 :
-	dummy2 =  sys.argv[1]
+if len(sys.argv) == 7 :
 	lines_file = sys.argv[2]
-	dummy3 =  sys.argv[3]
-	output_file = sys.argv[4]
+	shptype = sys.argv[4]
+	output_file = sys.argv[6]
 else:
 	print('Wrong number of Arguments, stopping now...')
 	print('Usage:')
-	print('python breaklines2shp.py -l lines3d.csv -o lines3d.shp')
+	print('python breaklines2shp.py -l lines3d.csv -t 2d -o lines3d.shp')
 	sys.exit()
 
 # use numpy to read the file
@@ -61,10 +71,18 @@ n_lns = len(x_lns)
 w = [Percentage(), Bar(), ETA()]
 pbar = ProgressBar(widgets=w, maxval=n_lns).start()
 
-# write the breaklines
 # to create the output file
-out = Writer(shapeType=13) # this is POLYLINEZ
+if (shptype == '2d'):
+	out = Writer(shapeType=3) # this is POLYLINE type, or 2d shapefile
+elif (shptype == '3d'):
+	out = Writer(shapeType=13) # this is POLYLINEZ, or 3d shapefile
+else:
+	print('Invalid type specified in the -t argument. Exiting!')
+
+# create the field 'id'
 out.field('id', 'C', 10, 0)
+
+# now we can write the breaklines
 
 part=[]
 
@@ -94,9 +112,6 @@ for i in range(0,n_lns):
 			out.record(id=i+1)
 			
 			part=[]
-
-
-############################################################################
 
 # save the shapefile
 out.save(output_file)

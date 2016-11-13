@@ -60,7 +60,22 @@ POLYGONZ = 15
 
 # print the type of the first object
 shape_type = sf.shape(0).shapeType
-print('The shapefile type of first shape is: ' + str(shape_type))
+
+if (shape_type == 1):
+	print('Type: ' + 'POINT')
+elif (shape_type == 3):
+	print('Type: ' + 'POLYLINE')
+elif (shape_type == 5):
+	print('Type: ' + 'POLYGON')
+elif (shape_type == 11):
+	print('Type: ' + 'POINTZ')
+elif (shape_type == 13):
+	print('Type: ' + 'POLYLINEZ')
+elif (shape_type == 15):
+	print('Type: ' + 'POLYGONZ')
+else:
+	print('Unknown type. Exiting!')
+	sys.exit(0)	
 
 # write node files too in case of polygons or polylines
 if (shape_type == 3 or shape_type == 5 or shape_type == 13 or shape_type == 15):
@@ -144,7 +159,7 @@ for s in sf.iterShapes():
 		# to write the nodes file (same as above, but without shapeid)
 		for j in range(len(xyz)):
 			fout2.write(str(xyz[j][0]) + ',' + str(xyz[j][1]))
-			if (len(field_names) > 1):
+			if (len(field_names) > 0):
 				for i in range(len(field_names)):
 					fout2.write(',' + str(records[shapeid][i]))
 					if (i == len(field_names)-1):
@@ -162,6 +177,4 @@ for s in sf.iterShapes():
 			
 			fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + ',' + \
 				str(s.z[j]) + '\n')
-
-print('All done!')
 
