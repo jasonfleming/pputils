@@ -69,7 +69,12 @@ def readAdcirc(adcirc_file):
 		xx[i] = x[i]
 		yy[i] = y[i]
 		zz[i] = z[i]
-		
+	
+	# round the coordinates and the elevation values
+	xx = np.around(xx,decimals=3)
+	yy = np.around(yy,decimals=3)
+	zz = np.around(zz,decimals=3)
+
 	# -1 to change index of elements; min node number now starts at zero
 	
 	# matplotlib triangulation requires node numbering to start at zero,
