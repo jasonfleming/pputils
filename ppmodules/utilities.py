@@ -4,6 +4,41 @@ import struct
 import subprocess
 from ppmodules.readMesh import *
 
+def minverse(M):
+	#{{{
+	# convert M into a one-d array for easy referencing
+	mm = np.reshape(M,9)
+	
+	x1 = mm[1]
+	y1 = mm[2]
+	x2 = mm[4]
+	y2 = mm[5]
+	x3 = mm[7]
+	y3 = mm[8]
+	
+	twoA = (x2*y3 - x3*y2) - (x1*y3-x3*y1) + (x1*y2 - x2*y1)
+	if (twoA < 1.0E-6):
+		print('zero area triangle used for interpolation')
+	
+	minv = np.zeros(9)
+	
+	minv[0] = (1.0/twoA) * (y2-y3)
+	minv[1] = (1.0/twoA) * (y3-y1)
+	minv[2]= (1.0/twoA) * (y1-y2)
+	
+	minv[3] = (1.0/twoA) * (x3-x2)
+	minv[4] = (1.0/twoA) * (x1-x3)
+	minv[5] = (1.0/twoA) * (x2-x1)
+	
+	minv[6] = (1.0/twoA) * (x2*y3-x3*y2)
+	minv[7] = (1.0/twoA) * (x3*y1-x1*y3)
+	minv[8] = (1.0/twoA) * (x1*y2-x2*y1)
+
+	# convert minv to a two-d array
+	minv_matrix = np.reshape(minv,(3,3))
+	#}}}
+	return minv_matrix
+
 # this function was obtained from
 # http://geospatialpython.com/2011/08/point-in-polygon-2-on-line.html
 

@@ -1,47 +1,39 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 interp_kd.py                          # 
+#                                 interpBreakline_kd.py                 # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
 # 
-# Date: Nov 16, 2016
+# Date: Nov 19, 2016
 #
-# Purpose: Script takes in a tin and a mesh file (both in ADCIRC format), 
-# and interpolates the nodes of the mesh file from the tin. This script
-# does not use Matplotlib's Triangulation Class as interp.py does. 
-# Instead, this script uses a rather less efficient way of searching
-# using the KDTree algorithm. The advantage with this method is that
-# it can handle invalid TIN's on which Matplotlib's Triangulation Object
-# crashes! 
+# Purpose: Script takes in a tin (in ADCIRC format), and a pputils lines 
+# file (shapeid,x,y), and interpolates z values from tin. When extracting
+# cross sections, the lines file should be resampled at a large number 
+# of nodes (say 100), or at specific features in order to get a properly
+# extracted cross section for hydraulic modeling. This version of the 
+# script works for TINs that Matplotlib will think are invalid (i.e., 
+# ones that have zero area elements). Much of the code parallels my
+# interp_kd.py script. This script is much less efficient than the
+# interp.py script, but it can handle TINs with zero area elements.
 #
-# Note: if there are rogue nodes in the TIN (i.e., nodes that are not
-# associated with any element), these must be removed from the TIN. 
-# MeshLab has a filter that can do this! To do this, convert the invalid
-# TIN to *.ply format, apply repair filters in MeshLab, save the 
-# modified TIN, then convert it to *.grd format.
-#
-# PPUTILS now has a way to handle what Matplotlib's Triangulation Class
-# calls invalid TIN's. But, the downside is that if the mesh nodes fall
-# outside of the TIN, these will not be able to be assigned a default
-# value because the algorithm will think the number of search nodes has
-# to be increased. This is not as robust as the original interp.py that
-# uses Matplotlib, but it will have to do when dealing with difficult 
-# TIN models.
+# This script can not handle breakline nodes that lie outside of the TIN.
+# The logic used is identical to that used in interp_kd.py script.
 #
 # Uses: Python 2 or 3, Numpy, Scipy
 #
 # Example:
 #
-# python interp_kd.py -t tin.grd -m mesh.grd -o mesh_interp.grd -n 100
+# python interpBreakline.py -t tin.grd -l lines.csv -o lines_z.csv -n 100
 # where:
 # -t tin surface
-# -m mesh (whose nodes are to be interpolated)
-# -o interpolated mesh
-# -n number of closest neighbours to keep in the KDTree search
-# 
+# -l resampled cross section lines file (in pputils format, shapeid,x,y)
+# -o cross section lines file (shapeid,x,y,z,sta)
+# -n number of nearest search nodes
+#
+# the script also outputs an additional *.csv file in hec-ras format
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,31 +42,27 @@ import numpy             as np             # numpy
 from scipy import spatial                  # kd tree for searching coords
 from scipy import linalg                   # linear algebra package
 from ppmodules.readMesh import *           # to get all readMesh functions
-from ppmodules.utilities import * 
+from ppmodules.utilities import *
 from progressbar import ProgressBar, Bar, Percentage, ETA
-#
+# 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
-#
 # I/O
 if len(sys.argv) != 9 :
 	print('Wrong number of Arguments, stopping now...')
 	print('Usage:')
-	print('python interp_kd.py -t tin.grd -m mesh.grd -o mesh_interp.grd -n 100')
+	print('python interpBreakline.py -t tin.grd -l lines.csv -o lines_z.csv -n 100')
 	sys.exit()
 
 tin_file = sys.argv[2]
-mesh_file = sys.argv[4]
-output_file = sys.argv[6]
+lines_file = sys.argv[4]
+output_file = sys.argv[6] 
 neigh = int(sys.argv[8])
 
 if (neigh < 2):
 	print('Number of neighbours must be greater than 1 ... Exiting')
 	sys.exit()
-
-# to create the output file
-fout = open(output_file,'w')
 
 # read the adcirc tin file
 print('Reading TIN ...')
@@ -93,14 +81,23 @@ for i in range(t_e):
 		t_x[t_ikle[i,2]]) / 3.0  
 	centroid_y[i] = (t_y[t_ikle[i,0]] +t_y[t_ikle[i,1]] + \
 		t_y[t_ikle[i,2]]) / 3.0
-	
-# read the adcirc mesh file
-print('Reading mesh ...')
-m_n,m_e,m_x,m_y,m_z,m_ikle = readAdcirc(mesh_file)
 
-# reset the elevation of the mesh to zero
-m_z = np.zeros(m_n)
+# read the lines file
+lines_data = np.loadtxt(lines_file, delimiter=',',skiprows=0,unpack=True)
+shapeid = lines_data[0,:]
+#shapeid = shapeid.astype(np.int32)
+x = lines_data[1,:]
+y = lines_data[2,:]
 
+# number of items in the lines file
+n = len(x)
+
+# create the new output variables
+z = np.zeros(n)
+sta = np.zeros(n)
+tempid = np.zeros(n)
+dist = np.zeros(n)
+		
 # construct the KDTree from the centroid nodes
 print('Constructing KDTree object from centroid nodes ...')
 source = np.column_stack((centroid_x,centroid_y))
@@ -114,11 +111,11 @@ poly = list()
 
 # for the progress bar
 w = [Percentage(), Bar(), ETA()]
-pbar = ProgressBar(widgets=w, maxval=m_n).start()
+pbar = ProgressBar(widgets=w, maxval=n).start()
 
 print('Searching using KDTree ...')
-for i in range(m_n): # just do for one node for now
-	d,idx = tree.query( (m_x[i],m_y[i]), k = neigh)
+for i in range(len(x)): # just do for one node for now
+	d,idx = tree.query( (x[i],y[i]), k = neigh)
 	
 	# instead of specifying number of neighbours, specify search radius
 	#idx = tree.query_ball_point( (m_x[i],m_y[i]), neigh)
@@ -130,7 +127,7 @@ for i in range(m_n): # just do for one node for now
 			(t_x[t_ikle[idx[j],1]], t_y[t_ikle[idx[j],1]]),
 			(t_x[t_ikle[idx[j],2]], t_y[t_ikle[idx[j],2]])  ]
 			
-		if (point_in_poly(m_x[i], m_y[i], poly) == 'IN'):
+		if (point_in_poly(x[i], y[i], poly) == 'IN'):
 			
 			#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 			# construct the FEM interpolation function and interpolate
@@ -147,10 +144,10 @@ for i in range(m_n): # just do for one node for now
 			p_1 = linalg.solve(M,z_1)
 			
 			# interpolate for z
-			m_z[i] = p_1[0] + p_1[1]*m_x[i] + p_1[2]*m_y[i]
+			z[i] = p_1[0] + p_1[1]*x[i] + p_1[2]*y[i]
 			
-			if ((m_z[i] < minz) and (m_z[i] > maxz)):
-				m_z[i] = -999.0
+			if ((z[i] < minz) and (z[i] > maxz)):
+				z[i] = -999.0
 			#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 			break
 		else:
@@ -160,7 +157,7 @@ for i in range(m_n): # just do for one node for now
 		poly = []
 	
 	if (not_found == len(idx)):
-		print('Mesh node ' + str(i+1) + ' not found inside TIN!')
+		print('Breakline node at line ' + str(i+1) + ' not found inside TIN!')
 		print('Increase number of neighbours ... Exiting!')
 		sys.exit()
 		
@@ -169,26 +166,43 @@ for i in range(m_n): # just do for one node for now
 	pbar.update(i+1)
 pbar.finish()
 
-# now write the adcirc mesh file
-print('Writing results to file ...')
-# to create the output file (this is the interpolated mesh)
-fout = open(output_file,'w')
+# to create the output file
+fout = open(output_file,"w")
 
-# now to write the adcirc mesh file
-fout.write('ADCIRC' + '\n')
-# writes the number of elements and number of nodes in the header file
-fout.write(str(m_e) + ' ' + str(m_n) + '\n')
+# to create the sta array
+sta[0] = 0.0
+tempid = shapeid
+dist[0] = 0.0
 
-# writes the nodes
-for i in range(0,m_n):
-	fout.write(str(i+1) + ' ' + str('{:.3f}'.format(m_x[i])) + ' ' + 
-		str('{:.3f}'.format(m_y[i])) + ' ' + str('{:.3f}'.format(m_z[i])) + '\n')
-#
-# writes the elements
-for i in range(0,m_e):
-	fout.write(str(i+1) + ' 3 ' + str(m_ikle[i,0]+1) + ' ' + str(m_ikle[i,1]+1) + ' ' + 
-		str(m_ikle[i,2]+1) + '\n')
+for i in range(1,n):
+	if (tempid[i] - shapeid[i-1] < 0.001):
+		xdist = x[i] - x[i-1]
+		ydist = y[i] - y[i-1]
+		dist[i] = np.sqrt(np.power(xdist,2.0) + np.power(ydist,2.0))
+		sta[i] = sta[i-1] + dist[i]
 
-print('All done')	
-	
+# to round the numpy arrays to three decimal spaces
+x = np.around(x,decimals=3)
+y = np.around(y,decimals=3)
+z = np.around(z,decimals=3)
+dist = np.around(dist,decimals=3)
+sta = np.around(sta,decimals=3)
 
+# now to write the output lines file (with xs information)
+for i in range(n):
+	fout.write(str(shapeid[i]) + ',' + str(x[i]) + ',' + 
+		str(y[i]) + ',' + str(z[i]) + ',' +	str(sta[i]) + '\n')
+
+# create an alternate output csv file that is used by hec-ras
+output_file2 = output_file.rsplit('.',1)[0] + '_hec-ras.csv'
+
+# opens the alternate output file
+f2 = open(output_file2,'w')
+
+# writes the header lines
+f2.write('River,Reach,RS,X,Y,Z' + '\n')
+for i in range(n):
+	f2.write('river_name,reach_name,' + str(shapeid[i]) + ','+
+		str(x[i]) + ',' + str(y[i]) + ',' + str(z[i]) + '\n')
+
+print('All done!')
