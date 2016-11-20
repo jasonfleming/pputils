@@ -80,7 +80,42 @@ def point_in_poly(x,y,poly):
 
    if inside: return "IN"
    else: return "OUT"
-   
+
+# python version of ptInTriangle
+# http://stackoverflow.com/questions/2049582
+#
+def ptInTriangle(pt, tri):
+	px = pt[0]
+	py = pt[1]
+	
+	p0x = tri[0,0]
+	p0y = tri[0,1]
+	
+	p1x = tri[1,0]
+	p1y = tri[1,1]	
+	
+	p2x = tri[2,0]
+	p2y = tri[2,1]	
+	
+	dX = px - p2x
+	dY = py - p2y
+	dX21 = p2x - p1x
+	dY12 = p1y - p2y
+	D = dY12 * (p0x - p2x) + dX21*(p0y - p2y)
+	s = dY12 * dX + dX21 * dY
+	t = (p2y - p0y) * dX + (p0x - p2x)*dY
+	
+	if (D < 0):
+		return ((s<=0) and (t<=0) and (s+t>=D))
+	else:
+		return ((s>=0) and (t>=0) and (s+t<=D))
+
+# this is to test the method
+#pt =  np.array([0.5, 0.0])
+#tri = np.array([[1.0, 1.0], [1.0, 0.0], [0.0, 0.0]]  )
+#print(ptInTriangle(pt, tri))
+
+
 # identical to my fortran code idwm.f90
 # takes as input an xyz array, and a coordinate x,y, and outputs the 
 # z values of the input coordinate using my idwm algorithm.
