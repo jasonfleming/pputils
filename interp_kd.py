@@ -31,6 +31,13 @@
 # uses Matplotlib, but it will have to do when dealing with difficult 
 # TIN models.
 #
+# Revised: Nov 21, 2016
+# Rather than using KDTree to search, use cKDTree. This has an effect of
+# improving performance by making the algorithm an order of magnitude 
+# faster (stackexchange forums are saying 50 times better). Also added
+# a check to make sure the zero area triangles are not used in the 
+# interpolations.
+#
 # Uses: Python 2 or 3, Numpy, Scipy
 #
 # Example:
@@ -104,7 +111,7 @@ m_z = np.zeros(m_n)
 # construct the KDTree from the centroid nodes
 print('Constructing KDTree object from centroid nodes ...')
 source = np.column_stack((centroid_x,centroid_y))
-tree = spatial.KDTree(source)
+tree = spatial.cKDTree(source)
 
 # used for FEM shape function
 ones = np.ones(3)
@@ -126,9 +133,23 @@ for i in range(m_n): # just do for one node for now
 	# reconstruct a poly out of the tin element for each idx 
 	not_found = 0
 	for j in range(len(idx)):
-		poly = [ (t_x[t_ikle[idx[j],0]], t_y[t_ikle[idx[j],0]]), 
-			(t_x[t_ikle[idx[j],1]], t_y[t_ikle[idx[j],1]]),
-			(t_x[t_ikle[idx[j],2]], t_y[t_ikle[idx[j],2]])  ]
+		
+		# find the area of each triangle in the search space
+		x1 = t_x[t_ikle[idx[j],0]]
+		y1 = t_y[t_ikle[idx[j],0]]
+		x2 = t_x[t_ikle[idx[j],1]]
+		y2 = t_y[t_ikle[idx[j],1]]
+		x3 = t_x[t_ikle[idx[j],2]]
+		y3 = t_y[t_ikle[idx[j],2]]
+		
+		twoA = twoA = (x2*y3 - x3*y2) - (x1*y3-x3*y1) + (x1*y2 - x2*y1)
+		A = twoA / 2.0
+		
+		# if zero area triangle is in the search space, leave the loop
+		if (abs(A) < 1.0E-6):
+			break		
+		
+		poly = [(x1, y1), (x2, y2), (x3, y3)]
 			
 		if (point_in_poly(m_x[i], m_y[i], poly) == 'IN'):
 			

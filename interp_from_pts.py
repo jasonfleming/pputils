@@ -23,6 +23,9 @@
 # Fixed a division by zero error if the distance is exactly zero in the
 # kdTree algorithm.
 #
+# Revised: Nov 21, 2016
+# Changed KDTree to cKDTree to improve performance.
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
@@ -78,7 +81,7 @@ m_n,m_e,m_x,m_y,m_z,m_ikle = readAdcirc(mesh_file)
 print('Constructing KDTree object')
 # to create a KDTree object
 source = np.column_stack((x,y))
-tree = spatial.KDTree(source)
+tree = spatial.cKDTree(source)
 
 den = 0.0
 tmp_sum = 0.0

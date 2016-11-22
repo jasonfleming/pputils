@@ -130,7 +130,7 @@ n = n_rev
 
 # to create the tuples of the master points
 points = np.column_stack((x,y))
-tree = spatial.KDTree(points)
+tree = spatial.cKDTree(points)
 
 shapeid_lns = lines_data[0,:]
 shapeid_lns = shapeid_lns.astype(np.int32)

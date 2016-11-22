@@ -24,6 +24,9 @@
 # Fixed a division by zero error if the distance is exactly zero in the
 # kdTree algorithm.
 #
+# Revised: Nov 21, 2016
+# Changed KDTree to cKDTree to improve performance.
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
@@ -84,7 +87,7 @@ lns_z = np.zeros(len(lns_x))
 print('Constructing KDTree object')
 # to create a KDTree object our of the xyz points file
 source = np.column_stack((x,y))
-tree = spatial.KDTree(source)
+tree = spatial.cKDTree(source)
 
 den = 0.0
 tmp_sum = 0.0

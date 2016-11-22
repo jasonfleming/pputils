@@ -19,6 +19,8 @@
 # Same as gis2gmsh.py, except that it uses kd tree searching algorithm for
 # node searching. This is far superior than my node searching algorithm!
 #
+# Revised: Nov 21, 2016
+# Changed KDTree to cKDTree to improve performance.
 #
 # Uses: Python2.7.9, Numpy v1.8.2
 #
@@ -177,7 +179,7 @@ if (duplicates_flag == 1):
 
 # to create the tuples of the master points
 points = np.column_stack((x,y))
-tree = spatial.KDTree(points)
+tree = spatial.cKDTree(points)
 
 # if node is part of boundary or lines, then it is not embedded
 is_node_emb = np.zeros(n,dtype=np.int32)

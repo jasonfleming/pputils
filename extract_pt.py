@@ -22,6 +22,9 @@
 # variables have 12 digits after the decimal point). Added the coordinate
 # location to the output file.
 #
+# Revised: Nov 21, 2016
+# Changed KDTree to cKDTree to improve performance.
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
@@ -91,7 +94,7 @@ y2d = y[0:len(x)/NPLAN]
 
 # create a KDTree object
 source = np.column_stack((x2d,y2d))
-tree = spatial.KDTree(source)
+tree = spatial.cKDTree(source)
 
 # find the index of the node the user is seeking
 d, idx = tree.query((xu,yu), k = 1)

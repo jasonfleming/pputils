@@ -28,6 +28,9 @@
 # Changed how the script searches for points. Got rid of 
 # tree.query_ball_point(), and replaced it with tree.query(). This has
 # the effect of speeding up computations significantly!
+#
+# Revised: Nov 21, 2016
+# Changed KDTree to cKDTree to improve performance.
 # 
 # Uses: Python 2 or 3, Numpy
 #
@@ -187,7 +190,7 @@ if (duplicates_flag == 1):
 
 # to create the tuples of the master points
 points = np.column_stack((x,y))
-tree = spatial.KDTree(points)
+tree = spatial.cKDTree(points)
 
 # if node is part of boundary or lines, then it is not embedded
 is_node_emb = np.zeros(n,dtype=np.int32)
