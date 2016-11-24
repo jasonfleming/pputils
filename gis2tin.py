@@ -98,6 +98,9 @@ else:
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
 
+# Tell the user what is going on
+print('Constructing Triangle poly file ...')
+
 # call gis2triangle.py
 subprocess.call([pystr, 'gis2triangle_kd.py', '-n', nodes_file, 
 	'-b', boundary_file, '-l', lines_file, '-h', holes_file, 

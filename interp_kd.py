@@ -38,6 +38,11 @@
 # a check to make sure the zero area triangles are not used in the 
 # interpolations.
 #
+# Revised: Nov 23, 2016
+# Used to have a check that had a break statement after the following:
+# if (abs(A) < 1.0E-6):
+# The break statement was removed.
+#
 # Uses: Python 2 or 3, Numpy, Scipy
 #
 # Example:
@@ -100,13 +105,13 @@ for i in range(t_e):
 		t_x[t_ikle[i,2]]) / 3.0  
 	centroid_y[i] = (t_y[t_ikle[i,0]] +t_y[t_ikle[i,1]] + \
 		t_y[t_ikle[i,2]]) / 3.0
-	
+
 # read the adcirc mesh file
 print('Reading mesh ...')
 m_n,m_e,m_x,m_y,m_z,m_ikle = readAdcirc(mesh_file)
 
 # reset the elevation of the mesh to zero
-m_z = np.zeros(m_n)
+#m_z = np.zeros(m_n)
 
 # construct the KDTree from the centroid nodes
 print('Constructing KDTree object from centroid nodes ...')
@@ -124,7 +129,7 @@ w = [Percentage(), Bar(), ETA()]
 pbar = ProgressBar(widgets=w, maxval=m_n).start()
 
 print('Searching using KDTree ...')
-for i in range(m_n): # just do for one node for now
+for i in range(m_n): 
 	d,idx = tree.query( (m_x[i],m_y[i]), k = neigh)
 	
 	# instead of specifying number of neighbours, specify search radius
@@ -145,9 +150,8 @@ for i in range(m_n): # just do for one node for now
 		twoA = twoA = (x2*y3 - x3*y2) - (x1*y3-x3*y1) + (x1*y2 - x2*y1)
 		A = twoA / 2.0
 		
-		# if zero area triangle is in the search space, leave the loop
 		if (abs(A) < 1.0E-6):
-			break		
+			A = 1.0E-6	
 		
 		poly = [(x1, y1), (x2, y2), (x3, y3)]
 			
@@ -170,7 +174,9 @@ for i in range(m_n): # just do for one node for now
 			# interpolate for z
 			m_z[i] = p_1[0] + p_1[1]*m_x[i] + p_1[2]*m_y[i]
 			
-			if ((m_z[i] < minz) and (m_z[i] > maxz)):
+			#print('mesh node ' + str(i) + ' m_z ' + str(m_z[i]))
+			
+			if ((m_z[i] < minz) or (m_z[i] > maxz)):
 				m_z[i] = -999.0
 			#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 			break

@@ -4,36 +4,6 @@ import struct
 import subprocess
 from ppmodules.readMesh import *
 
-def adjust_triangulation(n,e,x,y,z,ikle):
-	# this function reads an existing triangulation (as from my adcirc file)
-	# and adjusts the x and y nodes of the zero area triangles in order to try and
-	# keep the triangulation valid in the eyes of matplotlib
-	# TODO: test this fully
-	
-	# copy triangulation coordinates to a new name
-	x_adj = x
-	y_adj = y
-	
-	for i in range(e):
-		# find the area of each triangle in the search space
-		x1 = x[ikle[i,0]]
-		y1 = y[ikle[i,0]]
-		x2 = x[ikle[i,1]]
-		y2 = y[ikle[i,1]]
-		x3 = x[ikle[i,2]]
-		y3 = y[ikle[i,2]]
-		
-		twoA = twoA = (x2*y3 - x3*y2) - (x1*y3-x3*y1) + (x1*y2 - x2*y1)
-		A = twoA / 2.0
-		
-		if (A < 1.0E-6):
-			# shift the first coordinate of the triangle
-			print('adjusting ' + str(x1) + ' ' + str(y1))
-			x_adj[ikle[i,0]] = x1 + 0.01
-			y_adj[ikle[i,0]] = y1 + 0.01
-	
-	return x_adj, y_adj 
-
 def minverse(M):
 	#{{{
 	# convert M into a one-d array for easy referencing

@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 
 # manually construct an invalid triangulation
 x = np.array([0.0, 1.0, 1.0, 1.0, 2.0])
-y = np.array([1.0, 0.0, 2.0, 1.0, 1.0])
+#y = np.array([1.0, 0.0, 2.0, 1.0, 1.0])
+y = np.array([1.0+1.0E-10, 0.0, 2.0, 1.0, 1.0]) # this works
 z = np.zeros(5)
 
 # slightly modified from what I originally posted on Matplotlib's mailing list

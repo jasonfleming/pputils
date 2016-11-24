@@ -140,8 +140,8 @@ for i in range(len(x)): # just do for one node for now
 		A = twoA / 2.0
 		
 		# if zero area triangle is in the search space, leave the loop
-		if (abs(A) < 1.0E-6):
-			break
+		#if (abs(A) < 1.0E-6):
+		#	break
 		
 		poly = [(x1, y1), (x2, y2), (x3, y3)]
 			

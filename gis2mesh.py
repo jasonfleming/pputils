@@ -99,6 +99,7 @@ else:
 archtype = struct.calcsize("P") * 8
 
 # call gis2triangle.py
+print('Generating Triangle input files ...')
 subprocess.call([pystr, 'gis2triangle.py', '-n', nodes_file, 
 	'-b', boundary_file, '-l', lines_file, '-h', holes_file, 
 	'-o', 'mesh.poly'])
@@ -107,7 +108,8 @@ subprocess.call([pystr, 'gis2triangle.py', '-n', nodes_file,
 areas_data = np.loadtxt(areas_file, delimiter=',',skiprows=0,unpack=True)
 
 # this is the number of area constraints to add
-num_areas = areas_data.shape[1]
+# find out how many area points are in the area file
+num_areas = len(open(areas_file).readlines())
 	
 # this is not optimal, but rather than changing the gis2triangle_kd.py
 # script, read the mesh.poly file, and append the information on the 
@@ -116,10 +118,17 @@ num_areas = areas_data.shape[1]
 with open('mesh.poly', 'a') as f: # 'a' here is for append to the file
 	f.write('\n')
 	f.write(str(num_areas) + '\n')
-	for i in range(num_areas):
-		f.write(str(i+1) + ' ' + str(areas_data[0,i]) + ' ' +\
-			str(areas_data[1,i]) + ' ' + str(0) + ' ' +\
-			str(areas_data[2,i]) + '\n')
+	
+	# if more than one area constraint node
+	if (num_areas == 1):
+		f.write('1' + ' ' + str(areas_data[0]) + ' ' +\
+				str(areas_data[1]) + ' ' + str(0) + ' ' +\
+				str(areas_data[2]) + '\n')
+	else:
+		for i in range(num_areas):
+			f.write(str(i+1) + ' ' + str(areas_data[0,i]) + ' ' +\
+				str(areas_data[1,i]) + ' ' + str(0) + ' ' +\
+				str(areas_data[2,i]) + '\n')
 
 # now run Triangle
 if (os.name == 'posix'):
@@ -136,6 +145,7 @@ else:
 	sys.exit()
 	
 # call triangle2adcirc.py
+print('Converting Triangle output to ADCIRC mesh format ...')
 subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'mesh.1.node', 
 	'-e', 'mesh.1.ele', '-o', output_file])
 
@@ -149,6 +159,7 @@ os.remove('mesh.1.ele')
 shapefile = output_file.rsplit('.',1)[0] + '.shp'
 
 # now convert the *.grd file to a *.shp file by calling adcirc2shp.py
+print('Converting ADCIRC mesh to shapefile format ...')
 subprocess.call([pystr, 'adcirc2shp.py', '-i', output_file, 
 	'-o', shapefile])
 

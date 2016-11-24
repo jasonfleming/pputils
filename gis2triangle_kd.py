@@ -31,6 +31,10 @@
 #
 # Revised: Nov 21, 2016
 # Changed KDTree to cKDTree to improve performance.
+#
+# Revised: Nov 23, 2016
+# For some test cases cKDTree crashed, while KDTree went to completion.
+# Therefore, revert back to using KDTree instead.
 # 
 # Uses: Python 2 or 3, Numpy
 #
@@ -190,7 +194,7 @@ if (duplicates_flag == 1):
 
 # to create the tuples of the master points
 points = np.column_stack((x,y))
-tree = spatial.cKDTree(points)
+tree = spatial.KDTree(points)
 
 # if node is part of boundary or lines, then it is not embedded
 is_node_emb = np.zeros(n,dtype=np.int32)
