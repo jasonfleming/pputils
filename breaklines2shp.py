@@ -17,6 +17,9 @@
 # format. The 2d shp format is useful when cleaning the breaklines has
 # to be done with GRASS v.clean tool to ensure proper geometry is 
 # produced that will make a valid tin for matplotlib.tri object.
+#
+# Modififed: Nov 26, 2016
+# Added an option for checking if there the lines data has z values.
 # 
 # Uses: Python 2 or 3, Numpy
 #
@@ -52,10 +55,21 @@ else:
 # each column in the file is a row in data read by np.loadtxt method
 lines_data = np.loadtxt(lines_file, delimiter=',',skiprows=0,unpack=True)
 
+# find out how many columns there are in the lines_file
+with open(lines_file, 'r') as f:
+    line = next(f) # read 1 line
+    ncols = len(line.split(','))
+
+# assign the data read to variables
 shapeid_lns = lines_data[0,:]
 x_lns = lines_data[1,:]
 y_lns = lines_data[2,:]
-z_lns = lines_data[3,:]
+
+# if z is in the file, retain the z, otherwise write zeros
+if (ncols == 4):
+	z_lns = lines_data[3,:]
+else:
+	z_lns = np.zeros(len(x_lns))
 	
 # round lines nodes to three decimals
 x_lns = np.around(x_lns,decimals=3)
@@ -97,7 +111,6 @@ for i in range(0,n_lns):
 			# create tupples for vertexes to add
 			
 			part.append([x_lns[i-1], y_lns[i-1], z_lns[i-1], 0.0])
-			
 			
 			# this is needed, as the else below is never executed
 			# for the last line in the lines file!

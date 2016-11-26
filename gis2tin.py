@@ -106,6 +106,7 @@ subprocess.call([pystr, 'gis2triangle_kd.py', '-n', nodes_file,
 	'-b', boundary_file, '-l', lines_file, '-h', holes_file, 
 	'-o', 'tin.poly'])
 
+print('Generating TIN using Triangle ...')
 if (os.name == 'posix'):
 	# this assumes chmod +x has already been applied to the binaries
 	if (archtype == 32):
@@ -118,8 +119,9 @@ else:
 	print('OS not supported!')
 	print('Exiting!')
 	sys.exit()
-	
+
 # call triangle2adcirc.py
+print('Converting TIN from Triangle to ADCIRC format ...')
 subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'tin.1.node', 
 	'-e', 'tin.1.ele', '-o', output_file])
 
