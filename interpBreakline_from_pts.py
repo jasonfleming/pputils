@@ -13,7 +13,7 @@
 # pputils format),  and interpolates the nodes of the breakline file 
 # from the points file. It uses scipy's kdtree to assign to breakline
 # nodes the point in the xyz dataset that is closest. It is similar to
-# the interpMesh_from_pts.py, except rather than a mesh, the input is a
+# the interp_from_pts.py, except rather than a mesh, the input is a
 # breakline file. Used primarily to assign nodes to a TIN crop boundary.
 # If wanting to interpolate breaklines from a TIN, use interpBreakline.py
 # script. This script does exactly the same thing as the mkbreakline.py 
@@ -27,6 +27,9 @@
 # Revised: Nov 21, 2016
 # Changed KDTree to cKDTree to improve performance.
 #
+# Revised: Dec 3, 2016
+# Added the station variable in the output.
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
@@ -35,7 +38,7 @@
 # where:
 # -p xyz points file, no headers, comma delimited
 # -l lines file (to be interpolated)
-# -o interpolated lines file
+# -o interpolated lines file (id,x,y,z,sta)
 # -n number of nearest neighbours
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -79,10 +82,15 @@ z = pts_data[2,:]
 # read the lines file
 lines_data = np.loadtxt(lines_file, delimiter=',',skiprows=0,unpack=True)
 shapeid = lines_data[0,:]
-#shapeid = shapeid.astype(np.int32)
+shapeid = shapeid.astype(np.int32)
 lns_x = lines_data[1,:]
 lns_y = lines_data[2,:]
 lns_z = np.zeros(len(lns_x))
+
+# create the new output variables
+sta = np.zeros(len(x))
+tempid = np.zeros(len(x))
+dist = np.zeros(len(x))
 
 print('Constructing KDTree object')
 # to create a KDTree object our of the xyz points file
@@ -133,8 +141,29 @@ print('Writing results to file')
 # to create the output file (this is the interpolated mesh)
 fout = open(output_file,'w')
 
+# to create the sta array
+sta[0] = 0.0
+tempid = shapeid
+dist[0] = 0.0
+
+for i in range(1,len(lns_x)):
+	if (tempid[i] - shapeid[i-1] < 0.001):
+		xdist = lns_x[i] - lns_x[i-1]
+		ydist = lns_y[i] - lns_y[i-1]
+		dist[i] = np.sqrt(np.power(xdist,2.0) + np.power(ydist,2.0))
+		sta[i] = sta[i-1] + dist[i]
+
+# to round the numpy arrays to three decimal spaces
+lns_x = np.around(lns_x,decimals=3)
+lns_y = np.around(lns_y,decimals=3)
+lns_z = np.around(lns_z,decimals=3)
+dist = np.around(dist,decimals=3)
+sta = np.around(sta,decimals=3)
+
 # now to write the interpolated lines file (and its node values)
 for i in range(len(lns_x)):
-	fout.write(str(shapeid[i]) + "," + str(lns_x[i]) + "," + \
-		str(lns_y[i]) + "," +  str(lns_z[i]) + "\n")
+	fout.write(str(shapeid[i]) + ',' + str(lns_x[i]) + ',' + \
+		str(lns_y[i]) + ',' +  str(lns_z[i]) + ',' + str(sta[i]) + '\n')
+		
+print('All done!')
 

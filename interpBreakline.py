@@ -9,17 +9,17 @@
 # 
 # Date: June 28, 2015
 #
-# Modified: Feb 20, 2016
-# Made it work for python 2 and 3
-#
-# Modified: Nov 6, 2016
-# Changed name from extractxs.py to interpBreakline.py
-#
 # Purpose: Script takes in a tin (in ADCIRC format), and a pputils lines 
 # file (shapeid,x,y), and interpolates z values from tin. When extracting
 # cross sections, the lines file should be resampled at a large number 
 # of nodes (say 100), or at specific features in order to get a properly
 # extracted cross section for hydraulic modeling.
+#
+# Modified: Feb 20, 2016
+# Made it work for python 2 and 3
+#
+# Modified: Nov 6, 2016
+# Changed name from extractxs.py to interpBreakline.py
 #
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
