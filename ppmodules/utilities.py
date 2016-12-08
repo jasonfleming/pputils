@@ -2,7 +2,148 @@ import os,sys
 import numpy as np
 import struct     
 import subprocess
+from collections import OrderedDict
+from scipy import spatial
 from ppmodules.readMesh import *
+from progressbar import ProgressBar, Bar, Percentage, ETA
+
+def remove_duplicate_nodes(x,y,z):
+	# this still needs testing!
+	
+	# crop all the points to three decimals only
+	x = np.around(x,decimals=3)
+	y = np.around(y,decimals=3)
+	z = np.around(z,decimals=3)
+	
+	# this piece of code uses OrderedDict to remove duplicate nodes
+	# source "http://stackoverflow.com/questions/12698987"
+	# ###################################################################
+	tmp = OrderedDict()
+	for point in zip(x, y):
+	  tmp.setdefault(point[:1], point)
+	
+	# in python 3 tmp.values() is a view object that needs to be 
+	# converted to a list
+	mypoints = list(tmp.values()) 
+	# ###################################################################
+	
+	n_rev = len(mypoints)
+	
+	x_new = np.zeros(n_rev)
+	y_new = np.zeros(n_rev)
+	z_new = np.zeros(n_rev)
+	
+	for i in range(len(mypoints)):
+		x_new[i] = mypoints[i][0]
+		y_new[i] = mypoints[i][1]
+	
+	# now that we have unique x and y, we need to assign a z to each node
+	# use a cKDTree search to do this
+	source = np.column_stack((x,y))
+	tree = spatial.cKDTree(source)
+	
+	w = [Percentage(), Bar(), ETA()]
+	pbar = ProgressBar(widgets=w, maxval=n_rev).start()
+	for i in range(n_rev):
+		d,idx = tree.query( (x_new[i],y_new[i]), k = 1)
+		z_new[i] = z[idx]
+		pbar.update(i+1)
+	pbar.finish()	
+	
+	return x_new,y_new,z_new
+
+def adjustTriangulation(n,e,x,y,z,ikle):
+	
+	# this is the eps shift to be applied to the nodes
+	eps = 1.0e-6
+	
+	# find area of each element
+	for i in range(e):
+		x1 = x[ikle[i,0]]
+		y1 = y[ikle[i,0]]
+		x2 = x[ikle[i,1]]
+		y2 = y[ikle[i,1]]
+		x3 = x[ikle[i,2]]
+		y3 = y[ikle[i,2]]
+		
+		twoA = (x2*y3 - x3*y2) - (x1*y3-x3*y1) + (x1*y2 - x2*y1)
+		area = twoA / 2.0
+		
+		# assume that if area of the element is less than 1.0e-6 then 
+		# it will be an element that will require shifting of nodes
+		if (area < eps):
+			# calculate edge lengths
+			l12 = np.sqrt( np.power(abs(x1-x2),2) + np.power(abs(y1-y2),2))
+			l23 = np.sqrt( np.power(abs(x2-x3),2) + np.power(abs(y2-y3),2))
+			l31 = np.sqrt( np.power(abs(x3-x1),2) + np.power(abs(y3-y1),2))
+			
+			if ((l23 > l31) and (l23 > l12)):
+				# node 1 is middle, shift it by +ve delta
+				x1 = x1 + eps
+				y1 = y1 + eps
+				
+				# shift nodes 2 and 2 by a -ve delta
+				x2 = x2 - eps
+				y2 = y2 - eps
+
+				x3 = x3 - eps
+				y3 = y3 - eps
+				
+			elif ((l31 > l12) and (l31 > l23)):
+				# node 2 is middle, shift it by +ve delta
+				x2 = x2 + eps
+				y2 = y2 + eps
+				
+				# shift nodes 1 and 3 by a -ve delta
+				x1 = x1 - eps
+				y1 = y1 - eps
+
+				x3 = x3 - eps
+				y3 = y3 - eps
+				
+			elif ((l12 > l23) and (l12 > l31)):
+				# node 3 is middle, shift it by +ve delta
+				x3 = x3 + eps
+				y3 = y3 + eps
+				
+				# shift nodes 1 and 2 by a -ve delta
+				x1 = x1 - eps
+				y1 = y1 - eps
+
+				x2 = x2 - eps
+				y2 = y2 - eps
+				
+			else:
+				# this is needed as the part of the code that removes
+				# duplicate nodes allows for two nodes at the same location
+				# as long as they have a different z! 
+				
+				# this has to be fixed in the scripts that generate the tin
+				# (i.e., gis2triangle.py and gis2triangle_kd.py)
+				
+				# print('element ' + str(i+1))
+				# print((l12,l23,l31))
+				
+				if (l12 < eps):
+					x1 = x1 + eps
+					y1 = y1 + eps
+				elif (l23 < eps):
+					x2 = x2 + eps
+					y2 = y2 + eps
+				elif (l31 < eps):
+					x3 = x3 + eps
+					y3 = y3 + eps
+					
+			# update the coordinates in the input arrays
+			x[ikle[i,0]] = x1
+			y[ikle[i,0]] = y1
+			x[ikle[i,1]] = x2
+			y[ikle[i,1]] = y2
+			x[ikle[i,2]] = x3
+			y[ikle[i,2]] = y3			
+					
+	# returns the shifted x and y coordinates			
+	return x, y
 
 def minverse(M):
 	#{{{
