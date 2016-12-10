@@ -12,15 +12,26 @@
 # Purpose: Script takes in a text file of the geometry generated in qgis
 # (or any other gis or cad package) and produces geometry files used by
 # the triangle mesh generator program (i.e., it writes *.poly geometry 
-# file for use in triangle mesh generator. This script parallels my 
-# gis2gmsh.py script.
+# file for use in triangle mesh generator. This script is significantly
+# slower than gis2triangle_kd.py, as it uses a semi brute force method
+# to search for noded. This script should only be used only when 
+# gis2triangle_kd.py script does not produce satisfactory results.
 # 
 # Revised: Feb 20, 2016
 # Made it work for python 2 and 3
 # 
 # Revised: Nov 12, 2016
 # Changed the format of the holes file from holesid,x,y to x,y.
-# 
+#
+# Revised: Dec 10, 2016
+# Changed how the script searches for duplicate nodes. Previously a 
+# duplicate node was considered one that had (x,y,z) values that were 
+# identical. This meant that two nodes at the same location in (x,y) 
+# space could exist, and would have two different z values. This was
+# eliminated by keeping only unique (x,y) values, and assigning a z
+# value to the unique nodes via KDTree search mechanism. This change
+# did not cause cKDTree to crash, so it was used in the script.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -74,7 +85,9 @@
 import os,sys                              # system parameters
 import numpy             as np             # numpy
 from collections import OrderedDict        # for removal of duplicate nodes
+from scipy import spatial                  # kd tree for searching coords
 from progressbar import ProgressBar, Bar, Percentage, ETA
+from ppmodules.utilities import *
 curdir = os.getcwd()
 #
 #
@@ -140,11 +153,6 @@ if (n_attr == 4):
 else:
 	size = np.zeros(len(x))
 		
-# n is the number of nodes
-n = len(x)
-# creates node numbers from the nodes file
-node = np.zeros(n,dtype=np.int32)
-
 # to check for duplicate nodes
 # crop all the points to three decimals only
 x = np.around(x,decimals=3)
@@ -152,27 +160,15 @@ y = np.around(y,decimals=3)
 z = np.around(z,decimals=3)
 size = np.around(size,decimals=3)
 
-# this piece of code uses OrderedDict to remove duplicate nodes
-# source "http://stackoverflow.com/questions/12698987"
-# ###################################################################
-tmp = OrderedDict()
-for point in zip(x, y, z, size):
-  tmp.setdefault(point[:2], point)
+# this is a method from ppmodules/utilities.py that only keeps unique
+# nodes based on (x,y); the z coordinate is assigned via KDTree search
+x,y,z = remove_duplicate_nodes(x,y,z)
 
-# in python 3 tmp.values() is a view object that needs to be 
-# converted to a list
-mypoints = list(tmp.values()) 
-# ###################################################################
-n_rev = len(mypoints)
+# n is the number of nodes
+n = len(x)
 
-# replace x,y,z,size and n with their unique equivalents
-if (duplicates_flag == 1):
-	for i in range(n_rev):
-		x[i] = mypoints[i][0]
-		y[i] = mypoints[i][1]
-		z[i] = mypoints[i][2]
-		size[i] = mypoints[i][3]
-	n = n_rev
+# creates node numbers from the nodes file
+node = np.zeros(n,dtype=np.int32)
 
 # if node is part of boundary or lines, then it is not embedded
 is_node_emb = np.zeros(n,dtype=np.int32)

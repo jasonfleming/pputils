@@ -8,7 +8,7 @@ from ppmodules.readMesh import *
 from progressbar import ProgressBar, Bar, Percentage, ETA
 
 def remove_duplicate_nodes(x,y,z):
-	# this still needs testing!
+	print('Removing duplicate nodes ...')
 	
 	# crop all the points to three decimals only
 	x = np.around(x,decimals=3)
@@ -42,6 +42,7 @@ def remove_duplicate_nodes(x,y,z):
 	source = np.column_stack((x,y))
 	tree = spatial.cKDTree(source)
 	
+	print('Assigning z values to unique nodes ...')
 	w = [Percentage(), Bar(), ETA()]
 	pbar = ProgressBar(widgets=w, maxval=n_rev).start()
 	for i in range(n_rev):
