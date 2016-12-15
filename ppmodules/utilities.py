@@ -8,6 +8,51 @@ from ppmodules.readMesh import *
 from progressbar import ProgressBar, Bar, Percentage, ETA
 
 def remove_duplicate_nodes(x,y,z):
+	# This method removes duplicate nodes by keeping the unique values of
+	# (x,y,z) coordinates. If two nodes have the same (x,y) coordinate and
+	# a different z coordinate, this algorithm will think the nodes are
+	# unique. This means (1,1,2) and (1,1,3) are two unique nodes. If 
+	# wanting to have no duplicates in the (x,y) space, must use the
+	# sister method remove_duplicate_nodes_xy below.
+	
+	print('Removing duplicate nodes ...')
+	
+	# crop all the points to three decimals only
+	x = np.around(x,decimals=3)
+	y = np.around(y,decimals=3)
+	z = np.around(z,decimals=3)
+	
+	# this piece of code uses OrderedDict to remove duplicate nodes
+	# source "http://stackoverflow.com/questions/12698987"
+	# ###################################################################
+	tmp = OrderedDict()
+	for point in zip(x, y, z):
+	  tmp.setdefault(point[:2], point)
+	
+	# in python 3 tmp.values() is a view object that needs to be 
+	# converted to a list
+	mypoints = list(tmp.values()) 
+	# ###################################################################
+	
+	n_rev = len(mypoints)
+	
+	x_new = np.zeros(n_rev)
+	y_new = np.zeros(n_rev)
+	z_new = np.zeros(n_rev)
+	
+	for i in range(len(mypoints)):
+		x_new[i] = mypoints[i][0]
+		y_new[i] = mypoints[i][1]
+		z_new[i] = mypoints[i][2]
+	
+	return x_new,y_new,z_new
+
+def remove_duplicate_nodes_xy(x,y,z):
+	# This method removes duplicate nodes by keeping the unique values of
+	# (x,y) coordinates only. The z values of the unique coordinates are
+	# assigned by performing a search using KDTree. This isn't really 
+	# all that efficient, but it works 100% (i.e., there will not be a
+	# duplicate node that has the same (x,y) coordinates.
 	print('Removing duplicate nodes ...')
 	
 	# crop all the points to three decimals only
@@ -55,6 +100,10 @@ def remove_duplicate_nodes(x,y,z):
 
 def adjustTriangulation(n,e,x,y,z,ikle):
 	
+	# this an attempt to fix an invalid tin, so that it can be processed
+	# via trapezoidal map algorithm in Matplotlib
+	# the node shifting stratgy implemented here does not work!!!
+	
 	# this is the eps shift to be applied to the nodes
 	eps = 1.0e-6
 	
@@ -77,6 +126,9 @@ def adjustTriangulation(n,e,x,y,z,ikle):
 			l12 = np.sqrt( np.power(abs(x1-x2),2) + np.power(abs(y1-y2),2))
 			l23 = np.sqrt( np.power(abs(x2-x3),2) + np.power(abs(y2-y3),2))
 			l31 = np.sqrt( np.power(abs(x3-x1),2) + np.power(abs(y3-y1),2))
+			
+			#print('element where node 1 is in the middle')
+			
 			
 			if ((l23 > l31) and (l23 > l12)):
 				# node 1 is middle, shift it by +ve delta

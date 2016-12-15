@@ -160,9 +160,9 @@ y = np.around(y,decimals=3)
 z = np.around(z,decimals=3)
 size = np.around(size,decimals=3)
 
-# this is a method from ppmodules/utilities.py that only keeps unique
-# nodes based on (x,y); the z coordinate is assigned via KDTree search
-x,y,z = remove_duplicate_nodes(x,y,z)
+# this is a method from ppmodules/utilities.py that removes duplicates
+if (duplicates_flag == 1):
+	x,y,z = remove_duplicate_nodes(x,y,z)
 
 # n is the number of nodes
 n = len(x)
