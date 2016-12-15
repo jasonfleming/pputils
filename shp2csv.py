@@ -9,17 +9,21 @@
 # 
 # Date: Nov 1, 2016
 #
-# Modified: Nov 10, 2016
-# Rather than searching for 'z' as the field name, write all field names
-# for all records in the shapefile (only for 2D shapefile types). 3D
-# shapefiles are assumed not have any field names!
-#
 # Purpose: Takes a shapefile of types POINT, POLYLINE, POLYGON, 
 # POINTZ, POLYLINEZ, or POLYGONZ and converts it to a pputils file(s).
 # The script also automatically creates the nodes file (in case the
 # input file is a lines file (POLYLINE, POLYGON, POLYLINE, and POLYGONZ).
 # This script uses Joel Lawhead's pyshp, available through GitHub on:
 # https://github.com/GeospatialPython/pyshp
+#
+# Modified: Nov 10, 2016
+# Rather than searching for 'z' as the field name, write all field names
+# for all records in the shapefile (only for 2D shapefile types). 3D
+# shapefiles are assumed not have any field names!
+#
+# Modified: Dec 14, 2016
+# Removed field name from being written for pputils lines files. Instead,
+# all the field names are written in their corresponding nodes file.
 #
 # Uses: Python 2 or 3
 #
@@ -147,7 +151,11 @@ for s in sf.iterShapes():
 		# this is useful when processing contours with shapefiles
 
 		for j in range(len(xyz)):
-			fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + str(xyz[j][1]))
+			fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + str(xyz[j][1]) + '\n')
+			
+			# I commented this out, as the lines files do not need fields
+			# data, as field values will be in the nodes file below
+			'''
 			if (len(field_names) > 0):
 				for i in range(len(field_names)):
 					fout.write(',' + str(records[shapeid][i]))
@@ -155,8 +163,8 @@ for s in sf.iterShapes():
 						fout.write('\n')
 			else:
 				fout.write(',' + str(0.0) + '\n')			
-				
-		# to write the nodes file (same as above, but without shapeid)
+			'''	
+		# to write the nodes file (fields are written in the nodes file)
 		for j in range(len(xyz)):
 			fout2.write(str(xyz[j][0]) + ',' + str(xyz[j][1]))
 			if (len(field_names) > 0):
