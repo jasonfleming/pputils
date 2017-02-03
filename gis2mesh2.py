@@ -62,6 +62,11 @@
 #                  closed line constraint. The areas file must include a 
 #                  x,y,area for each area bounded by each area. 
 #
+# --> -f is the function that converts the interpolated tin values to an
+#                  area constraint that will be used by Triangle in the mesh
+#                  refinement procedure. The file is to contain x and y
+#                  coordinates of a table lookup function.
+#
 # --> -t is the tin file that is used in the refinement procedure that
 #                  interpolates an elevation to a centroid of each element in
 #                  the originally generated mesh by Triangle. The interpolated
@@ -92,18 +97,19 @@ elif (sys.version_info > (2, 7)):
   version = 2
   pystr = 'python'
 #
-if len(sys.argv) == 15 :
+if len(sys.argv) == 17 :
   nodes_file = sys.argv[2]
   boundary_file = sys.argv[4]
   lines_file = sys.argv[6]
   holes_file = sys.argv[8]
   areas_file = sys.argv[10]
-  tin_file = sys.argv[12]
-  output_file = sys.argv[14]
+  function_file = sys.argv[12]
+  tin_file = sys.argv[14]
+  output_file = sys.argv[16]
 else:
   print('Wrong number of Arguments, stopping now...')
   print('Usage:')
-  print('python gis2mesh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -a areas.csv -t tin.grd -o mesh.grd')
+  print('python gis2mesh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -a areas.csv -f function.csv -t tin.grd -o mesh.grd')
   sys.exit()
 
 # the code below is exactly the same as that in gis2mesh.py  
@@ -143,7 +149,11 @@ with open('mesh.poly', 'a') as f: # 'a' here is for append to the file
         str(areas_data[1,i]) + ' ' + str(0) + ' ' +\
         str(areas_data[2,i]) + '\n')
 
-# now run Triangle
+# now run Triangle (to generate initial mesh)
+print('#############################################################')
+print(' Triangle is generating initial mesh ...')
+print('#############################################################')
+
 if (os.name == 'posix'):
   # this assumes chmod +x has already been applied to the binaries
   if (archtype == 32):
@@ -162,13 +172,22 @@ else:
 # now call triangle2adcirc.py and create mesh_temp.grd file
 print('Converting Triangle output to ADCIRC mesh format ...')
 subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'mesh.1.node',
-                 '-e', 'mesh.1.ele', '-o', 'mesh_temp.grd'])
+                 '-e', 'mesh.1.ele', '-o', 'mesh_initial.grd'])
+
+# construct the output wkt file
+wkt_file_initial = 'mesh_initialWKT.csv'
+
+# now convert the *.grd file to a *.wkt file by calling adcirc2wkt.py
+# this is the first cut mesh
+print('Converting ADCIRC mesh to WKT format ...')
+subprocess.call([pystr, 'adcirc2wkt.py', '-i', 'mesh_initial.grd', 
+                 '-o', wkt_file_initial])
 
 # read the mesh_temp.grd file, and extract from it the centroid coordinate
 # for each element
-n,e,x,y,z,ikle = readAdcirc('mesh_temp.grd')
+n,e,x,y,z,ikle = readAdcirc('mesh_initial.grd')
 
-# create centroids for each element in mesh_temp.grd
+# create centroids for each element in mesh_initial.grd
 centroid_x = np.zeros(e)
 centroid_y = np.zeros(e)
 
@@ -183,7 +202,6 @@ print('Reading TIN ...')
 t_n,t_e,t_x,t_y,t_z,t_ikle = readAdcirc(tin_file)
 
 # now interpolate centroid_x and centroid_y from the tin.grd
-
 # create tin triangulation object using matplotlib
 tin = mtri.Triangulation(t_x, t_y, t_ikle)
 
@@ -195,6 +213,62 @@ centroid_z = interpolator(centroid_x, centroid_y)
 # to an equivalent min area constraint for Triangle to use in its refinement
 # procedure
 
+# read in the transfer function using numpy arrays
+function_data = np.loadtxt(function_file, delimiter=',',skiprows=0,unpack=True)
+
+# first column is the x value --> coresponds to values of the tin
+fx = function_data[0,:]
+
+# second column is the y value --> coresponds to values of max area constraint
+fy = function_data[1,:]
+
+# use numpy to interpolate the area constraints from the function in the file
+centroid_a = np.interp(centroid_z,fx,fy)
+
+# to generate a series array containting the elements in the mesh.1.ele
+e_count = np.arange(1,e+1)
+
+# now write the area constraint for the refinement
+aout = open('mesh.1.area', 'w')
+aout.write(str(e) + '\n')
+for i in range(e):
+  aout.write(str(i+1) + '  ' + str(centroid_a[i]) + '\n')
+aout.write('')
+aout.close()
+
+print('#############################################################')
+print(' Triangle is generating refined mesh ...')
+print('#############################################################')
+
+# now run Triangle (to generate the refined mesh)
+if (os.name == 'posix'):
+  # this assumes chmod +x has already been applied to the binaries
+  if (archtype == 32):
+    subprocess.call( ['./triangle/bin/triangle_32', '-rDpqa', 'mesh.1' ] )
+  else:
+    subprocess.call( ['./triangle/bin/triangle_64', '-rDpqa', 'mesh.1' ] )
+elif (os.name == 'nt'):
+  subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-rDpqa', 'mesh.1' ] )
+else:
+  print('OS not supported!')
+  print('Exiting!')
+  sys.exit()
+
+# now call triangle2adcirc.py and create mesh.grd file
+print('Converting Triangle output to ADCIRC mesh format ...')
+subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'mesh.2.node',
+                 '-e', 'mesh.2.ele', '-o', 'mesh_final.grd'])
+
+# construct the output wkt file
+wkt_file_final = 'mesh_finalWKT.csv'
+
+# now convert the *.grd file to a *.wkt file by calling adcirc2wkt.py
+# this is the first cut mesh
+print('Converting ADCIRC mesh to WKT format ...')
+subprocess.call([pystr, 'adcirc2wkt.py', '-i', 'mesh_final.grd', 
+                 '-o', wkt_file_final])
+
+
 # to remove the temporary files
 #os.remove('mesh.poly')
 #os.remove('mesh.1.poly')
@@ -202,12 +276,5 @@ centroid_z = interpolator(centroid_x, centroid_y)
 #os.remove('mesh.1.ele')
 
 
-'''
-# construct the output shapefile name (user reverse split function)
-wkt_file = output_file.rsplit('.',1)[0] + 'WKT.csv'
 
-# now convert the *.grd file to a *.wkt file by calling adcirc2wkt.py
-print('Converting ADCIRC mesh to WKT format ...')
-subprocess.call([pystr, 'adcirc2shp.py', '-i', output_file, 
-  '-o', shapefile])
-'''
+
