@@ -11,17 +11,15 @@
 #
 # Purpose: Same as the gis2mesh.py script, except that this version refines
 # the original mesh based on a tin. A function is needed to convert the
-# elevations in the tin to a custom area constraint (one for each element)
-# in the originally created mesh. Triangle is then executed with the -r
-# option (refine), which then creates a mesh that is refined based on the
-# values in the tin. Because there are too many inputs, this script needs
-# its own custom input file.
+# elevations in the tin to a custom area constraint in the originally created
+# mesh. Triangle is then executed with the -r option (refine), which then
+# creates a mesh that is refined based on the values in the tin.
 #
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
-# python gis2mesh.py -n nodes.csv -b boundary.csv -l lines.csv -h none -a area.csv -o mesh.grd
+# python gis2mesh.py -n nodes.csv -b boundary.csv -l lines.csv -h none -a area.csv -f function.csv -t tin.grd -o mesh.grd
 #
 # where:
 # --> -n is the file listing of all nodes (incl. embedded nodes
@@ -112,8 +110,8 @@ else:
   print('python gis2mesh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -a areas.csv -f function.csv -t tin.grd -o mesh.grd')
   sys.exit()
 
-# the code below is exactly the same as that in gis2mesh.py  
-  
+# the code between ##### is exactly the same as that in gis2mesh.py
+# ###################################################################
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
 
@@ -183,7 +181,9 @@ print('Converting ADCIRC mesh to WKT format ...')
 subprocess.call([pystr, 'adcirc2wkt.py', '-i', 'mesh_initial.grd', 
                  '-o', wkt_file_initial])
 
-# read the mesh_temp.grd file, and extract from it the centroid coordinate
+# ###################################################################
+
+# read the mesh_initial.grd file, and extract from it the centroid coordinate
 # for each element
 n,e,x,y,z,ikle = readAdcirc('mesh_initial.grd')
 
@@ -222,7 +222,7 @@ fx = function_data[0,:]
 # second column is the y value --> coresponds to values of max area constraint
 fy = function_data[1,:]
 
-# use numpy to interpolate the area constraints from the function in the file
+# use numpy to interpolate the area constraints using the function as a table lookup
 centroid_a = np.interp(centroid_z,fx,fy)
 
 # to generate a series array containting the elements in the mesh.1.ele
@@ -254,7 +254,7 @@ else:
   print('Exiting!')
   sys.exit()
 
-# now call triangle2adcirc.py and create mesh.grd file
+# now call triangle2adcirc.py and create mesh_final.grd file
 print('Converting Triangle output to ADCIRC mesh format ...')
 subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'mesh.2.node',
                  '-e', 'mesh.2.ele', '-o', 'mesh_final.grd'])
@@ -263,17 +263,22 @@ subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'mesh.2.node',
 wkt_file_final = 'mesh_finalWKT.csv'
 
 # now convert the *.grd file to a *.wkt file by calling adcirc2wkt.py
-# this is the first cut mesh
 print('Converting ADCIRC mesh to WKT format ...')
 subprocess.call([pystr, 'adcirc2wkt.py', '-i', 'mesh_final.grd', 
                  '-o', wkt_file_final])
 
+print('Removing temporary files ...')
+os.remove('mesh.poly')
 
-# to remove the temporary files
-#os.remove('mesh.poly')
-#os.remove('mesh.1.poly')
-#os.remove('mesh.1.node')
-#os.remove('mesh.1.ele')
+os.remove('mesh.1.poly')
+os.remove('mesh.1.node')
+os.remove('mesh.1.ele')
+os.remove('mesh.1.area')
+
+os.remove('mesh.2.poly')
+os.remove('mesh.2.node')
+os.remove('mesh.2.ele')
+
 
 
 
