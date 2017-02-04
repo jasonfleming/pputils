@@ -78,7 +78,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os,sys                              # system parameters
+import os,sys,shutil                       # system parameters
 import numpy             as np             # numpy
 from collections import OrderedDict        # for removal of duplicate nodes
 import struct                              # to determine sys architecture
@@ -172,7 +172,7 @@ print('Converting Triangle output to ADCIRC mesh format ...')
 subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'mesh.1.node',
                  '-e', 'mesh.1.ele', '-o', 'mesh_initial.grd'])
 
-# construct the output wkt file
+# construct the wkt file of the initial mesh
 wkt_file_initial = 'mesh_initialWKT.csv'
 
 # now convert the *.grd file to a *.wkt file by calling adcirc2wkt.py
@@ -244,11 +244,11 @@ print('#############################################################')
 if (os.name == 'posix'):
   # this assumes chmod +x has already been applied to the binaries
   if (archtype == 32):
-    subprocess.call( ['./triangle/bin/triangle_32', '-rDpqa', 'mesh.1' ] )
+    subprocess.call( ['./triangle/bin/triangle_32', '-rDpqa', 'mesh.1'])
   else:
-    subprocess.call( ['./triangle/bin/triangle_64', '-rDpqa', 'mesh.1' ] )
+    subprocess.call( ['./triangle/bin/triangle_64', '-rDpqa', 'mesh.1'])
 elif (os.name == 'nt'):
-  subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-rDpqa', 'mesh.1' ] )
+  subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-rDpqa', 'mesh.1'])
 else:
   print('OS not supported!')
   print('Exiting!')
@@ -263,9 +263,12 @@ subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'mesh.2.node',
 wkt_file_final = 'mesh_finalWKT.csv'
 
 # now convert the *.grd file to a *.wkt file by calling adcirc2wkt.py
-print('Converting ADCIRC mesh to WKT format ...')
-subprocess.call([pystr, 'adcirc2wkt.py', '-i', 'mesh_final.grd', 
+print('Converting final ADCIRC mesh to WKT format ...')
+subprocess.call([pystr, 'adcirc2wkt.py', '-i', 'mesh_final.grd',
                  '-o', wkt_file_final])
+
+# copies the 'mesh_final.grd' to the actual output name from the command line
+shutil.copyfile('mesh_final.grd', output_file)
 
 print('Removing temporary files ...')
 os.remove('mesh.poly')

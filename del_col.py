@@ -1,7 +1,7 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 del_col.py                           # 
+#                                 del_col.py                            # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
@@ -10,7 +10,9 @@
 # Date: Jan 22, 2017
 #
 # Purpose: Takes in a comma separated *.csv file and deletes the 
-# specified column from the file.
+# specified column from the file. It works only for pputils *.csv
+# files, that have number values as columns. It uses numpy to read
+# and write the file.
 #
 # Uses: Python 2 or 3, Numpy
 #
@@ -35,11 +37,11 @@ import numpy as np
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # I/O
 if len(sys.argv) != 7 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python del_col.py -i input.csv -c 0 -o output.csv')
-	sys.exit()
-	
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python del_col.py -i input.csv -c 0 -o output.csv')
+  sys.exit()
+  
 input_file = sys.argv[2]
 col = int(sys.argv[4])
 output_file = sys.argv[6]

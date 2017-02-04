@@ -66,34 +66,36 @@ import numpy             as np             # numpy
 from collections import OrderedDict        # for removal of duplicate nodes
 import struct                              # to determine sys architecture
 import subprocess                          # to execute binaries
-curdir = os.getcwd()
+from ppmodules.readMesh import *           # to get all readMesh functions
+import matplotlib.tri    as mtri           # matplotlib triangulations
 #
+curdir = os.getcwd()
 #
 # determine which version of python the user is running
 if (sys.version_info > (3, 0)):
-	version = 3
-	pystr = 'python3'
+  version = 3
+  pystr = 'python3'
 elif (sys.version_info > (2, 7)):
-	version = 2
-	pystr = 'python'
+  version = 2
+  pystr = 'python'
 #
 # I/O
 if len(sys.argv) == 11 :
-	dummy1 =  sys.argv[1]
-	nodes_file = sys.argv[2]
-	dummy2 =  sys.argv[3]
-	boundary_file = sys.argv[4]
-	dummy3 =  sys.argv[5]
-	lines_file = sys.argv[6]
-	dummy4 =  sys.argv[7]
-	holes_file = sys.argv[8]
-	dummy5 =  sys.argv[9]
-	output_file = sys.argv[10]
+  dummy1 =  sys.argv[1]
+  nodes_file = sys.argv[2]
+  dummy2 =  sys.argv[3]
+  boundary_file = sys.argv[4]
+  dummy3 =  sys.argv[5]
+  lines_file = sys.argv[6]
+  dummy4 =  sys.argv[7]
+  holes_file = sys.argv[8]
+  dummy5 =  sys.argv[9]
+  output_file = sys.argv[10]
 else:
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python gis2tin.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -o out.grd')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python gis2tin.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -o out.grd')
+  sys.exit()
 
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
@@ -103,27 +105,35 @@ print('Constructing Triangle poly file ...')
 
 # call gis2triangle.py
 subprocess.call([pystr, 'gis2triangle_kd.py', '-n', nodes_file, 
-	'-b', boundary_file, '-l', lines_file, '-h', holes_file, 
-	'-o', 'tin.poly'])
+  '-b', boundary_file, '-l', lines_file, '-h', holes_file, 
+  '-o', 'tin.poly'])
 
 print('Generating TIN using Triangle ...')
 if (os.name == 'posix'):
-	# this assumes chmod +x has already been applied to the binaries
-	if (archtype == 32):
-		subprocess.call( ['./triangle/bin/triangle_32', 'tin.poly' ] )
-	else:
-		subprocess.call( ['./triangle/bin/triangle_64', 'tin.poly' ] )
+  # this assumes chmod +x has already been applied to the binaries
+  if (archtype == 32):
+    subprocess.call( ['./triangle/bin/triangle_32', 'tin.poly' ] )
+  else:
+    subprocess.call( ['./triangle/bin/triangle_64', 'tin.poly' ] )
 elif (os.name == 'nt'):
-	subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', 'tin.poly' ] )
+  subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', 'tin.poly' ] )
 else:
-	print('OS not supported!')
-	print('Exiting!')
-	sys.exit()
+  print('OS not supported!')
+  print('Exiting!')
+  sys.exit()
 
 # call triangle2adcirc.py
 print('Converting TIN from Triangle to ADCIRC format ...')
 subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'tin.1.node', 
-	'-e', 'tin.1.ele', '-o', output_file])
+  '-e', 'tin.1.ele', '-o', output_file])
+
+# construct the output wkt file
+wkt_file = output_file.rsplit('.',1)[0] + '_WKT.csv'
+
+# now convert the *.grd file to a *.wkt file by calling adcirc2wkt.py
+print('Converting TIN from ADCIRC to WKT format ...')
+subprocess.call([pystr, 'adcirc2wkt.py', '-i', output_file,
+                 '-o', wkt_file])
 
 # to remove the temporary files
 os.remove('tin.poly')

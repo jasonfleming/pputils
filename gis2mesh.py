@@ -75,25 +75,25 @@ import subprocess                          # to execute binaries
 #
 # determine which version of python the user is running
 if (sys.version_info > (3, 0)):
-	version = 3
-	pystr = 'python3'
+  version = 3
+  pystr = 'python3'
 elif (sys.version_info > (2, 7)):
-	version = 2
-	pystr = 'python'
+  version = 2
+  pystr = 'python'
 #
 # I/O
 if len(sys.argv) == 13 :
-	nodes_file = sys.argv[2]
-	boundary_file = sys.argv[4]
-	lines_file = sys.argv[6]
-	holes_file = sys.argv[8]
-	areas_file = sys.argv[10]
-	output_file = sys.argv[12]
+  nodes_file = sys.argv[2]
+  boundary_file = sys.argv[4]
+  lines_file = sys.argv[6]
+  holes_file = sys.argv[8]
+  areas_file = sys.argv[10]
+  output_file = sys.argv[12]
 else:
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python gis2mesh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -a areas.csv -o mesh.grd')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python gis2mesh.py -n nodes.csv -b boundary.csv -l lines.csv -h holes.csv -a areas.csv -o mesh.grd')
+  sys.exit()
 
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
@@ -101,8 +101,8 @@ archtype = struct.calcsize("P") * 8
 # call gis2triangle.py
 print('Generating Triangle input files ...')
 subprocess.call([pystr, 'gis2triangle.py', '-n', nodes_file, 
-	'-b', boundary_file, '-l', lines_file, '-h', holes_file, 
-	'-o', 'mesh.poly'])
+  '-b', boundary_file, '-l', lines_file, '-h', holes_file, 
+  '-o', 'mesh.poly'])
 
 # read areas file
 areas_data = np.loadtxt(areas_file, delimiter=',',skiprows=0,unpack=True)
@@ -110,44 +110,44 @@ areas_data = np.loadtxt(areas_file, delimiter=',',skiprows=0,unpack=True)
 # this is the number of area constraints to add
 # find out how many area points are in the area file
 num_areas = len(open(areas_file).readlines())
-	
+  
 # this is not optimal, but rather than changing the gis2triangle_kd.py
 # script, read the mesh.poly file, and append the information on the 
 # area constraints before running Triangle. This is sloppy, but it works!
 
 with open('mesh.poly', 'a') as f: # 'a' here is for append to the file
-	f.write('\n')
-	f.write(str(num_areas) + '\n')
-	
-	# if more than one area constraint node
-	if (num_areas == 1):
-		f.write('1' + ' ' + str(areas_data[0]) + ' ' +\
-				str(areas_data[1]) + ' ' + str(0) + ' ' +\
-				str(areas_data[2]) + '\n')
-	else:
-		for i in range(num_areas):
-			f.write(str(i+1) + ' ' + str(areas_data[0,i]) + ' ' +\
-				str(areas_data[1,i]) + ' ' + str(0) + ' ' +\
-				str(areas_data[2,i]) + '\n')
+  f.write('\n')
+  f.write(str(num_areas) + '\n')
+  
+  # if more than one area constraint node
+  if (num_areas == 1):
+    f.write('1' + ' ' + str(areas_data[0]) + ' ' +\
+        str(areas_data[1]) + ' ' + str(0) + ' ' +\
+        str(areas_data[2]) + '\n')
+  else:
+    for i in range(num_areas):
+      f.write(str(i+1) + ' ' + str(areas_data[0,i]) + ' ' +\
+        str(areas_data[1,i]) + ' ' + str(0) + ' ' +\
+        str(areas_data[2,i]) + '\n')
 
 # now run Triangle
 if (os.name == 'posix'):
-	# this assumes chmod +x has already been applied to the binaries
-	if (archtype == 32):
-		subprocess.call( ['./triangle/bin/triangle_32', '-Dqa', 'mesh.poly' ] )
-	else:
-		subprocess.call( ['./triangle/bin/triangle_64', '-Dqa', 'mesh.poly' ] )
+  # this assumes chmod +x has already been applied to the binaries
+  if (archtype == 32):
+    subprocess.call( ['./triangle/bin/triangle_32', '-Dqa', 'mesh.poly' ] )
+  else:
+    subprocess.call( ['./triangle/bin/triangle_64', '-Dqa', 'mesh.poly' ] )
 elif (os.name == 'nt'):
-	subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-Dqa', 'mesh.poly' ] )
+  subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-Dqa', 'mesh.poly' ] )
 else:
-	print('OS not supported!')
-	print('Exiting!')
-	sys.exit()
-	
+  print('OS not supported!')
+  print('Exiting!')
+  sys.exit()
+  
 # call triangle2adcirc.py
 print('Converting Triangle output to ADCIRC mesh format ...')
 subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'mesh.1.node', 
-	'-e', 'mesh.1.ele', '-o', output_file])
+  '-e', 'mesh.1.ele', '-o', output_file])
 
 # to remove the temporary files
 os.remove('mesh.poly')
@@ -156,10 +156,9 @@ os.remove('mesh.1.node')
 os.remove('mesh.1.ele')
 
 # construct the output shapefile name (user reverse split function)
-shapefile = output_file.rsplit('.',1)[0] + '.shp'
+wkt_file = output_file.rsplit('.',1)[0] + 'WKT.csv'
 
 # now convert the *.grd file to a *.shp file by calling adcirc2shp.py
-print('Converting ADCIRC mesh to shapefile format ...')
-subprocess.call([pystr, 'adcirc2shp.py', '-i', output_file, 
-	'-o', shapefile])
+print('Converting ADCIRC mesh to wkt format ...')
+subprocess.call([pystr, 'adcirc2wkt.py', '-i', output_file, '-o', wkt_file])
 
