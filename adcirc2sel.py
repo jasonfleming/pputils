@@ -13,13 +13,17 @@
 # TELEMAC's SELAFIN format. Made it to depend on selafin_io_pp, which
 # works under python 2 and 3!
 #
+# Revised: Feb 18, 2017
+# Added the precision as a command line argument.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
-# python adcirc2sel.py -i mesh.grd -o mesh.slf
+# python adcirc2sel.py -i mesh.grd -p single -o mesh.slf
 # where:
 # -i input adcirc mesh file
+# -p precision of the *.slf file (single or double)
 # -o converted *.slf mesh file
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,27 +38,26 @@ from ppmodules.readMesh import *           # for the readAdcirc function
 #
 # this is the function that returns True if the elements is oriented CCW
 #def CCW((x1,y1),(x2,y2),(x3,y3)):
-#	return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)
+#  return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)
 
 # this works for python 2 and 3
 def CCW(x1,y1,x2,y2,x3,y3):
-   return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)	
+   return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)  
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 curdir = os.getcwd()
 #
 # I/O
-if len(sys.argv) != 5 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python adcirc2sel.py -i mesh.grd -o mesh.slf')
-	sys.exit()
-dummy1 =  sys.argv[1]
+if len(sys.argv) != 7:
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python adcirc2sel.py -i mesh.grd -p single -o mesh.slf')
+  sys.exit()
 adcirc_file = sys.argv[2]
-dummy2 =  sys.argv[3]
-output_file = sys.argv[4]
+precision = sys.argv[4]
+output_file = sys.argv[6]
 
 ########################################################################
 # this part of the code uses python's subprocess to call externally
@@ -69,56 +72,56 @@ archtype = struct.calcsize("P") * 8
 
 # to determine the IPOBO array, call pre-compiled binary bnd_extr_pp
 if (os.name == 'posix'):
-	# to move the adcirc file to ./boundary/bin
-	callstr = 'mv ' + str(adcirc_file) + ' ./boundary/bin'
-	subprocess.call(callstr, shell=True)
+  # to move the adcirc file to ./boundary/bin
+  callstr = 'mv ' + str(adcirc_file) + ' ./boundary/bin'
+  subprocess.call(callstr, shell=True)
 
-	# change directory to get to executable
-	os.chdir('./boundary/bin')
-	
-	if (archtype == 32):
-		# make sure the binary is allowed to be executed
-		subprocess.call(['chmod', '+x', 'bnd_extr_pp_32'])
-		
-		# execute the binary to generate the renumbered nodes and elements
-		print('Executing bnd_extr_pp program ...')
-		subprocess.call(['./bnd_extr_pp_32', adcirc_file])
-	if (archtype == 64):
-		# make sure the binary is allowed to be executed
-		subprocess.call(['chmod', '+x', 'bnd_extr_pp_64'])
-		
-		# execute the binary to generate the renumbered nodes and elements
-		print('Executing bnd_extr_pp program ...')
-		subprocess.call(['./bnd_extr_pp_64', adcirc_file])
+  # change directory to get to executable
+  os.chdir('./boundary/bin')
+  
+  if (archtype == 32):
+    # make sure the binary is allowed to be executed
+    subprocess.call(['chmod', '+x', 'bnd_extr_pp_32'])
+    
+    # execute the binary to generate the renumbered nodes and elements
+    print('Executing bnd_extr_pp program ...')
+    subprocess.call(['./bnd_extr_pp_32', adcirc_file])
+  if (archtype == 64):
+    # make sure the binary is allowed to be executed
+    subprocess.call(['chmod', '+x', 'bnd_extr_pp_64'])
+    
+    # execute the binary to generate the renumbered nodes and elements
+    print('Executing bnd_extr_pp program ...')
+    subprocess.call(['./bnd_extr_pp_64', adcirc_file])
 
-	# move the files back
-	subprocess.call('mv *.bnd ' + curdir, shell=True)
-	subprocess.call('mv ' + adcirc_file + ' ' + curdir, shell=True)
-	
-	# change directory back
-	os.chdir(curdir)
-	
+  # move the files back
+  subprocess.call('mv *.bnd ' + curdir, shell=True)
+  subprocess.call('mv ' + adcirc_file + ' ' + curdir, shell=True)
+  
+  # change directory back
+  os.chdir(curdir)
+  
 if (os.name == 'nt'):
-	# nt is for windows
-	callstr = ".\\boundary\\bin\\bnd_extr_pp_32.exe"
-	subprocess.call([callstr, adcirc_file])
-	
+  # nt is for windows
+  callstr = ".\\boundary\\bin\\bnd_extr_pp_32.exe"
+  subprocess.call([callstr, adcirc_file])
+  
 ########################################################################
 
 # if we are here, this means gredit.bnd file is generated and moved to 
 # root dir of pputils
 if (os.path.isfile('gredit.bnd') == False):
-	print('Fortran compiled program bnd_exr_pp.f did not generate gredit.bnd!')
-	print('Exiting ...')
-	sys.exit()
+  print('Fortran compiled program bnd_exr_pp.f did not generate gredit.bnd!')
+  print('Exiting ...')
+  sys.exit()
 
 # now open gredit.bnd and read the boundary data
 # read the contents of the gredit.bnd file into a master list, where each
 # item in the list is a line
 master = list()
 with open('gredit.bnd','r') as f:
-	for i in f:
-		master.append(i)
+  for i in f:
+    master.append(i)
 f.close()
 
 # delete the gredit.bnd file
@@ -136,7 +139,7 @@ del master[0]
 # bnd is a list of lists
 bnd = list()
 for i in range(num_bnd):
-	bnd.append(list())
+  bnd.append(list())
 
 # total boundary nodes for each boundary
 bnd_nodes = list()
@@ -148,12 +151,12 @@ count = -1
 # boundary into its own list
 # this is where interpretive languages are great!
 for i in range(len(master)):
-	tmp = master[i].split()
-	if (len(tmp) == 2):
-		bnd_nodes.append(tmp[0])
-		count = count + 1
-	else:
-		bnd[count].append(tmp[0])
+  tmp = master[i].split()
+  if (len(tmp) == 2):
+    bnd_nodes.append(tmp[0])
+    count = count + 1
+  else:
+    bnd[count].append(tmp[0])
 
 # bnd[0] is the main land boundary
 # convert the bnd[0] to a numpy array
@@ -170,20 +173,20 @@ ikle[:,2] = ikle[:,2]+1
 
 # go through each element, and make sure it is oriented in CCW fashion
 for i in range(len(ikle)):
-	
-	# if the element is not CCW then must change its orientation
-	if not CCW( x[ikle[i,0]-1], y[ikle[i,0]-1], x[ikle[i,1]-1], y[ikle[i,1]-1], 
-		x[ikle[i,2]-1], y[ikle[i,2]-1] ):
-		
-		t0 = ikle[i,0]
-		t1 = ikle[i,1]
-		t2 = ikle[i,2]
-		
-		# switch orientation
-		ikle[i,0] = t2
-		ikle[i,2] = t0
-		
-		#print('switching orientation for element: ' +str(i+1))
+  
+  # if the element is not CCW then must change its orientation
+  if not CCW( x[ikle[i,0]-1], y[ikle[i,0]-1], x[ikle[i,1]-1], y[ikle[i,1]-1], 
+    x[ikle[i,2]-1], y[ikle[i,2]-1] ):
+    
+    t0 = ikle[i,0]
+    t1 = ikle[i,1]
+    t2 = ikle[i,2]
+    
+    # switch orientation
+    ikle[i,0] = t2
+    ikle[i,2] = t0
+    
+    #print('switching orientation for element: ' +str(i+1))
 
 # note that the nodes here are indexed starting at zero
 node = np.arange(n)+1
@@ -203,18 +206,18 @@ LLnode = np.argmin(dist)
 # find the index of the LLnode in land_bnd
 start_idx = 0
 for i in range(len(land_bnd)):
-	if (land_bnd[i] == LLnode+1):
-		start_idx = i
-#print 'Index in land_bnd with the LLnode is ', start_idx		
+  if (land_bnd[i] == LLnode+1):
+    start_idx = i
+#print 'Index in land_bnd with the LLnode is ', start_idx    
 
 # this makes sure the LLnode is at the start of the array
 land_bnd_rolled = np.roll(land_bnd, len(land_bnd) - start_idx)
 
 # return the land_bnd_rolled back to bnd[0]
 for i in range(len(bnd[0])):
-	bnd[0][i] = land_bnd_rolled[i]
-	
-# *.cli file name string	
+  bnd[0][i] = land_bnd_rolled[i]
+  
+# *.cli file name string  
 cli_file = output_file.split('.',1)[0] + '.cli'
 
 # create the *.cli file
@@ -229,10 +232,10 @@ a = -1
 # all_bnd is arranged so that it can be written to the *.cli file
 all_bnd = list()
 for i in range(num_bnd):
-	for item in bnd[i]:
-		a = a + 1
-		all_bnd.append(item)
-		fcli.write(cli_base + str(item) + ' ' + str(a+1) + '\n')
+  for item in bnd[i]:
+    a = a + 1
+    all_bnd.append(item)
+    fcli.write(cli_base + str(item) + ' ' + str(a+1) + '\n')
 fcli.close()
 
 # convert all_bnd from a list to a numpy array
@@ -246,19 +249,29 @@ ppIPOB = np.zeros(n,dtype=np.int32)
 ipob_count = 0
 
 for i in range(len(all_bnd)):
-	ipob_count = ipob_count + 1
-	ppIPOB[int(all_bnd[i])-1] = ipob_count
+  ipob_count = ipob_count + 1
+  ppIPOB[int(all_bnd[i])-1] = ipob_count
 
 #######################################################################
+if(precision == 'single'):
+  ftype = 'f'
+  fsize = 4
+elif(precision == 'double'):
+  ftype = 'd'
+  fsize = 8
+else:
+  print('Precision unknown! Exiting!')
+  sys.exit(0)
+
 # it gets these from readAdcirc function
 NELEM = e
 NPOIN = n
 NDP = 3 # always 3 for triangular elements
-IKLE = ikle	
+IKLE = ikle  
 IPOBO = ppIPOB
 
 slf = ppSELAFIN(output_file)
-slf.setPrecision('f',4) # single precision
+slf.setPrecision(ftype, fsize)
 slf.setTitle('created with pputils')
 slf.setVarNames(['BOTTOM          '])
 slf.setVarUnits(['M               '])

@@ -64,7 +64,7 @@ fout.write('POINTS ' + str(len(x)) + ' float' + '\n')
 # to write the node coordinates
 for i in range(len(x)):
 	fout.write(str("{:.3f}".format(x[i])) + ' ' + 
-		str("{:.3f}".format(y[i])) + ' ' + str("{:.3f}".format(z[i])) + 
+		str("{:.3f}".format(y[i])) + ' ' + str("{:.3f}".format(0.0)) + 
 		'\n')
 		
 # to write the node connectivity table

@@ -6,35 +6,19 @@
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
 # Author: Pat Prodanovic, Ph.D., P.Eng.
-
+#
 # Date: Feb 15, 2016
 #
-# Purpose: Script designed to open 2D telemac binary file, read the
-# the desired *.slf result variable(s), and simply output it to a text file.
-# 
-# Works for Python 2 or Python 3 as it uses selafin_io_pp class ppSELAFIN.
+# Purpose: Script designed to open 2D telemac binary file and write the
+# values of all variables to a text file for the selected time step.
+#
+# Revised: Feb 18, 2017
+# Got rid of the limitation that only one or two variables could be read.
 #
 # Uses: Python 2 or 3, Numpy
 #
-# Example:
-# 
-# when extracting 1 variable
-# python extract2.py -i input.slf -v 2 -t 23 -o output.xyz
-#
-# when extracting 2 variables
-# python extract2.py -i input.slf -v 2 3 -t 23 -o output.xyz
-#
-# where:
-#       --> -i is the *.slf file from which to extract text data
-#
-#       --> -v is the index of the variable to extract; when extracting
-#                        two variables, the second index is of the second 
-#                        variable; see probe.py for index codes
-#
-#       --> -t is the index of the time step to extract
-#
-#       --> -o is the text output file
-#
+# Usage:
+# python extract.py -i result.slf -t 8 -o result.csv
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
@@ -48,33 +32,19 @@ from ppmodules.selafin_io_pp import *
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 # I/O
-if len(sys.argv) == 9:
-	# python extract.py -i input.slf -v 2 -t 23 -o output.xyz
-	input_file = sys.argv[2]         # input *.slf file
-	var1_idx = int(sys.argv[4])      # index of variable 1
-	var2_idx = 0                     # variable 2 is nothing here ...
-	t = int(sys.argv[6])             # index of time record
-	output_file  = sys.argv[8]       # output vector file
+if len(sys.argv) == 7:
+  input_file = sys.argv[2]         # input *.slf file
+  t = int(sys.argv[4])             # index of time record
+  output_file  = sys.argv[6]       # output text file
 
-elif len(sys.argv) == 10:
-	# python extract.py -i input.slf -v 2 3 -t 23 -o output.xyz
-	input_file = sys.argv[2]         # input *.slf file
-	var1_idx = int(sys.argv[4])      # index of variable 1
-	var2_idx = int(sys.argv[5])      # index of variable 2
-	t = int(sys.argv[7])             # index of time record
-	output_file  = sys.argv[9]       # output vector file
 else:
-	print('Wrong number of arguments ... stopping now ...')
-	print(' ')
-	print('For extracting 1 variable try this :')
-	print('python extract2.py -i input.slf -v 2 -t 23 -o output.xyz')
-	print(' ')
-	print('For extracting 2 variable try this :')
-	print('python extract2.py -i input.slf -v 2 3 -t 23 -o output.xyz')
-	sys.exit()
+  print('Wrong number of arguments ... stopping now ...')
+  print('Usage:')
+  print('python extract.py -i result.slf -t 8 -o result.csv')
+  sys.exit()
 
 # create the output file
-fout = open(output_file, "w")
+fout = open(output_file, 'w')
 #
 # Read the header of the selafin result file and get geometry and
 # variable names and units
@@ -83,30 +53,49 @@ fout = open(output_file, "w")
 slf = ppSELAFIN(input_file)
 slf.readHeader()
 slf.readTimes()
-slf.readVariables(t)
+
+NPLAN = slf.getNPLAN()
+
+if (NPLAN > 1):
+  print('It does not make sense to run this script for 3d SELAFIN files.')
+  print('Exiting!!!')
+  sys.exit(0)
 
 times = slf.getTimes()
 vnames = slf.getVarNames()
 vunits = slf.getVarUnits()
-master_results = slf.getVarValues()
 x = slf.getMeshX()
 y = slf.getMeshY()
 
-var1 = master_results[var1_idx]
-var2 = master_results[var2_idx]
+# number of variables
+NVAR = len(vnames)
 
-# print('Writing output to text file ...')
+# now we are ready to output the results
+# to write the header of the output file
+fout.write('x, ' + 'y, ')
+for i in range(NVAR):
+  fout.write(vnames[i] + ', ')
+fout.write('\n')
 
-if len(sys.argv) == 10:
-	fout.write('x, y, ' + vnames[var1_idx] + ', ' + vnames[var2_idx] + '\n')
-	for i in range(len(var1)):
-		fout.write(str("{:.3f}".format(x[i])) + ", " + str("{:.3f}".format(y[i])) +
-			", " + str("{:.12f}".format(var1[i])) + ", " +
-			str("{:.12f}".format(var2[i])) + "\n")
-elif len(sys.argv) == 9:
-		fout.write('x, y, ' + vnames[var1_idx] + '\n')
-		for i in range(len(var1)):
-			fout.write(str("{:.3f}".format(x[i])) + ", " + str("{:.3f}".format(y[i])) +
-				", " + str("{:.12f}".format(var1[i])) + "\n")
+# do not display units
+'''
+fout.write('M, M, ')
+for i in range(NVAR):
+  fout.write(vunits[i] + ', ')
+fout.write('\n')
+'''
 
-# print("All Done!")
+# read the variables for the specified time step t
+slf.readVariables(t)
+results = slf.getVarValues()
+
+# use numpy to transpose the results
+results_tr = np.transpose(results)
+
+# outputs the results
+for k in range(len(x)):
+  fout.write(str('{:.12f}').format(x[k]) + ', ' + str('{:.12f}').format(y[k]) + ', ')
+  for j in range(NVAR):
+    fout.write(str("{:.12f}").format(results_tr[k][j]) + ', ')
+  fout.write('\n')
+

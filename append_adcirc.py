@@ -13,13 +13,18 @@
 # and merges them into a single *.slf file for use in TELEMAC simulations.
 # Similar to append.py, except it uses adcirc files as input.
 #
+# Revised: Feb 18, 2017
+# Added precision (single or double) as a command line input.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
 #
-# python append_adcirc.py -i bathy.grd friction.grd -o merged.slf
+# python append_adcirc.py -b bathy.grd -f friction.grd -p single -o merged.slf
 # where:
-# -i input *.grd files
+# -b input bathy *.grd file
+# -f input fruction *.grd file
+# -p precision of the *.slf file
 # -o output *.slf file with merged variables 
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,28 +37,38 @@ from ppmodules.readMesh import *
 from ppmodules.utilities import *
 #
 # I/O
-if len(sys.argv) != 6 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python append_adcirc.py -i bathy.grd friction.grd -o merged.slf')
-	sys.exit()
-dummy1 =  sys.argv[1]
-first_file = sys.argv[2]
-second_file = sys.argv[3]
-dummy2 =  sys.argv[4]
-output_file = sys.argv[5]
+if len(sys.argv) != 9 :
+  print('Wrong number of arguments, stopping now...')
+  print('Usage:')
+  print('python append_adcirc.py -b bathy.grd -f friction.grd -p single -o merged.slf')
+  sys.exit()
+
+bathy_file = sys.argv[2]
+friction_file = sys.argv[4]
+precision = sys.argv[6]
+output_file = sys.argv[8]
+
+if(precision == 'single'):
+  ftype = 'f'
+  fsize = 4
+elif(precision == 'double'):
+  ftype = 'd'
+  fsize = 8
+else:
+  print('Precision unknown! Exiting!')
+  sys.exit(0)
 
 # reads the first and second ADCIRC files
-n1,e1,x1,y1,z1,ikle1 = readAdcirc(first_file)
-n2,e2,x2,y2,z2,ikle2 = readAdcirc(second_file)
+n1,e1,x1,y1,z1,ikle1 = readAdcirc(bathy_file)
+n2,e2,x2,y2,z2,ikle2 = readAdcirc(friction_file)
 
 if (n1 != n2) or (e1 != e2):
-	print('Nodes and elements of two input files do not match ... exiting.')
-	sys.exit()
+  print('Nodes and elements of two input files do not match ... exiting.')
+  sys.exit()
 
 # use getIPOBO_IKLE() to get IPOBO and IKLE arrays
 # this method also writes a 'temp.cli' file as well
-IPOBO, IKLE = getIPOBO_IKLE(first_file)
+IPOBO, IKLE = getIPOBO_IKLE(bathy_file)
 
 # rename temp.cli to proper name
 cli_file = output_file.split('.',1)[0] + '.cli'
@@ -68,7 +83,7 @@ y = y1
 
 # now we are ready to write the output *.slf file
 out = ppSELAFIN(output_file)
-out.setPrecision('f',4) # assume single precision
+out.setPrecision(ftype, fsize) 
 out.setTitle('created with pputils')
 out.setVarNames(['BOTTOM          ','BOTTOM FRICTION '])
 out.setVarUnits(['M               ','                '])
