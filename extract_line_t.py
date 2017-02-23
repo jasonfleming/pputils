@@ -53,6 +53,8 @@ lny = lines_data[2,:]
 # Read the header of the selafin result file and get geometry and
 # variable names and units
 
+print('Reading result file headers ...')
+
 # use selafin_io_pp class ppSELAFIN
 slf = ppSELAFIN(input_file)
 slf.readHeader()
@@ -105,14 +107,28 @@ triang = mtri.Triangulation(x, y, IKLE)
 slf.readVariables(t)
 results = slf.getVarValues()
 
+print('Interpolating ...')
+
 # now to interpolate the result file to the nodes of the lines file, for
 # each variable in the file (for the specified time step only).
 for j in range(numvars):
   interpolator = mtri.LinearTriInterpolator(triang, results[j,:])
   ln_interp[j,:] = interpolator(lnx,lny)
 
+print('Transposing ...')
+  
 # tranpose the interpolated result, so that they will print nicely  
 ln_interp_tr = np.transpose(ln_interp)
+
+where_are_NaNs = np.isnan(ln_interp_tr)
+if (np.sum(where_are_NaNs) > 0):
+	print('#####################################################')
+	print('')
+	print('WARNING: Some line nodes are outside of the mesh boundary!!!')
+	print('')
+	print('#####################################################')
+
+print('Writing output to file ...')
 
 # to write the output file
 fout = open(output_file, 'w')

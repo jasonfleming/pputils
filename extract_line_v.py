@@ -54,6 +54,8 @@ lny = lines_data[2,:]
 # Read the header of the selafin result file and get geometry and
 # variable names and units
 
+print('Reading result file headers ...')
+
 # use selafin_io_pp class ppSELAFIN
 slf = ppSELAFIN(input_file)
 slf.readHeader()
@@ -102,16 +104,30 @@ for i in range(1,len(lnx)):
 # create a result triangulation object
 triang = mtri.Triangulation(x, y, IKLE)
 
+print('Interpolating ...')
+
 for i in range(len(times)):
   slf.readVariables(i)
   results = slf.getVarValues()
 
   interpolator = mtri.LinearTriInterpolator(triang, results[v,:])
   ln_interp[i,:] = interpolator(lnx,lny)
+
+print('Transposing ...')
   
 # tranpose the interpolated result, so that they will print nicely  
 ln_interp_tr = np.transpose(ln_interp)
 
+where_are_NaNs = np.isnan(ln_interp_tr)
+if (np.sum(where_are_NaNs) > 0):
+	print('#####################################################')
+	print('')
+	print('WARNING: Some line nodes are outside of the mesh boundary!!!')
+	print('')
+	print('#####################################################')
+
+print('Writing output to file ...')
+        
 # to write the output file
 fout = open(output_file, 'w')
 
@@ -129,27 +145,3 @@ for k in range(len(lnx)):
   for j in range(len(times)):
     fout.write(str(ln_interp_tr[k,j]) + ', ')
   fout.write('\n')  
-
-'''
-# this doesn't yet work ...
-
-# now, let's create a figure for each time step for the variable in question
-fignames = list()
-
-for j in range(len(times)):
-  # axis ranges
-  xmin = np.amin(sta)
-  xmax = np.amax(sta)
-  ymin = np.amin(ln_interp_tr[:,j])
-  ymax = np.amax(ln_interp_tr[:,j])
-    
-  fignames.append(input_file.split('.',1)[0] + "{:0>5d}".format(j) + '.png')
-  plt.figure(figsize=(10, 5))
-  plt.grid(True)
-  plt.xlabel('Station [m]')
-  plt.ylabel(vnames[v] + '[' + vunits[v] + ']')
-  plt.axis([xmin, xmax, ymin, ymax])
-  plt.plot(sta, ln_interp_tr[:,j] )
-  plt.savefig(fignames[j], c = 'k')
-  plt.close()
-'''
