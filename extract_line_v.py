@@ -24,7 +24,6 @@
 import sys
 import numpy as np
 import matplotlib.tri as mtri
-from matplotlib import pyplot as plt
 from ppmodules.selafin_io_pp import *
 #
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
