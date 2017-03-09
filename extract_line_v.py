@@ -13,6 +13,9 @@
 # values of all time steps (for a given variable) for the nodes along
 # the lines file. 
 #
+# Revised: Mar 9, 2017
+# Deleted the trailing comma in the text output.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Usage:
@@ -134,7 +137,10 @@ fout = open(output_file, 'w')
 # lines data, but it will be easier on the eyes ...)
 fout.write(str('id, x, y, sta, '))
 for i in range(len(times)):
-  fout.write(str(times[i]) + ', ')
+  if (i < len(times)-1):
+    fout.write(str(times[i]) + ', ')
+  else:
+    fout.write(str(times[i]))  
 fout.write('\n')  
 
 # to write the data
@@ -142,5 +148,8 @@ for k in range(len(lnx)):
   fout.write(str(shapeid[k]) + ', ' + str(lnx[k]) + ', ' + str(lny[k]) + ', ')
   fout.write(str(sta[k]) + ', ')
   for j in range(len(times)):
-    fout.write(str(ln_interp_tr[k,j]) + ', ')
+    if (j < len(times)-1):
+      fout.write(str(ln_interp_tr[k,j]) + ', ')
+    else:
+      fout.write(str(ln_interp_tr[k,j]))
   fout.write('\n')  

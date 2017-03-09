@@ -15,6 +15,9 @@
 # Revised: Feb 18, 2017
 # Got rid of the limitation that only one or two variables could be read.
 #
+# Revised: Mar 9, 2017
+# Deleted the trailing comma in the text output.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Usage:
@@ -74,7 +77,10 @@ NVAR = len(vnames)
 # to write the header of the output file
 fout.write('x, ' + 'y, ')
 for i in range(NVAR):
-  fout.write(vnames[i] + ', ')
+  if (i < (NVAR-1)):
+    fout.write(vnames[i] + ', ')
+  else:
+    fout.write(vnames[i])
 fout.write('\n')
 
 # do not display units
@@ -96,6 +102,9 @@ results_tr = np.transpose(results)
 for k in range(len(x)):
   fout.write(str('{:.12f}').format(x[k]) + ', ' + str('{:.12f}').format(y[k]) + ', ')
   for j in range(NVAR):
-    fout.write(str("{:.12f}").format(results_tr[k][j]) + ', ')
+    if (j < (NVAR-1)):
+      fout.write(str("{:.12f}").format(results_tr[k][j]) + ', ')
+    else:
+      fout.write(str("{:.12f}").format(results_tr[k][j]))
   fout.write('\n')
 
