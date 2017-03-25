@@ -25,6 +25,9 @@
 # Removed field name from being written for pputils lines files. Instead,
 # all the field names are written in their corresponding nodes file.
 #
+# Modified: Mar 24, 2017
+# Made a change in how fields are written to the line files.
+#
 # Uses: Python 2 or 3
 #
 # Example:
@@ -39,13 +42,13 @@ from pyshp.shapefile import *              # pyshp class
 #
 # I/O
 if len(sys.argv) == 5 :
-	input_file = sys.argv[2]
-	output_file = sys.argv[4]
+  input_file = sys.argv[2]
+  output_file = sys.argv[4]
 else:
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python shp2csv.py -i file.shp -o file.csv')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python shp2csv.py -i file.shp -o file.csv')
+  sys.exit()
 
 # to create the output file
 fout = open(output_file, 'w')
@@ -66,26 +69,26 @@ POLYGONZ = 15
 shape_type = sf.shape(0).shapeType
 
 if (shape_type == 1):
-	print('Type: ' + 'POINT')
+  print('Type: ' + 'POINT')
 elif (shape_type == 3):
-	print('Type: ' + 'POLYLINE')
+  print('Type: ' + 'POLYLINE')
 elif (shape_type == 5):
-	print('Type: ' + 'POLYGON')
+  print('Type: ' + 'POLYGON')
 elif (shape_type == 11):
-	print('Type: ' + 'POINTZ')
+  print('Type: ' + 'POINTZ')
 elif (shape_type == 13):
-	print('Type: ' + 'POLYLINEZ')
+  print('Type: ' + 'POLYLINEZ')
 elif (shape_type == 15):
-	print('Type: ' + 'POLYGONZ')
+  print('Type: ' + 'POLYGONZ')
 else:
-	print('Unknown type. Exiting!')
-	sys.exit(0)	
+  print('Unknown type. Exiting!')
+  sys.exit(0)  
 
 # write node files too in case of polygons or polylines
 if (shape_type == 3 or shape_type == 5 or shape_type == 13 or shape_type == 15):
-	nodes_file = output_file.rsplit('.',1)[0] + '_nodes.csv'
-	fout2 = open(nodes_file, 'w')
-	
+  nodes_file = output_file.rsplit('.',1)[0] + '_nodes.csv'
+  fout2 = open(nodes_file, 'w')
+  
 
 # -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 # these are the fields
@@ -102,13 +105,13 @@ field_names = list()
 
 # assigns the fields to the list of field names
 for i in range(nf):
-	field_names.append(fields[i][0])
+  field_names.append(fields[i][0])
 
 print('The shapefile has the following fields:')
 print(field_names)
 print(' ')
 
-# -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+		
+# -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+    
 
 # each shape has a value for each field name
 records = sf.records()
@@ -118,71 +121,71 @@ shapeid = -1
 
 # set up an iterator (thanks to Joel Lawhead's email!)
 for s in sf.iterShapes():
-	
-	# this is just a counter
-	shapeid = shapeid + 1
-	
-	# if the shapefile is of type POINTZ, field names are not written
-	if (shape_type == POINTZ):
-		xyz = s.points[0]
-		xyz.append(s.z[0])
-		
-		fout.write(str(xyz[0]) + ',' +str(xyz[1]) + ',' +str(xyz[2]) + '\n')
-		
-	elif (shape_type == POINT):
-		xyz = s.points[0]
-		
-		# write all fields for all records in the POINT file
-		# write the coordinates
-		fout.write(str(xyz[0]) + ',' +str(xyz[1]))
-		
-		if (len(field_names) > 0):
-			for i in range(len(field_names)):
-				fout.write(',' + str(records[shapeid][i]))
-				if (i == len(field_names)-1):
-					fout.write('\n')
-		else:
-			fout.write(',' + str(0.0) + '\n')
-			
-	if (shape_type == POLYLINE) or (shape_type == POLYGON):
-		xyz = s.points
-		
-		# if the data has an attribute z write it to all nodes of each line
-		# this is useful when processing contours with shapefiles
+  
+  # this is just a counter
+  shapeid = shapeid + 1
+  
+  # if the shapefile is of type POINTZ, field names are not written
+  if (shape_type == POINTZ):
+    xyz = s.points[0]
+    xyz.append(s.z[0])
+    
+    fout.write(str(xyz[0]) + ',' +str(xyz[1]) + ',' +str(xyz[2]) + '\n')
+    
+  elif (shape_type == POINT):
+    xyz = s.points[0]
+    
+    # write all fields for all records in the POINT file
+    # write the coordinates
+    fout.write(str(xyz[0]) + ',' +str(xyz[1]))
+    
+    if (len(field_names) > 0):
+      for i in range(len(field_names)):
+        fout.write(',' + str(records[shapeid][i]))
+        if (i == len(field_names)-1):
+          fout.write('\n')
+    else:
+      fout.write(',' + str(0.0) + '\n')
+      
+  if (shape_type == POLYLINE) or (shape_type == POLYGON):
+    xyz = s.points
+    
+    # if the data has an attributes, write them in the output file
+    # this is useful when processing contours with shapefiles
 
-		for j in range(len(xyz)):
-			fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + str(xyz[j][1]) + '\n')
-			
-			# I commented this out, as the lines files do not need fields
-			# data, as field values will be in the nodes file below
-			'''
-			if (len(field_names) > 0):
-				for i in range(len(field_names)):
-					fout.write(',' + str(records[shapeid][i]))
-					if (i == len(field_names)-1):
-						fout.write('\n')
-			else:
-				fout.write(',' + str(0.0) + '\n')			
-			'''	
-		# to write the nodes file (fields are written in the nodes file)
-		for j in range(len(xyz)):
-			fout2.write(str(xyz[j][0]) + ',' + str(xyz[j][1]))
-			if (len(field_names) > 0):
-				for i in range(len(field_names)):
-					fout2.write(',' + str(records[shapeid][i]))
-					if (i == len(field_names)-1):
-						fout2.write('\n')
-			else:
-				fout2.write(',' + str(0.0) + '\n')			
-			
-	if (shape_type == POLYLINEZ) or (shape_type == POLYGONZ):				
-		xyz = s.points
-		
-		# polylineZ and polygonZ shapefiles are assumed not to have fields
-		for j in range(len(xyz)):
-			fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + \
-				str(xyz[j][1]) + ',' + str(s.z[j]) + '\n')
-			
-			fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + ',' + \
-				str(s.z[j]) + '\n')
+    for j in range(len(xyz)):
+      fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + str(xyz[j][1]))
+      
+      # write the field values
+      if (len(field_names) > 0):
+        for i in range(len(field_names)):
+          fout.write(',' + str(records[shapeid][i]))
+          if (i == len(field_names)-1):
+            fout.write('\n')
+      else:
+        # if there are not fields, write nothing
+        fout.write('\n')
+
+    # to write the nodes file (fields are written in the nodes file)
+    for j in range(len(xyz)):
+      fout2.write(str(xyz[j][0]) + ',' + str(xyz[j][1]))
+      if (len(field_names) > 0):
+        for i in range(len(field_names)):
+          fout2.write(',' + str(records[shapeid][i]))
+          if (i == len(field_names)-1):
+            fout2.write('\n')
+      else:
+        # if there are no fields, write 0.0
+        fout2.write(',' + str(0.0) + '\n')      
+      
+  if (shape_type == POLYLINEZ) or (shape_type == POLYGONZ):        
+    xyz = s.points
+    
+    # polylineZ and polygonZ shapefiles are assumed not to have fields
+    for j in range(len(xyz)):
+      fout.write(str(shapeid) + ',' + str(xyz[j][0]) + ',' + \
+        str(xyz[j][1]) + ',' + str(s.z[j]) + '\n')
+      
+      fout2.write(str(xyz[j][0]) + ',' +str(xyz[j][1]) + ',' + \
+        str(s.z[j]) + '\n')
 
