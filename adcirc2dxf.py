@@ -34,15 +34,15 @@ from progressbar import ProgressBar, Bar, Percentage, ETA
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 5 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python adcirc2dxf.py -i out.grd -o out.dxf')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python adcirc2dxf.py -i out.grd -o out.dxf')
+  sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
 dummy2 =  sys.argv[3]
@@ -64,9 +64,9 @@ print('processing nodes')
 
 # create nodes in the dxf file
 for i in range(n):
-	drawing.add(dxf.point(point=(x[i],y[i],z[i])))
-	pbar.update(i+1)
-	
+  drawing.add(dxf.point(point=(x[i],y[i],z[i])))
+  pbar.update(i+1)
+  
 pbar.finish()
 
 ############################################################
@@ -76,17 +76,17 @@ pbar = ProgressBar(widgets=w, max_value=e).start()
 print('processing elements')
 # to create elements
 for i in range(e):
-	poly = dxf.polyline()
-	#pface = dxf.polyface()
-	# create tupples for each vertex
-	v0 = (x[ikle[i,0]],y[ikle[i,0]],z[ikle[i,0]])
-	v1 = (x[ikle[i,1]],y[ikle[i,1]],z[ikle[i,1]])
-	v2 = (x[ikle[i,2]],y[ikle[i,2]],z[ikle[i,2]])
-	#pface.add_face([v0, v1, v2], color=256)
-	poly.add_vertices( [ v0, v1, v2, v0 ])
-	drawing.add(poly)
-	#drawing.add(pface)
-	pbar.update(i+1)
+  poly = dxf.polyline()
+  #pface = dxf.polyface()
+  # create tupples for each vertex
+  v0 = (x[ikle[i,0]],y[ikle[i,0]],z[ikle[i,0]])
+  v1 = (x[ikle[i,1]],y[ikle[i,1]],z[ikle[i,1]])
+  v2 = (x[ikle[i,2]],y[ikle[i,2]],z[ikle[i,2]])
+  #pface.add_face([v0, v1, v2], color=256)
+  poly.add_vertices( [ v0, v1, v2, v0 ])
+  drawing.add(poly)
+  #drawing.add(pface)
+  pbar.update(i+1)
 pbar.finish()
 
 ############################################################

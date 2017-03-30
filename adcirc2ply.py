@@ -38,15 +38,15 @@ from ppmodules.readMesh import *           # to get all readMesh functions
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 5 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python adcirc2ply.py -i out.grd -o out.ply')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python adcirc2ply.py -i out.grd -o out.ply')
+  sys.exit()
 adcirc_file = sys.argv[2]
 ply_file = sys.argv[4]
 
@@ -81,11 +81,11 @@ fout.write('end_header'+ '\n')
 
 # to write the node coordinates
 for i in range(len(x)):
-	fout.write(str("{:.3f}".format(x[i]-xref)) + ' ' + 
-		str("{:.3f}".format(y[i]-yref)) + ' ' + str("{:.3f}".format(z[i])) + 
-		'\n')
-		
+  fout.write(str("{:.3f}".format(x[i]-xref)) + ' ' + 
+    str("{:.3f}".format(y[i]-yref)) + ' ' + str("{:.3f}".format(z[i])) + 
+    '\n')
+    
 for i in range(len(ikle)):
-	fout.write('3 ' + str(ikle[i][0]) + ' ' + str(ikle[i][1]) + ' ' + 
-		str(ikle[i][2]) + '\n')
-			
+  fout.write('3 ' + str(ikle[i][0]) + ' ' + str(ikle[i][1]) + ' ' + 
+    str(ikle[i][2]) + '\n')
+      

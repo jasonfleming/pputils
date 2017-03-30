@@ -30,15 +30,15 @@ from ppmodules.readMesh import *           # to get all readMesh functions
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 6 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python adcirc2ren.py -i out.grd -o out_nodes.txt out_elements.txt')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python adcirc2ren.py -i out.grd -o out_nodes.txt out_elements.txt')
+  sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
 dummy2 = sys.argv[3]
@@ -57,12 +57,12 @@ xref = x[np.argmin(x)]
 yref = y[np.argmin(x)] 
 
 for i in range(n):
-	fn.write(str(x[i]-xref) + ' ' + str(y[i]-yref) + ' ' + str(z[i]) + '\n')
-	
+  fn.write(str(x[i]-xref) + ' ' + str(y[i]-yref) + ' ' + str(z[i]) + '\n')
+  
 for i in range(e):
-	fe.write(str(ikle[i,0]) + ' ' + str(ikle[i,1]) + ' ' + str(ikle[i,2]) + '\n')
-	
-	
-fo = open('coord_shift.txt','w')	
+  fe.write(str(ikle[i,0]) + ' ' + str(ikle[i,1]) + ' ' + str(ikle[i,2]) + '\n')
+  
+  
+fo = open('coord_shift.txt','w')  
 fo.write(str(xref) + ' ' + str(yref))
 

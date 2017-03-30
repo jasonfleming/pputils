@@ -45,15 +45,15 @@ from ppmodules.selafin_io_pp import *
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 9 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python extract_pt.py -i in.slf -x 100.0 -y 200.0 -o out.txt')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python extract_pt.py -i in.slf -x 100.0 -y 200.0 -o out.txt')
+  sys.exit()
 
 input_file = sys.argv[2]
 xu = float(sys.argv[4])
@@ -78,8 +78,8 @@ NVAR = len(variables)
 
 # to remove duplicate spaces from variables and units
 for i in range(NVAR):
-	variables[i] = ' '.join(variables[i].split())
-	units[i] = ' '.join(units[i].split())
+  variables[i] = ' '.join(variables[i].split())
+  units[i] = ' '.join(units[i].split())
 
 # gets some of the mesh properties from the *.slf file
 NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
@@ -111,32 +111,32 @@ idx_all[0] = idx
 
 # start at second plane and go to the end
 for i in range(1,NPLAN,1):
-	idx_all[i] = idx_all[i-1] + (NPOIN / NPLAN)
+  idx_all[i] = idx_all[i-1] + (NPOIN / NPLAN)
 
 # now we are ready to output the results
 # to write the header of the output file
 fout.write('TIME, ')
 for i in range(NVAR):
-	fout.write(variables[i] + ', ')
+  fout.write(variables[i] + ', ')
 fout.write('\n')
 
 fout.write('S, ')
 for i in range(NVAR):
-	fout.write(units[i] + ', ')
+  fout.write(units[i] + ', ')
 fout.write('\n')
 
 ########################################################################
 # extract results for every plane (if there are multiple planes that is)
 for p in range(NPLAN):
-	slf.readVariablesAtNode(idx_all[p])
-	results = slf.getVarValuesAtNode()
+  slf.readVariablesAtNode(idx_all[p])
+  results = slf.getVarValuesAtNode()
 
-	# outputs the results
-	for i in range(len(times)):
-		fout.write(str("{:.3f}").format(times[i]) + ', ')
-		for j in range(NVAR):
-			fout.write(str("{:.12f}").format(results[i][j]) + ', ')
-		fout.write('\n')
+  # outputs the results
+  for i in range(len(times)):
+    fout.write(str("{:.3f}").format(times[i]) + ', ')
+    for j in range(NVAR):
+      fout.write(str("{:.12f}").format(results[i][j]) + ', ')
+    fout.write('\n')
 ########################################################################
 
 # close the output file
@@ -152,28 +152,28 @@ fout.close()
 ###############################################################################
 # read the results for all variables, for all times
 for t in range(len(times)):
-	# read variable
-	slf.readVariables(t)
-	
-	# these are the results for all variables, for time step count
-	master_results = slf.getVarValues() 
-	
-	# to store the extracted results in an array of its own
-	extracted_results = np.zeros((NVAR,NPLAN))
-	
-	for i in range(NVAR):
-		for j in range(len(idx_all)):
-			extracted_results[i][j] = master_results[i][idx_all[j]]
-	
-	# transpose the extracted_results 
-	extracted_results_tr = np.transpose(extracted_results)
-	
-	
-	for i in range(NPLAN):
-		fout.write(str("{:.3f}").format(times[t]) + ', ')
-		for j in range(NVAR):
-			fout.write(str("{:.4f}").format(extracted_results_tr[i][j]) + ', ')
-		fout.write('\n')
+  # read variable
+  slf.readVariables(t)
+  
+  # these are the results for all variables, for time step count
+  master_results = slf.getVarValues() 
+  
+  # to store the extracted results in an array of its own
+  extracted_results = np.zeros((NVAR,NPLAN))
+  
+  for i in range(NVAR):
+    for j in range(len(idx_all)):
+      extracted_results[i][j] = master_results[i][idx_all[j]]
+  
+  # transpose the extracted_results 
+  extracted_results_tr = np.transpose(extracted_results)
+  
+  
+  for i in range(NPLAN):
+    fout.write(str("{:.3f}").format(times[t]) + ', ')
+    for j in range(NVAR):
+      fout.write(str("{:.4f}").format(extracted_results_tr[i][j]) + ', ')
+    fout.write('\n')
 ###############################################################################
 '''
 
@@ -181,54 +181,54 @@ for t in range(len(times)):
 # more human readable 
 
 if NPLAN > 1:
-	fout2 = open('temp.txt','w')
+  fout2 = open('temp.txt','w')
 
-	master = list() # data as read from the file
-	master2 = list() # the one with the trailing comma removed, and headers removed
-	
-	# use python to read the results file
-	# first three lines are headers
-	
-	header_str = ''
-	count = 0
-	
-	with open(output_file, 'r') as f1:
-		for i in f1:
-			master.append(i)
-			if (count < 3):
-				header_str = header_str + master[count]
-				count = count + 1
-				
-	# remove the output file
-	os.remove(output_file)
+  master = list() # data as read from the file
+  master2 = list() # the one with the trailing comma removed, and headers removed
+  
+  # use python to read the results file
+  # first three lines are headers
+  
+  header_str = ''
+  count = 0
+  
+  with open(output_file, 'r') as f1:
+    for i in f1:
+      master.append(i)
+      if (count < 3):
+        header_str = header_str + master[count]
+        count = count + 1
+        
+  # remove the output file
+  os.remove(output_file)
 
-	for i in range(len(master)):
-		if i > 2:
-			master2.append(master[i].rsplit(',',1)[0])
-			
-	for i in range(len(master2)):
-		fout2.write(master2[i] + '\n')
-	
-	# close the temp file	
-	fout2.close()
-	
-	# use numpy to read the temp file
-	temp_data = np.loadtxt('temp.txt', delimiter=',',skiprows=0,unpack=True)
-	
-	temp_data_tr = np.transpose(temp_data)
-	
-	# now use np.lexsort to sort the data by columns
-	elev_col = temp_data_tr[:,1]
-	time_col = temp_data_tr[:,0]
-	
-	ind = np.lexsort( (elev_col, time_col))
-	
-	temp_data_sorted = temp_data_tr[ind,:]
-	
-	# now write the final output file
-	np.savetxt(output_file, temp_data_sorted, fmt='%10.12f', header = header_str, 
-		comments = '', delimiter=',')
+  for i in range(len(master)):
+    if i > 2:
+      master2.append(master[i].rsplit(',',1)[0])
+      
+  for i in range(len(master2)):
+    fout2.write(master2[i] + '\n')
+  
+  # close the temp file  
+  fout2.close()
+  
+  # use numpy to read the temp file
+  temp_data = np.loadtxt('temp.txt', delimiter=',',skiprows=0,unpack=True)
+  
+  temp_data_tr = np.transpose(temp_data)
+  
+  # now use np.lexsort to sort the data by columns
+  elev_col = temp_data_tr[:,1]
+  time_col = temp_data_tr[:,0]
+  
+  ind = np.lexsort( (elev_col, time_col))
+  
+  temp_data_sorted = temp_data_tr[ind,:]
+  
+  # now write the final output file
+  np.savetxt(output_file, temp_data_sorted, fmt='%10.12f', header = header_str, 
+    comments = '', delimiter=',')
 
-	# remove the temp file
-	os.remove('temp.txt')
+  # remove the temp file
+  os.remove('temp.txt')
 

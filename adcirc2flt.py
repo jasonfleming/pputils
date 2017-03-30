@@ -37,15 +37,15 @@ from progressbar import ProgressBar, Bar, Percentage, ETA
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 7 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python adcirc2flt.py -i tin.grd -s 10 -o tin.flt')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python adcirc2flt.py -i tin.grd -s 10 -o tin.flt')
+  sys.exit()
 dummy1 =  sys.argv[1]
 adcirc_file = sys.argv[2]
 dummy2 =  sys.argv[3]
@@ -83,7 +83,7 @@ print("Grid resolution is : " + str(spacing) + " m")
 
 # creates the regular grid
 xreg, yreg = np.meshgrid(np.linspace(x.min(), x.max(), int(num_x_pts[0])),
-	np.linspace(y.min(), y.max(), int(num_y_pts[0])))
+  np.linspace(y.min(), y.max(), int(num_y_pts[0])))
 x_regs = xreg[1,:]
 y_regs = yreg[:,1]
 
@@ -125,9 +125,9 @@ fout.close()
 w = [Percentage(), Bar(), ETA()]
 pbar = ProgressBar(widgets=w, maxval=interp_zz.shape[0]).start()
 for i in range(interp_zz.shape[0]):
-	s = struct.pack('f'*interp_zz.shape[1], *np.flipud(interp_zz)[i,:])
-	fout.write(s)
-	pbar.update(i+1)
+  s = struct.pack('f'*interp_zz.shape[1], *np.flipud(interp_zz)[i,:])
+  fout.write(s)
+  pbar.update(i+1)
 fout.close()
 pbar.finish()
 

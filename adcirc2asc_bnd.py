@@ -39,15 +39,15 @@ from ppmodules.readMesh import *           # to get all readMesh functions
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 9:
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python adcirc2asc_bnd.py -i tin.grd -p poly.csv -s 10 -o tin.asc')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python adcirc2asc_bnd.py -i tin.grd -p poly.csv -s 10 -o tin.asc')
+  sys.exit()
 adcirc_file = sys.argv[2]
 boundary_file = sys.argv[4]
 spacing = sys.argv[6]
@@ -81,14 +81,14 @@ polygon_ids = np.unique(shapeid_poly)
 n_polygons = len(polygon_ids)
 
 if (n_polygons > 1):
-	print('Number of polygons in input file greater than 1. Exiting.')
-	sys.exit()
-	
+  print('Number of polygons in input file greater than 1. Exiting.')
+  sys.exit()
+  
 # construct a polygon as mpl object
 poly = list()
 for i in range(len(shapeid_poly)):
-	poly.append( (x_poly[i], y_poly[i]) )
-	
+  poly.append( (x_poly[i], y_poly[i]) )
+  
 # convert poly list to a numpy array
 poly_array = np.asarray(poly)
 
@@ -115,7 +115,7 @@ print("Grid resolution is : " + str(spacing) + " m")
 # creates the regular grid
 print('Creating the grid ...')
 xreg, yreg = np.meshgrid(np.linspace(x_poly.min(), x_poly.max(), int(num_x_pts[0])),
-	np.linspace(y_poly.min(), y_poly.max(), int(num_y_pts[0])))
+  np.linspace(y_poly.min(), y_poly.max(), int(num_y_pts[0])))
 x_regs = xreg[1,:]
 y_regs = yreg[:,1]
 
@@ -141,9 +141,9 @@ y_grid_pts = np.ravel(yreg)
 # of this script!
 print('Clipping results to boundary ...')
 for i in range(len(x_grid_pts)):
-	poly_test = path.contains_point( (x_grid_pts[i], y_grid_pts[i]) )
-	if (poly_test == False):
-		interp_zz_ravel[i] = -999.00
+  poly_test = path.contains_point( (x_grid_pts[i], y_grid_pts[i]) )
+  if (poly_test == False):
+    interp_zz_ravel[i] = -999.00
 
 # now, turn interp_zz_ravel back into a 2d array
 interp_zz = np.reshape(interp_zz_ravel, xreg.shape)
@@ -159,6 +159,6 @@ header_str = header_str + "NODATA_VALUE " + str(-999.00)
 
 #np.savetxt("temp.out", z, fmt='%.2f', delimiter='') # this has no max spaces
 np.savetxt(output_file, np.flipud(interp_zz), fmt='%10.3f', header = header_str, 
-	comments = '', delimiter='') # this has 10 char spaces, 3 after decimal
+  comments = '', delimiter='') # this has 10 char spaces, 3 after decimal
 
 print("All done!")

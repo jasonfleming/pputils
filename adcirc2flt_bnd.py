@@ -41,15 +41,15 @@ from progressbar import ProgressBar, Bar, Percentage, ETA
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 curdir = os.getcwd()
 #
 # I/O
 if len(sys.argv) != 9:
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python adcirc2flt_bnd.py -i tin.grd -p poly.csv -s 10 -o tin.asc')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python adcirc2flt_bnd.py -i tin.grd -p poly.csv -s 10 -o tin.asc')
+  sys.exit()
 adcirc_file = sys.argv[2]
 boundary_file = sys.argv[4]
 spacing = sys.argv[6]
@@ -88,14 +88,14 @@ polygon_ids = np.unique(shapeid_poly)
 n_polygons = len(polygon_ids)
 
 if (n_polygons > 1):
-	print('Number of polygons in input file greater than 1. Exiting.')
-	sys.exit()
-	
+  print('Number of polygons in input file greater than 1. Exiting.')
+  sys.exit()
+  
 # construct a polygon as mpl object
 poly = list()
 for i in range(len(shapeid_poly)):
-	poly.append( (x_poly[i], y_poly[i]) )
-	
+  poly.append( (x_poly[i], y_poly[i]) )
+  
 # convert poly list to a numpy array
 poly_array = np.asarray(poly)
 
@@ -122,7 +122,7 @@ print("Grid resolution is : " + str(spacing) + " m")
 # creates the regular grid
 print('Creating the grid ...')
 xreg, yreg = np.meshgrid(np.linspace(x_poly.min(), x_poly.max(), int(num_x_pts[0])),
-	np.linspace(y_poly.min(), y_poly.max(), int(num_y_pts[0])))
+  np.linspace(y_poly.min(), y_poly.max(), int(num_y_pts[0])))
 x_regs = xreg[1,:]
 y_regs = yreg[:,1]
 
@@ -152,10 +152,10 @@ w = [Percentage(), Bar(), ETA()]
 pbar = ProgressBar(widgets=w, maxval=len(x_grid_pts)).start()
 
 for i in range(len(x_grid_pts)):
-	poly_test = path.contains_point( (x_grid_pts[i], y_grid_pts[i]) )
-	if (poly_test == False):
-		interp_zz_ravel[i] = -999.00
-	pbar.update(i+1)	
+  poly_test = path.contains_point( (x_grid_pts[i], y_grid_pts[i]) )
+  if (poly_test == False):
+    interp_zz_ravel[i] = -999.00
+  pbar.update(i+1)  
 pbar.finish()
 
 # now, turn interp_zz_ravel back into a 2d array
@@ -172,8 +172,8 @@ fhdr.write("BYTEORDER LSBFIRST " + "\n")
 
 print('Writing binary data file ...')
 for i in range(interp_zz.shape[0]):
-	s = struct.pack('f'*interp_zz.shape[1], *np.flipud(interp_zz)[i,:])
-	fout.write(s)
+  s = struct.pack('f'*interp_zz.shape[1], *np.flipud(interp_zz)[i,:])
+  fout.write(s)
 fout.close()
 
 print("All done!")
