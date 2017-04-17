@@ -23,6 +23,7 @@
 import os,sys
 import numpy as np
 from ppmodules.selafin_io_pp import *
+from struct import pack
 
 if len(sys.argv) == 5:
   input_file = sys.argv[2]
