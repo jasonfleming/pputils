@@ -102,7 +102,7 @@ if (os.name == 'posix'):
     print('Executing bnd_extr_pp program ...')
     subprocess.call(['./bnd_extr_pp_64', adcirc_file])
 
-  elif (proctype == 'armv71'):  
+  elif (proctype == 'armv7l'):  
     # make sure the binary is allowed to be executed
     subprocess.call(['chmod', '+x', 'bnd_extr_pp_pi32'])
     

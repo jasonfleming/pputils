@@ -124,7 +124,7 @@ proctype = os.uname()[4][:]
 
 # for linux32 its i686
 # for linux64 its x86_64
-# for raspberry pi 32 its armv71
+# for raspberry pi 32 its armv7l
 
 # call gis2triangle.py
 print('Generating Triangle input files ...')
@@ -169,7 +169,7 @@ if (os.name == 'posix'):
     subprocess.call( ['./triangle/bin/triangle_32', '-Dqa', 'mesh.poly' ] )
   elif (proctype == 'x86_64'):
     subprocess.call( ['./triangle/bin/triangle_64', '-Dqa', 'mesh.poly' ] )
-  elif (proctype == 'armv71'):
+  elif (proctype == 'armv7l'):
     subprocess.call( ['./triangle/bin/triangle_pi32', '-Dqa', 'mesh.poly' ] )
 elif (os.name == 'nt'):
   subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-Dqa', 'mesh.poly' ] )
@@ -260,7 +260,7 @@ if (os.name == 'posix'):
     subprocess.call( ['./triangle/bin/triangle_32', '-rDpqa', 'mesh.1'])
   elif (proctype == 'x86_64'):
     subprocess.call( ['./triangle/bin/triangle_64', '-rDpqa', 'mesh.1'])
-  elif (proctype == 'armv71'):
+  elif (proctype == 'armv7l'):
     subprocess.call( ['./triangle/bin/triangle_pi32', '-rDpqa', 'mesh.1'])
 elif (os.name == 'nt'):
   subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-rDpqa', 'mesh.1'])

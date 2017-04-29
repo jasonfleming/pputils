@@ -93,7 +93,7 @@ proctype = os.uname()[4][:]
 
 # for linux32 its i686
 # for linux64 its x86_64
-# for raspberry pi 32 its armv71
+# for raspberry pi 32 its armv7l
 
 if (os.name == 'posix'):
   
@@ -120,8 +120,7 @@ if (os.name == 'posix'):
     # execute the binary to generate the renumbered nodes and elements
     subprocess.call(['./triangulation_rcm_64', 'out'])
   
-  elif (proctype == 'armv71'):
-    # its 64-bit
+  elif (proctype == 'armv7l'):
     # make sure the binary is allowed to be executed
     subprocess.call('chmod +x triangulation_rcm_pi32',shell=True)
     

@@ -109,7 +109,7 @@ proctype = os.uname()[4][:]
 
 # for linux32 its i686
 # for linux64 its x86_64
-# for raspberry pi 32 its armv71
+# for raspberry pi 32 its armv7l
 
 # Tell the user what is going on
 print('Constructing Triangle poly file ...')
@@ -126,7 +126,7 @@ if (os.name == 'posix'):
     subprocess.call( ['./triangle/bin/triangle_32', 'tin.poly' ] )
   elif (proctype == 'x86_64'):
     subprocess.call( ['./triangle/bin/triangle_64', 'tin.poly' ] )
-  elif (proctype == 'armv71'):
+  elif (proctype == 'armv7l'):
     subprocess.call( ['./triangle/bin/triangle_pi32', 'tin.poly' ] )
 elif (os.name == 'nt'):
   subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', 'tin.poly' ] )
