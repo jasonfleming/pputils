@@ -16,6 +16,10 @@
 # Revised: Feb 18, 2017
 # Added the precision as a command line argument.
 #
+# Revised: Apr 29, 2017
+# Changed how different system architectures are called; made it run
+# for the raspberry pi system.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -70,6 +74,9 @@ output_file = sys.argv[6]
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
 
+# to determine processor type
+proctype = os.uname()[4][:]
+
 # to determine the IPOBO array, call pre-compiled binary bnd_extr_pp
 if (os.name == 'posix'):
   # to move the adcirc file to ./boundary/bin
@@ -79,14 +86,15 @@ if (os.name == 'posix'):
   # change directory to get to executable
   os.chdir('./boundary/bin')
   
-  if (archtype == 32):
+  if (proctype == 'i686'):
     # make sure the binary is allowed to be executed
     subprocess.call(['chmod', '+x', 'bnd_extr_pp_32'])
     
     # execute the binary to generate the renumbered nodes and elements
     print('Executing bnd_extr_pp program ...')
     subprocess.call(['./bnd_extr_pp_32', adcirc_file])
-  if (archtype == 64):
+    
+  elif (proctype == 'x86_64'):
     # make sure the binary is allowed to be executed
     subprocess.call(['chmod', '+x', 'bnd_extr_pp_64'])
     
@@ -94,6 +102,14 @@ if (os.name == 'posix'):
     print('Executing bnd_extr_pp program ...')
     subprocess.call(['./bnd_extr_pp_64', adcirc_file])
 
+  elif (proctype == 'armv71'):  
+    # make sure the binary is allowed to be executed
+    subprocess.call(['chmod', '+x', 'bnd_extr_pp_pi32'])
+    
+    # execute the binary to generate the renumbered nodes and elements
+    print('Executing bnd_extr_pp program ...')
+    subprocess.call(['./bnd_extr_pp_pi32', adcirc_file])
+    
   # move the files back
   subprocess.call('mv *.bnd ' + curdir, shell=True)
   subprocess.call('mv ' + adcirc_file + ' ' + curdir, shell=True)

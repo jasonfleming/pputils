@@ -9,12 +9,16 @@
 # 
 # Date: February 2, 2016
 #
-# Modified: Feb 20, 2016
-# Made it work for python 2 and 3
-#
 # Purpose: Same inputs as gis2triangle.py; calls gis2triangle.py, then
 # uses python's subprocess module to call triangle to create the tin, then calls 
 # triangle2adcirc.py to produce an adcirc tin file.
+#
+# Modified: Feb 20, 2016
+# Made it work for python 2 and 3
+#
+# Revised: Apr 29, 2017
+# Changed how different system architectures are called; made it work
+# for the raspberry pi system.
 #
 # Uses: Python 2 or 3, Numpy
 #
@@ -100,6 +104,13 @@ else:
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
 
+# determines processor type
+proctype = os.uname()[4][:]
+
+# for linux32 its i686
+# for linux64 its x86_64
+# for raspberry pi 32 its armv71
+
 # Tell the user what is going on
 print('Constructing Triangle poly file ...')
 
@@ -111,10 +122,12 @@ subprocess.call([pystr, 'gis2triangle_kd.py', '-n', nodes_file,
 print('Generating TIN using Triangle ...')
 if (os.name == 'posix'):
   # this assumes chmod +x has already been applied to the binaries
-  if (archtype == 32):
+  if (proctype == 'i686'):
     subprocess.call( ['./triangle/bin/triangle_32', 'tin.poly' ] )
-  else:
+  elif (proctype == 'x86_64'):
     subprocess.call( ['./triangle/bin/triangle_64', 'tin.poly' ] )
+  elif (proctype == 'armv71'):
+    subprocess.call( ['./triangle/bin/triangle_pi32', 'tin.poly' ] )
 elif (os.name == 'nt'):
   subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', 'tin.poly' ] )
 else:

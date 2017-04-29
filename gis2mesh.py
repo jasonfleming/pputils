@@ -14,6 +14,10 @@
 # The script also calls the adcirc2shp.py to convert the mesh to a 
 # shapefile format, so that it may be viewed on a GIS platform.
 #
+# Revised: Apr 29, 2017
+# Changed how different system architectures are called; made it work
+# for the raspberry pi system.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -98,6 +102,13 @@ else:
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
 
+# determines processor type
+proctype = os.uname()[4][:]
+
+# for linux32 its i686
+# for linux64 its x86_64
+# for raspberry pi 32 its armv71
+
 # call gis2triangle.py
 print('Generating Triangle input files ...')
 subprocess.call([pystr, 'gis2triangle.py', '-n', nodes_file, 
@@ -133,10 +144,12 @@ with open('mesh.poly', 'a') as f: # 'a' here is for append to the file
 # now run Triangle
 if (os.name == 'posix'):
   # this assumes chmod +x has already been applied to the binaries
-  if (archtype == 32):
+  if (proctype == 'i686'):
     subprocess.call( ['./triangle/bin/triangle_32', '-Dqa', 'mesh.poly' ] )
-  else:
+  elif (proctype == 'x86_64'):
     subprocess.call( ['./triangle/bin/triangle_64', '-Dqa', 'mesh.poly' ] )
+  elif (proctype == 'armv71'):
+    subprocess.call( ['./triangle/bin/triangle_pi32', '-Dqa', 'mesh.poly' ] )
 elif (os.name == 'nt'):
   subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-Dqa', 'mesh.poly' ] )
 else:

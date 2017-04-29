@@ -15,6 +15,10 @@
 # mesh. Triangle is then executed with the -r option (refine), which then
 # creates a mesh that is refined based on the values in the tin.
 #
+# Revised: Apr 29, 2017
+# Changed how different system architectures are called; made it work
+# for the raspberry pi system.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -115,6 +119,13 @@ else:
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
 
+# determines processor type
+proctype = os.uname()[4][:]
+
+# for linux32 its i686
+# for linux64 its x86_64
+# for raspberry pi 32 its armv71
+
 # call gis2triangle.py
 print('Generating Triangle input files ...')
 subprocess.call([pystr, 'gis2triangle.py', '-n', nodes_file, 
@@ -154,10 +165,12 @@ print('#############################################################')
 
 if (os.name == 'posix'):
   # this assumes chmod +x has already been applied to the binaries
-  if (archtype == 32):
+  if (proctype == 'i686'):
     subprocess.call( ['./triangle/bin/triangle_32', '-Dqa', 'mesh.poly' ] )
-  else:
+  elif (proctype == 'x86_64'):
     subprocess.call( ['./triangle/bin/triangle_64', '-Dqa', 'mesh.poly' ] )
+  elif (proctype == 'armv71'):
+    subprocess.call( ['./triangle/bin/triangle_pi32', '-Dqa', 'mesh.poly' ] )
 elif (os.name == 'nt'):
   subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-Dqa', 'mesh.poly' ] )
 else:
@@ -243,10 +256,12 @@ print('#############################################################')
 # now run Triangle (to generate the refined mesh)
 if (os.name == 'posix'):
   # this assumes chmod +x has already been applied to the binaries
-  if (archtype == 32):
+  if (proctype == 'i686'):
     subprocess.call( ['./triangle/bin/triangle_32', '-rDpqa', 'mesh.1'])
-  else:
+  elif (proctype == 'x86_64'):
     subprocess.call( ['./triangle/bin/triangle_64', '-rDpqa', 'mesh.1'])
+  elif (proctype == 'armv71'):
+    subprocess.call( ['./triangle/bin/triangle_pi32', '-rDpqa', 'mesh.1'])
 elif (os.name == 'nt'):
   subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-rDpqa', 'mesh.1'])
 else:
@@ -281,8 +296,3 @@ os.remove('mesh.1.area')
 os.remove('mesh.2.poly')
 os.remove('mesh.2.node')
 os.remove('mesh.2.ele')
-
-
-
-
-
