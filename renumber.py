@@ -88,14 +88,13 @@ fe.close()
 archtype = struct.calcsize("P") * 8
 #print 'Architecture: ' + str(archtype) + ' bit'
 
-# determines processor type
-proctype = os.uname()[4][:]
-
-# for linux32 its i686
-# for linux64 its x86_64
-# for raspberry pi 32 its armv7l
-
 if (os.name == 'posix'):
+  # determines processor type
+  # for linux32 its i686
+  # for linux64 its x86_64
+  # for raspberry pi 32 its armv7l
+  
+  proctype = os.uname()[4][:]
   
   # move the temp files to ./renumber/bin
   subprocess.call('mv out_nodes.txt out_elements.txt ./renumber/bin',shell=True)

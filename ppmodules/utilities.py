@@ -464,14 +464,14 @@ def getIPOBO_IKLE(adcirc_file):
   # to determine if the system is 32 or 64 bit
   archtype = struct.calcsize("P") * 8
 
-  # to determine processor type
-  proctype = os.uname()[4][:]
-  
   curdir = os.getcwd()
   print(curdir)
   
   # to determine the IPOBO array, call pre-compiled binary bnd_extr_pp
   if (os.name == 'posix'):
+    # to determine processor type
+    proctype = os.uname()[4][:]		
+		
     # to move the adcirc file to ./boundary/bin
     callstr = 'mv ' + str(adcirc_file) + ' ./boundary/bin'
     subprocess.call(callstr, shell=True)

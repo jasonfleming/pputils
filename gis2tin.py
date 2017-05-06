@@ -20,6 +20,9 @@
 # Changed how different system architectures are called; made it work
 # for the raspberry pi system.
 #
+# Revised: May 6, 2017
+# Placed a call to processor type inside the posix if statement.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -104,13 +107,6 @@ else:
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
 
-# determines processor type
-proctype = os.uname()[4][:]
-
-# for linux32 its i686
-# for linux64 its x86_64
-# for raspberry pi 32 its armv7l
-
 # Tell the user what is going on
 print('Constructing Triangle poly file ...')
 
@@ -121,6 +117,13 @@ subprocess.call([pystr, 'gis2triangle_kd.py', '-n', nodes_file,
 
 print('Generating TIN using Triangle ...')
 if (os.name == 'posix'):
+	# determines processor type
+  proctype = os.uname()[4][:]
+
+  # for linux32 its i686
+  # for linux64 its x86_64
+  # for raspberry pi 32 its armv7l
+	
   # this assumes chmod +x has already been applied to the binaries
   if (proctype == 'i686'):
     subprocess.call( ['./triangle/bin/triangle_32', 'tin.poly' ] )

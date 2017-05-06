@@ -20,6 +20,9 @@
 # Changed how different system architectures are called; made it run
 # for the raspberry pi system.
 #
+# Revised: May 6, 2017
+# Placed a call to processor type inside the posix if statement.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -74,11 +77,11 @@ output_file = sys.argv[6]
 # to determine if the system is 32 or 64 bit
 archtype = struct.calcsize("P") * 8
 
-# to determine processor type
-proctype = os.uname()[4][:]
-
 # to determine the IPOBO array, call pre-compiled binary bnd_extr_pp
 if (os.name == 'posix'):
+  # to determine processor type
+  proctype = os.uname()[4][:]
+	
   # to move the adcirc file to ./boundary/bin
   callstr = 'mv ' + str(adcirc_file) + ' ./boundary/bin'
   subprocess.call(callstr, shell=True)
