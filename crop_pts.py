@@ -35,11 +35,11 @@ from progressbar import ProgressBar, Bar, Percentage, ETA
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # I/O
 if len(sys.argv) != 7 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python crop_pts.py -n points.csv -p polygon.csv -o points_cropped.csv')
-	sys.exit()
-	
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python crop_pts.py -n points.csv -p polygon.csv -o points_cropped.csv')
+  sys.exit()
+  
 input_file = sys.argv[2]
 polygon_file = sys.argv[4]
 output_file = sys.argv[6]
@@ -80,14 +80,14 @@ polygon_ids = np.unique(shapeid_poly)
 n_polygons = len(polygon_ids)
 
 if (n_polygons > 1):
-	print('Number of polygons in input file greater than 1. Exiting.')
-	sys.exit()
-	
+  print('Number of polygons in input file greater than 1. Exiting.')
+  sys.exit()
+  
 # construct a polygon as mpl object
 poly = list()
 for i in range(len(shapeid_poly)):
-	poly.append( (x_poly[i], y_poly[i]) )
-	
+  poly.append( (x_poly[i], y_poly[i]) )
+  
 # convert poly list to a numpy array
 poly_array = np.asarray(poly)
 
@@ -99,13 +99,13 @@ w = [Percentage(), Bar(), ETA()]
 pbar = ProgressBar(widgets=w, maxval=n).start()
 
 for j in range(n):
-	poly_test = path.contains_point( (x[j], y[j]) )
-	if (poly_test == True):
-		fout.write( str(x[j]) + ',' + str(y[j]) + ',' + str(z[j]) + '\n')
-	pbar.update(j+1)
+  poly_test = path.contains_point( (x[j], y[j]) )
+  if (poly_test == True):
+    fout.write( str(x[j]) + ',' + str(y[j]) + ',' + str(z[j]) + '\n')
+  pbar.update(j+1)
 
 pbar.finish()
-	
+  
 print('All done!')
 
 

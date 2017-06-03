@@ -11,7 +11,13 @@
 # Purpose: Takes in a closed polygon (in pputils format), and a set of
 # lines (also in pputils format), and outputs all line segments within 
 # the closed polygon boundary. The script uses Matplotlib for point
-# in poly test (same as assign_mpl.py).
+# in poly test (same as assign_mpl.py). Note that this script does not
+# crop the lines to the boundary, but only outputs those line segments
+# that fully lie within the boundary polygon.
+#
+# Modified: Jun 3, 2017
+# Made the change so that the cropped lines file only output lines
+# that have lengths greater than zero.
 #
 # Uses: Python 2 or 3, Matplotlib, Numpy, Scipy
 #
@@ -36,11 +42,11 @@ from progressbar import ProgressBar, Bar, Percentage, ETA
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # I/O
 if len(sys.argv) != 7 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python crop_lns.py -n lines.csv -p polygon.csv -o lines_cropped.csv')
-	sys.exit()
-	
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python crop_lns.py -n lines.csv -p polygon.csv -o lines_cropped.csv')
+  sys.exit()
+  
 lines_file = sys.argv[2]
 polygon_file = sys.argv[4]
 output_file = sys.argv[6]
@@ -63,9 +69,9 @@ x_lns = lines_data[1,:]
 y_lns = lines_data[2,:]
 
 if (n_attr == 3):
-	z_lns = np.zeros(n_lns)
+  z_lns = np.zeros(n_lns)
 else:
-	z_lns = lines_data[3,:]
+  z_lns = lines_data[3,:]
 
 # crop all the lns points to three decimals only
 x_lns = np.around(x_lns,decimals=3)
@@ -91,14 +97,14 @@ polygon_ids = np.unique(shapeid_poly)
 n_polygons = len(polygon_ids)
 
 if (n_polygons > 1):
-	print('Number of polygons in input file greater than 1. Exiting.')
-	sys.exit()
-	
+  print('Number of polygons in input file greater than 1. Exiting.')
+  sys.exit()
+  
 # construct a polygon as mpl object
 poly = list()
 for i in range(len(shapeid_poly)):
-	poly.append( (x_poly[i], y_poly[i]) )
-	
+  poly.append( (x_poly[i], y_poly[i]) )
+  
 # convert poly list to a numpy array
 poly_array = np.asarray(poly)
 
@@ -109,15 +115,49 @@ path = mplPath.Path(poly_array)
 w = [Percentage(), Bar(), ETA()]
 pbar = ProgressBar(widgets=w, maxval=n_lns).start()
 
+# store the cropped data to arrays
+shapeid_lns_cr = list()
+x_lns_cr = list()
+y_lns_cr = list()
+z_lns_cr = list()
+
 for j in range(n_lns):
-	poly_test = path.contains_point( (x_lns[j], y_lns[j]) )
-	if (poly_test == True):
-		fout.write(str(shapeid_lns[j]) + ',' + str(x_lns[j]) + ',' + 
-			str(y_lns[j]) + ',' + str(z_lns[j]) + '\n')
-	pbar.update(j+1)
+  poly_test = path.contains_point( (x_lns[j], y_lns[j]) )
+  if (poly_test == True):
+    
+    shapeid_lns_cr.append(shapeid_lns[j])
+    x_lns_cr.append(x_lns[j])
+    y_lns_cr.append(y_lns[j])
+    z_lns_cr.append(z_lns[j])
+    
+  pbar.update(j+1)
 
 pbar.finish()
-	
+
+print('Getting rid of zero length lines ...')
+
+# get a unique number of shapeid_lns_cr
+unique_shapes = list(set(shapeid_lns_cr))
+
+line_node_count = list()
+line_node_count_all = list()
+
+# count how many points are in each unique shape
+for item in unique_shapes:
+  line_node_count.append(shapeid_lns_cr.count(item))
+
+# this creates a line_count_all list that corresponds to every
+# node in the cropped lines file
+for i in range(len(shapeid_lns_cr)):
+  line_node_count_all.append(line_node_count[int(shapeid_lns_cr[i])])
+
+# now go through the cropped points, and only write ones that have
+# more than one vertex (this avoids having lines with zero length)
+for i in range(len(shapeid_lns_cr)):
+  if (line_node_count_all[i] > 1):
+    fout.write(str(int(shapeid_lns_cr[i])) + ',' + str(x_lns_cr[i]) + ',' +
+      str(y_lns_cr[i]) + ',' + str(z_lns_cr[i]) + '\n')
+    
 print('All done!')
 
 
