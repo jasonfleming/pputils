@@ -108,5 +108,6 @@ fs = open("run_scenarios.sh", "w")
 for item in filenames:
 	fs.write("python runModule.py tomawac " + item + "\n")
 	fs.write("rm *.sortie" + "\n")
+	fs.write("rm *.zip" + "\n")
 
 
