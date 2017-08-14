@@ -15,12 +15,17 @@
 # probe.py because it reads data for all variables, for all time steps,
 # in order to find the min and max of the data.
 #
+# Modified: Aug 14, 2017
+# Rather than scanning data for all time steps, scan the file for a
+# particular time step only.
+#
 # Uses: Python 2 or 3, Numpy
 #
-# Example: python scan.py -i input.slf
+# Example: python scan.py -i input.slf -t 3
 # 
 # where:
 #       --> -i is the telemac *.slf file being probed
+#       --> -t is the index of the time step being probed
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
@@ -35,17 +40,15 @@ from ppmodules.selafin_io_pp import *
 # MAIN
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
-if len(sys.argv) != 3:
+if len(sys.argv) == 5:
+  input_file = sys.argv[2]   # input *.slf file
+  t = int(sys.argv[4])
+else:
   print('Wrong number of Arguments, stopping now...')
   print('Example usage:')
-  print('python scan.py -i input.slf')
+  print('python scan.py -i input.slf -t 3')
   sys.exit()
 
-# I/O
-input_file = sys.argv[2]   # input *.slf file
-print('#########################################################')
-print("The input file being scaned: " + input_file)
-#
 # constructor for pp_SELAFIN class
 slf = ppSELAFIN(input_file)
 slf.readHeader()
@@ -57,6 +60,10 @@ vunits = slf.getVarUnits()
 ftype,fsize = slf.getPrecision()
 nplan = slf.getNPLAN()
 
+if (t >= len(times)):
+  print('time step is not within the file. Exiting!')
+  sys.exit()
+
 # gets some of the mesh properties from the *.slf file
 NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
 
@@ -64,8 +71,8 @@ NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
 numvars = len(vnames)
 
 # this is the min and max for each variable, for each time step
-tempmin = np.zeros((numvars, len(times)))
-tempmax = np.zeros((numvars, len(times)))
+#tempmin = np.zeros((numvars, len(times)))
+#tempmax = np.zeros((numvars, len(times)))
 
 # the min max array for each variable
 minmax = np.zeros((numvars,2))
@@ -84,19 +91,16 @@ elif(ftype == 'd' and fsize == 8):
 else:
   precision = 'unknown'
 
-# prints variable names and their min and max values from all time steps
-for i in range(len(times)):
-  slf.readVariables(i)
-  master_results = slf.getVarValues()
-
-  for j in range(numvars):
-    tempmin[j,i] = np.min(master_results[j,:])
-    tempmax[j,i] = np.max(master_results[j,:])
+# prints variable names and their min and max values from a particular time step
+slf.readVariables(t)
+master_results = slf.getVarValues()
 
 for j in range(numvars):
-  minmax[j,0] = np.min(tempmin[j,:])
-  minmax[j,1] = np.max(tempmax[j,:])
+  minmax[j,0] = np.min(master_results[j,:])
+  minmax[j,1] = np.max(master_results[j,:])
   
+print('#########################################################')
+print("The input file being scaned: " + input_file)
 print('Precision: ' + precision )
 print('File type: ' + slf_type )
 if (slf_type == '3d'):
@@ -104,6 +108,7 @@ if (slf_type == '3d'):
 print('Number of elements: ' + str(NELEM))
 print('Number of nodes: ' + str(NPOIN))
 print('Number of time steps: ' + str(len(times)))
+print('Index of output time step: ' + str(t))          
 print(' ')
 print('#########################################################')
 print('Variables in '+input_file+' are: ')
