@@ -43,7 +43,7 @@ if len(sys.argv) != 9:
   print('Wrong number of Arguments, stopping now...')
   print('Usage:')
   print('python sel2png.py -i input.slf -v 4 -t 0 -o output.png')
-  sys.exit()
+  sys.exit() 
 
 input_file = sys.argv[2]         # input *.slf file
 var_index  = int(sys.argv[4])    # index number of grided output variable 
