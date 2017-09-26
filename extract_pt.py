@@ -25,6 +25,10 @@
 # Revised: Nov 21, 2016
 # Changed KDTree to cKDTree to improve performance.
 #
+# Revised: Sep 26, 2017
+# changed the definition of x2d and y2d to make sure the index is an 
+# integer. This was changed in the latest numpy release.
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
@@ -89,8 +93,8 @@ NPLAN = slf.getNPLAN()
 fout.write('The file has ' + str(NPLAN) + ' planes' + '\n')
 
 # store just the x and y coords
-x2d = x[0:len(x)/NPLAN]
-y2d = y[0:len(x)/NPLAN]
+x2d = x[0:int(len(x)/NPLAN)]
+y2d = y[0:int(len(x)/NPLAN)]
 
 # create a KDTree object
 source = np.column_stack((x2d,y2d))
