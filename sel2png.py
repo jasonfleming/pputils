@@ -14,7 +14,15 @@
 # does not specify starting and ending time step, the script will create
 # a plot for the specified variable for every time step in the file. In
 # case two variables are specified, the script will simply compute their
-# vector magnitude, and plot its result.
+# vector magnitude, and plot its result. Note that this script needs to
+# read the configuration file titled sel2png.cfg, as additional options
+# are specified in the *.cfg file.
+#
+# Revised: Oct 3, 2017
+# Changed the parameters in the sel2png.py configuration file, and added
+# the ability to plot vectors. It works for plotting vectors on all mesh
+# nodes, and on a user specified grid of points.
+#
 # 
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
@@ -86,14 +94,30 @@ with open('sel2png.cfg', 'r') as f1:
   for i in f1:
     line.append(i)
 
-# reads the parameters from the sel2png.cfg file
-params = line[1].split()
+# reads the first set of parameters from the sel2png.cfg file
+params1 = line[1].split()
     
-cbar_min_global = float(params[0])
-cbar_max_global = float(params[1])
-vector_flag = int(params[2])
-vector_scale = float(params[3])
-vector_color = str(params[4])
+cbar_min_global = float(params1[0])
+cbar_max_global = float(params1[1])
+cbar_color_map = params1[2]
+
+# reads the second set of parameters from the sel2png.cfg file
+params2 = line[11].split()
+
+vectors = int(params2[0])
+vector_scale = float(params2[1])
+vector_color = str(params2[2])
+vector_grid = int(params2[3])
+vector_grid_size = float(params2[4])
+
+# reads the third set of parameters from the sel2png.cfg file
+params3 = line[23].split()
+
+zoom = int(params3[0])
+xll = float(params3[1])
+yll = float(params3[2])
+xur = float(params3[3])
+yur = float(params3[4])
 
 # Read the header of the selafin result file and get geometry and
 # variable names and units
@@ -115,6 +139,34 @@ times = slf.getTimes()
 variables = slf.getVarNames()
 units = slf.getVarUnits()
 
+# the vector variables that it searches for
+# for telemac2d
+idx_vel_u = -1000
+idx_vel_v = -1000
+
+# for tomawac
+idx_mean_dir = -1000
+idx_wave_height = -1000
+
+# for artemis
+idx_art_wave_inc = -1000
+idx_art_wave_height = -1000
+
+# find the index of the vector variables
+for i in range(len(variables)):
+  if (variables[i].find('VELOCITY U') > -1):
+    idx_vel_u = i
+  elif (variables[i].find('VELOCITY V') > -1):
+    idx_vel_v = i
+  elif (variables[i].find('MEAN DIRECTION') > -1):
+    idx_mean_dir = i
+  elif (variables[i].find('WAVE HEIGHT HM0') > -1):
+    idx_wave_height = i
+  elif (variables[i].find('WAVE HEIGHT') > -1):
+    idx_art_wave_height = i
+  elif (variables[i].find('WAVE INCIDENCE') > -1):
+    idx_art_wave_inc = i
+  
 # update the index of t_end
 # len(times) gives total number of items in the array
 # len(times) - 1 is the index of the last element
@@ -129,9 +181,16 @@ for i in range(len(variables)):
 # gets some of the mesh properties from the *.slf file
 NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
 
+# define u and v for plotting (if needed)
+u = np.zeros(NPOIN)
+v = np.zeros(NPOIN)
+
 # the IKLE array starts at element 1, but matplotlib needs it to start
 # at zero
 IKLE[:,:] = IKLE[:,:] - 1
+
+# create a Matplotlib triangulation object
+triang = mtri.Triangulation(x,y,IKLE)
 
 # to create a list of files
 file_out = list()
@@ -186,19 +245,30 @@ for count, item in enumerate(filenames):
   else:
     cbar_min = cbar_min_global
     cbar_max = cbar_max_global
-      
+
+  '''
+  # adjust the plot_array for limits of levels (before plotting)
+  for i in range(len(plot_array)):
+    if (plot_array[i] < cbar_min):
+      plot_array[i] = cbar_min
+    if (plot_array[i] > cbar_max):
+      plot_array[i] = cbar_max
+  '''
+
+  # adjust the levels
   levels = np.linspace(cbar_min, cbar_max, 16)
-  #levels = np.linspace(0, 5, 16)
   
   plt.figure()
   plt.gca().set_aspect('equal')
-  cmap = cm.get_cmap(name='jet') # 'jet', 'terrain', for reverse use jet_r
+  cmap = cm.get_cmap(name=cbar_color_map)
   plt.tricontourf(triang, plot_array, levels=levels,
     cmap=cmap, antialiased=True)
   
-  # axis limits
-  #plt.xlim(449575,449875)
-  #plt.ylim(4705998,4706398)
+  # axis limits (the zoom flag controls this)
+  if (zoom > 0):
+    plt.xlim(xll,xur)
+    plt.ylim(yll,yur)
+
   plt.axis('off')
   
   # this is for the colorbar
@@ -215,10 +285,77 @@ for count, item in enumerate(filenames):
   # set the title, and its size
   cb.ax.set_title(title, size=5)
   
-  # to plot the vectors
-  #u = master_results[0]
-  #v = master_results[1]
-  #plt.quiver(x, y, u, v, width=0.0005, pivot='middle', color='white')
+  # to plot the vectors (if vector flag is on)
+  if (vectors > 0):
+    
+    # now we must find the vector variables to plot
+    # it will find telemac2d velocity vector, tomawac's mean direction, and
+    # artemis's wave_incidence vector
+
+    # for telemac2d
+    if ((idx_vel_u > -1000) and (idx_vel_v > -1000)):
+      u = master_results[idx_vel_u]
+      v = master_results[idx_vel_v]
+
+    # for tomawac  
+    elif ((idx_mean_dir > -1000) and (idx_wave_height > -1000)):
+      for i in range(len(x)):
+        u[i] = np.sin(master_results[idx_mean_dir][i] * np.pi / 180.0) * \
+            master_results[idx_wave_height][i]
+        v[i] = np.cos(master_results[idx_mean_dir][i] * np.pi / 180.0) * \
+            master_results[idx_wave_height][i]
+
+    # for artemis
+    elif ((idx_art_wave_height > -1000) and (idx_art_wave_inc > -1000) ):
+      for i in range(len(x)):
+        u[i] = np.cos(master_results[idx_art_wave_inc][i] * np.pi / 180.0) * \
+            master_results[idx_art_wave_height][i]
+        v[i] = np.sin(master_results[idx_art_wave_inc][i] * np.pi / 180.0) * \
+            master_results[idx_art_wave_height][i]
+    else:
+      print('Vector variable not found in file. Exiting.')
+      sys.exit()
+
+    if (vector_grid > 0):
+      # plot the vectors on a grid
+      # we now have to convert the u and v to a regular vector based on the
+      # vector_grid_size parameter, the code here is taken from adcirc2asc.py
+
+      # to accomodate code pasting
+      spacing = vector_grid_size
+      
+      # determine the spacing of the regular grid
+      range_in_x = float(np.max(x) - np.min(x))
+      range_in_y = float(np.max(y) - np.min(y))
+
+      max_range = max(range_in_x, range_in_y)
+      
+      # first index is integer divider, second is remainder
+      num_x_pts = divmod(range_in_x, spacing)
+      num_y_pts = divmod(range_in_y, spacing)
+      
+      # creates the regular grid
+      xreg, yreg = np.meshgrid(np.linspace(np.min(x), np.max(x), int(num_x_pts[0])),
+        np.linspace(np.min(y), np.max(y), int(num_y_pts[0])))
+      x_regs = xreg[1,:]
+      y_regs = yreg[:,1]
+
+      # perform the triangulation
+      interpolator = mtri.LinearTriInterpolator(triang, u)
+      u_grid = interpolator(xreg, yreg)
+
+      interpolator = mtri.LinearTriInterpolator(triang, v)
+      v_grid = interpolator(xreg, yreg)
+
+      # matplotlib automatically manages np.nan's
+      # now, we are ready to plot the vectors
+      plt.quiver(x_regs, y_regs, u_grid, v_grid, width=vector_scale,
+        pivot='middle', color=vector_color)
+                                          
+    else:
+      # plot the vectors at every node point
+      plt.quiver(x, y, u, v, width=vector_scale, pivot='middle',
+        color=vector_color)
   
   # this plots the figure
   fig = plt.gcf() # returns the reference for the current figure
