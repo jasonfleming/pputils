@@ -349,12 +349,14 @@ for count, item in enumerate(filenames):
 
       # matplotlib automatically manages np.nan's
       # now, we are ready to plot the vectors
-      plt.quiver(x_regs, y_regs, u_grid, v_grid, width=vector_scale,
-        pivot='middle', color=vector_color)
+      
+      # width is the shaft width of the arrows
+      plt.quiver(x_regs, y_regs, u_grid, v_grid,
+        width=vector_scale, pivot='middle', color=vector_color)
                                           
     else:
       # plot the vectors at every node point
-      plt.quiver(x, y, u, v, width=vector_scale, pivot='middle',
+      plt.quiver(x, y, u, v, pivot='middle', width=vector_scale,
         color=vector_color)
   
   # this plots the figure

@@ -36,10 +36,10 @@ from ppmodules.selafin_io_pp import *
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 if len(sys.argv) != 3:
-	print('Wrong number of Arguments, stopping now...')
-	print('Example usage:')
-	print('python probe.py -i input.slf')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Example usage:')
+  print('python probe.py -i input.slf')
+  sys.exit()
 
 # I/O
 input_file = sys.argv[2]   # input *.slf file
@@ -56,22 +56,26 @@ vnames = slf.getVarNames()
 vunits = slf.getVarUnits()
 ftype,fsize = slf.getPrecision()
 nplan = slf.getNPLAN()
+NELEM = slf.getNELEM()
+NPOIN = slf.getNPOIN()
 
 if (nplan > 1):
-	slf_type = '3d'
+  slf_type = '3d'
 else:
-	slf_type = '2d'
+  slf_type = '2d'
 
 if(ftype == 'f' and fsize == 4):
-	precision = 'single'
+  precision = 'single'
 elif(ftype == 'd' and fsize == 8):
-	precision = 'double'
+  precision = 'double'
 else:
-	precision = 'unknown'
+  precision = 'unknown'
 
 # prints variable names
 print('Precision: ' + precision )
 print('File type: ' + slf_type )
+print('Number of elements: ' + str(NELEM))
+print('Number of nodes: ' + str(NPOIN))
 print(' ')
 print('#################################')
 print('Variables in '+input_file+' are: ')
@@ -79,7 +83,7 @@ print('---------------------------------')
 print('     v     variable        unit'   )
 print('---------------------------------')
 for i in range(len(vnames)):
-	print('    ',i, '-->', vnames[i] + ' [' + vunits[i].strip() + ']')
+  print('    ',i, '-->', vnames[i] + ' [' + vunits[i].strip() + ']')
 print(' ')
 print('#################################')
 
@@ -89,30 +93,30 @@ records = np.arange(len(times))
 nrecs = len(times)
 
 if (len(times) < 2):
-	print("    t    time (s)")
-	print('---------------------------------')
-	print(str(records[0]) + " -->" + str("{:10.1f}".format(times[0])))
+  print("    t    time (s)")
+  print('---------------------------------')
+  print(str(records[0]) + " -->" + str("{:10.1f}".format(times[0])))
 elif(len(times) < 3):
-	print("    t    time (s)")
-	print('---------------------------------')
-	print(str(records[0]) + " -->" + str("{:10.1f}".format(times[0])))
-	print(str(records[1]) + " -->" + str("{:10.1f}".format(times[1])))
-elif (len(times) < 4):	
-	print("    t    time (s)")
-	print('---------------------------------')
-	print(str(records[0]) + " -->" + str("{:10.1f}".format(times[0])))
-	print(str(records[1]) + " -->" + str("{:10.1f}".format(times[1])))
-	print(str(records[2]) + " -->" + str("{:10.1f}".format(times[2])))
+  print("    t    time (s)")
+  print('---------------------------------')
+  print(str(records[0]) + " -->" + str("{:10.1f}".format(times[0])))
+  print(str(records[1]) + " -->" + str("{:10.1f}".format(times[1])))
+elif (len(times) < 4):  
+  print("    t    time (s)")
+  print('---------------------------------')
+  print(str(records[0]) + " -->" + str("{:10.1f}".format(times[0])))
+  print(str(records[1]) + " -->" + str("{:10.1f}".format(times[1])))
+  print(str(records[2]) + " -->" + str("{:10.1f}".format(times[2])))
 else:
-	print("t        time (s)")
-	print('---------------------------------')
-	print(str(records[0]) + " -->" + str("{:10.1f}".format(times[0])))
-	print(str(records[1]) + " -->" + str("{:10.1f}".format(times[1])))
-	print(str(records[2]) + " -->" + str("{:10.1f}".format(times[2])))
-	print(str(records[3]) + " -->" + str("{:10.1f}".format(times[3])))
-	print('     ......')
-	print(str(records[nrecs-1]) +"-->" + str("{:10.1f}".format(times[nrecs-1])))
-	
+  print("t        time (s)")
+  print('---------------------------------')
+  print(str(records[0]) + " -->" + str("{:10.1f}".format(times[0])))
+  print(str(records[1]) + " -->" + str("{:10.1f}".format(times[1])))
+  print(str(records[2]) + " -->" + str("{:10.1f}".format(times[2])))
+  print(str(records[3]) + " -->" + str("{:10.1f}".format(times[3])))
+  print('     ......')
+  print(str(records[nrecs-1]) +"-->" + str("{:10.1f}".format(times[nrecs-1])))
+  
 print('#################################')
 
 
