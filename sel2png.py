@@ -106,12 +106,13 @@ params2 = line[11].split()
 
 vectors = int(params2[0])
 vector_scale = float(params2[1])
-vector_color = str(params2[2])
-vector_grid = int(params2[3])
-vector_grid_size = float(params2[4])
+vector_width = float(params2[2])
+vector_color = str(params2[3])
+vector_grid = int(params2[4])
+vector_grid_size = float(params2[5])
 
 # reads the third set of parameters from the sel2png.cfg file
-params3 = line[23].split()
+params3 = line[24].split()
 
 zoom = int(params3[0])
 xll = float(params3[1])
@@ -352,12 +353,15 @@ for count, item in enumerate(filenames):
       
       # width is the shaft width of the arrows
       plt.quiver(x_regs, y_regs, u_grid, v_grid,
-        width=vector_scale, pivot='middle', color=vector_color)
+        width=vector_width, pivot='middle', color=vector_color,
+        angles='xy', scale_units='xy',
+        scale=1.0/vector_scale)
                                           
     else:
       # plot the vectors at every node point
-      plt.quiver(x, y, u, v, pivot='middle', width=vector_scale,
-        color=vector_color)
+      plt.quiver(x, y, u, v, pivot='middle',width=vector_width,
+        color=vector_color, angles='xy', scale_units='xy',
+        scale=1.0/vector_scale)
   
   # this plots the figure
   fig = plt.gcf() # returns the reference for the current figure
