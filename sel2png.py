@@ -23,16 +23,23 @@
 # the ability to plot vectors. It works for plotting vectors on all mesh
 # nodes, and on a user specified grid of points.
 #
+# Revised: Dec 5, 2017
+# Added an option so that the *.cfg file is now specified as a command
+# line argument after the input file. Use the sel2png.cfg file for
+# inspiration.
+#
 # 
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
-# Example: python sel2png.py -i input.slf -v 4 -o output.png
-#          python sel2png.py -i input.slf -v 0 1 -o output.png
-#          python sel2png.py -i input.slf -v 4 -o output.png -s 1 -e 6
-#          python sel2png.py -i input.slf -v 0 1 -o output.png -s 1 -e 6
+# Example: python sel2png.py -i input.slf -c sel2png.cfg -v 4 -o output.png
+#          python sel2png.py -i input.slf -c sel2png.cfg -v 0 1 -o output.png
+#          python sel2png.py -i input.slf -c sel2png.cfg -v 4 -o output.png -s 1 -e 6
+#          python sel2png.py -i input.slf -c sel2png.cfg -v 0 1 -o output.png -s 1 -e 6
 # 
 # where:
 #       --> -i is the *.slf file as input
+#
+#       --> c is the *.cfg configuration file (see sel2png.cfg file)
 #
 #       --> -v is the index of the variable to extract; see probe.py for 
 #                        index codes of the variables; can have two values
@@ -50,58 +57,62 @@ import matplotlib.cm as cm
 import numpy as np
 from ppmodules.selafin_io_pp import *
 
-if len(sys.argv) == 7:
-  input_file = sys.argv[2]         
-  var_index1  = int(sys.argv[4])
-  var_index2 = -999
-  output_file = sys.argv[6]
-  t_start = 0
-  t_end = 0
-elif len(sys.argv) == 11:
-  input_file = sys.argv[2]         
-  var_index1  = int(sys.argv[4])
-  var_index2 = -999
-  output_file = sys.argv[6]
-  t_start = int(sys.argv[8])
-  t_end = int(sys.argv[10])
-elif len(sys.argv) == 8:
-  input_file = sys.argv[2]         
-  var_index1 = int(sys.argv[4])
-  var_index2 = int(sys.argv[5])          
-  output_file = sys.argv[7]
-  t_start = 0
-  t_end = 0
-elif len(sys.argv) == 12:
+if len(sys.argv) == 9:
   input_file = sys.argv[2]
-  var_index1 = int(sys.argv[4])
-  var_index2 = int(sys.argv[5])          
-  output_file = sys.argv[7]
-  t_start = int(sys.argv[9])
-  t_end = int(sys.argv[11])
+  cfg_file = sys.argv[4]
+  var_index1  = int(sys.argv[6])
+  var_index2 = -999
+  output_file = sys.argv[6]
+  t_start = 0
+  t_end = 0
+elif len(sys.argv) == 13:
+  input_file = sys.argv[2]
+  cfg_file = sys.argv[4]
+  var_index1  = int(sys.argv[6])
+  var_index2 = -999
+  output_file = sys.argv[8]
+  t_start = int(sys.argv[10])
+  t_end = int(sys.argv[12])
+elif len(sys.argv) == 10:
+  input_file = sys.argv[2]
+  cfg_file = sys.argv[4]
+  var_index1 = int(sys.argv[6])
+  var_index2 = int(sys.argv[7])          
+  output_file = sys.argv[9]
+  t_start = 0
+  t_end = 0
+elif len(sys.argv) == 14:
+  input_file = sys.argv[2]
+  cfg_file = sys.argv[4]
+  var_index1 = int(sys.argv[6])
+  var_index2 = int(sys.argv[7])          
+  output_file = sys.argv[9]
+  t_start = int(sys.argv[11])
+  t_end = int(sys.argv[13])
 else: 
   print('Wrong number of Arguments, stopping now...')
   print('Usage:')
-  print('python sel2png.py -i input.slf -v 4 -o output.png')
-  print('python sel2png.py -i input.slf -v 4 5 -o output.png')
-  print('python sel2png.py -i input.slf -v 4 -o output.png -s 1 -e 5')
-  print('python sel2png.py -i input.slf -v 4 5 -o output.png -s 1 -e 5')
+  print('python sel2png.py -i input.slf -c sel2png.cfg -v 4 -o output.png')
+  print('python sel2png.py -i input.slf -c sel2png.cfg -v 4 5 -o output.png')
+  print('python sel2png.py -i input.slf -c sel2png.cfg -v 4 -o output.png -s 1 -e 5')
+  print('python sel2png.py -i input.slf -c sel2png.cfg -v 4 5 -o output.png -s 1 -e 5')
   sys.exit()
-
-# reads the sel2png.cfg file for additional parameters
+  
+# reads the *.cfg file for additional parameters
 # each line in the file is a list object
 line = list()
-with open('sel2png.cfg', 'r') as f1:
+with open(cfg_file, 'r') as f1:
   for i in f1:
     line.append(i)
 
-# reads the first set of parameters from the sel2png.cfg file
+# reads the first set of parameters from the *.cfg file
 params1 = line[1].split()
     
 cbar_min_global = float(params1[0])
 cbar_max_global = float(params1[1])
 cbar_color_map = params1[2]
 
-# reads the second set of parameters from the sel2png.cfg file
+# reads the second set of parameters from the *.cfg file
 params2 = line[11].split()
 
 vectors = int(params2[0])
@@ -111,7 +122,7 @@ vector_color = str(params2[3])
 vector_grid = int(params2[4])
 vector_grid_size = float(params2[5])
 
-# reads the third set of parameters from the sel2png.cfg file
+# reads the third set of parameters from the *.cfg file
 params3 = line[24].split()
 
 zoom = int(params3[0])
@@ -167,13 +178,13 @@ for i in range(len(variables)):
     idx_art_wave_height = i
   elif (variables[i].find('WAVE INCIDENCE') > -1):
     idx_art_wave_inc = i
-  
+
 # update the index of t_end
 # len(times) gives total number of items in the array
 # len(times) - 1 is the index of the last element
-if (len(sys.argv) == 7 or len(sys.argv) == 8):
+if (len(sys.argv) == 9 or len(sys.argv) == 10):
   t_end = len(times)-1
-
+    
 # to remove duplicate spaces from variables
 for i in range(len(variables)):
   variables[i] = ' '.join(variables[i].split())
@@ -216,7 +227,7 @@ if (idx_list[0] not in idx_times):
 elif (idx_list[-1] not in idx_times):
   print('Ending time specified not in *.slf file. Exiting.')
   sys.exit()
-
+  
 # this is the same as my sel2vtk.py script
 for count, item in enumerate(filenames):
   print('Writing file ' + item)

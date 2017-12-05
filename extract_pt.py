@@ -26,8 +26,11 @@
 # Changed KDTree to cKDTree to improve performance.
 #
 # Revised: Sep 26, 2017
-# changed the definition of x2d and y2d to make sure the index is an 
+# Changed the definition of x2d and y2d to make sure the index is an 
 # integer. This was changed in the latest numpy release.
+#
+# Revised: Dec 5, 2017
+# Changed how parsing is done in formatting for the 3d ascii output.
 #
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
@@ -199,10 +202,10 @@ if NPLAN > 1:
   with open(output_file, 'r') as f1:
     for i in f1:
       master.append(i)
-      if (count < 3):
+      if (count > 2) and (count < 5):
         header_str = header_str + master[count]
-        count = count + 1
-        
+      count = count + 1
+
   # remove the output file
   os.remove(output_file)
 
@@ -215,9 +218,9 @@ if NPLAN > 1:
   
   # close the temp file  
   fout2.close()
-  
+
   # use numpy to read the temp file
-  temp_data = np.loadtxt('temp.txt', delimiter=',',skiprows=0,unpack=True)
+  temp_data = np.loadtxt('temp.txt', delimiter=',',skiprows=2,unpack=True)
   
   temp_data_tr = np.transpose(temp_data)
   

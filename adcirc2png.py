@@ -13,6 +13,9 @@
 # file using Matplotlib for quick visualization. Additional parameters
 # that control the levels and zoom are given in the file adcirc2png.cfg.
 #
+# Revised: Dec 5, 2017
+# Made the *.cfg file a required command line input.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -38,30 +41,31 @@ from ppmodules.readMesh import *
 curdir = os.getcwd()
 #
 # I/O
-if len(sys.argv) != 5 :
+if len(sys.argv) != 7 :
   print('Wrong number of Arguments, stopping now...')
   print('Usage:')
-  print('python adcirc2png.py -i out.grd -o out.png')
+  print('python adcirc2png.py -i out.grd -c adcirc2png.cfg -o out.png')
   sys.exit()
   
 adcirc_file = sys.argv[2]
-png_file = sys.argv[4]
+cfg_file = sys.argv[4]
+png_file = sys.argv[6]
 
 # reads the sel2png.cfg file for additional parameters
 # each line in the file is a list object
 line = list()
-with open('adcirc2png.cfg', 'r') as f1:
+with open(cfg_file, 'r') as f1:
   for i in f1:
     line.append(i)
 
-# reads the first set of parameters from the adcirc2png.cfg file
+# reads the first set of parameters from the *.cfg file
 params1 = line[1].split()
     
 cbar_min_global = float(params1[0])
 cbar_max_global = float(params1[1])
 cbar_color_map = params1[2]
 
-# reads the second set of parameters from the adcirc2png.cfg file
+# reads the second set of parameters from the *.cfg file
 params2 = line[13].split()
 
 zoom = int(params2[0])
@@ -70,7 +74,7 @@ yll = float(params2[2])
 xur = float(params2[3])
 yur = float(params2[4])
 
-# reads the third set of parameters from the adcirc2png.cfg file
+# reads the third set of parameters from the *.cfg file
 params3 = line[23].split()
 
 show_mesh = int(params3[0])
