@@ -52,16 +52,16 @@ import timeit
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 curdir = os.getcwd()
 start_time = timeit.default_timer()
 #
 # I/O
 if len(sys.argv) != 7 :
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python assign.py -i out.grd -b boundary.csv -o out_friction.grd')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python assign.py -i out.grd -b boundary.csv -o out_friction.grd')
+  sys.exit()
 dummy1 =  sys.argv[1]
 input_file = sys.argv[2]
 dummy2 =  sys.argv[3]
@@ -105,11 +105,11 @@ attr_count = -1
 # TODO must fix this!
 # go through the polygons, and assign attribute_data 
 for i in range(nodes-1):
-	#print str(shapeid_poly[i]) + ' ' + str(shapeid_poly[i+1])
-	if (shapeid_poly[i] - shapeid_poly[i+1] < 0):
-		attr_count = attr_count + 1
-		attribute_data[attr_count] = attr_poly[i]
-		
+  #print str(shapeid_poly[i]) + ' ' + str(shapeid_poly[i+1])
+  if (shapeid_poly[i] - shapeid_poly[i+1] < 0):
+    attr_count = attr_count + 1
+    attribute_data[attr_count] = attr_poly[i]
+    
 # manually assign the attribute_data for the last polygon
 attribute_data[n_polygons-1] = attr_poly[nodes-1]
 
@@ -126,25 +126,25 @@ count_bar = 0
 
 # loop over all polygons
 for i in range(n_polygons):
-	# construct each polygon
-	poly = []
-	for j in range(nodes):
-		if (shapeid_poly[j] == polygon_ids[i]):
-			poly.append( (x_poly[j], y_poly[j]) )
-	#print poly
-	
-	# to loop over all nodes in the mesh (inneficient)
-	# TODO remove the brute force component of this code!!!
-	for k in range(n):
-		count_bar = count_bar + 1
-		pbar.update(count_bar)
-		poly_test = point_in_poly(x[k], y[k], poly)
-		if (poly_test == 'IN'):
-			f[k] = attribute_data[i]
-	
-	# delete all elements in the poly list
-	del poly[:]		
-	#print '###########'
+  # construct each polygon
+  poly = []
+  for j in range(nodes):
+    if (shapeid_poly[j] == polygon_ids[i]):
+      poly.append( (x_poly[j], y_poly[j]) )
+  #print poly
+  
+  # to loop over all nodes in the mesh (inneficient)
+  # TODO remove the brute force component of this code!!!
+  for k in range(n):
+    count_bar = count_bar + 1
+    pbar.update(count_bar)
+    poly_test = point_in_poly(x[k], y[k], poly)
+    if (poly_test == 'IN'):
+      f[k] = attribute_data[i]
+  
+  # delete all elements in the poly list
+  del poly[:]    
+  #print '###########'
 
 # finish the bar
 pbar.finish()
@@ -154,8 +154,8 @@ pbar.finish()
 outside_test = np.extract(f-default < 0.001,f)
 
 if (len(outside_test) > 0):
-	print('Warning: some nodes were not within any of the input polygons!')
-	print('Assigning default value of ' + str(default) + ' as attribute')
+  print('Warning: some nodes were not within any of the input polygons!')
+  print('Assigning default value of ' + str(default) + ' as attribute')
 
 # now to write the adcirc mesh file
 fout.write("ADCIRC" + "\n")
@@ -164,13 +164,13 @@ fout.write(str(e) + " " + str(n) + "\n")
 
 # writes the nodes
 for i in range(n):
-	fout.write(str(i+1) + " " + str("{:.3f}".format(x[i])) + " " + 
-		str("{:.3f}".format(y[i])) + " " + str("{:.3f}".format(f[i])) + "\n")
+  fout.write(str(i+1) + " " + str("{:.3f}".format(x[i])) + " " + 
+    str("{:.3f}".format(y[i])) + " " + str("{:.3f}".format(f[i])) + "\n")
 #
 # writes the elements
 for i in range(e):
-	fout.write(str(i+1) + " 3 " + str(ikle[i,0]+1) + " " + str(ikle[i,1]+1) + " " + 
-		str(ikle[i,2]+1) + "\n")	
+  fout.write(str(i+1) + " 3 " + str(ikle[i,0]+1) + " " + str(ikle[i,1]+1) + " " + 
+    str(ikle[i,2]+1) + "\n")  
 #
 end_time = timeit.default_timer()
 #print('execution time is ' + str(end_time - start_time))

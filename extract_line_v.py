@@ -79,7 +79,7 @@ NPLAN = slf.getNPLAN()
 # to warn the user that this applies for 2d SELAFIN files only
 if (NPLAN > 1):
   print('It does not make sense to run this script for 3d SELAFIN files.')
-  print('Use POSTED-3D or Paraview instead!')
+  print('Use POSTEL-3D or Paraview instead!')
   sys.exit(0)
 
 # number of variables
