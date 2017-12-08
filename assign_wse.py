@@ -158,10 +158,13 @@ slf_ws.writeHeader()
 # re-create the depth array from the wse and bottom arrays
 depth = np.subtract(wse, bottom)
 
-# make sure there are not negative depths
+# make sure there are not negative depths,
+# and that wse is not smaller than bottom
 for i in range(NPOIN):
   if (depth[i] < 0):
     depth[i] = 0.0
+  if (wse[i] < bottom[i]):
+    wse[i] = bottom[i]
 
 # this is the master results to write for the warm start file
 res_ws = np.zeros((5,NPOIN))
