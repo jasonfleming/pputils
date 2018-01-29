@@ -101,11 +101,11 @@ for i in range(num_pts):
 # now take the adcirc file, and produce a *.slf file out of it
 
 # reads the ADCIRC mesh file first
-n,e,x,y,z,ikle = readAdcirc(adcirc_file)
+#n,e,x,y,z,ikle = readAdcirc(adcirc_file)
 
 # use getIPOBO_IKLE() to get IPOBO and IKLE arrays
 # this method also writes a 'temp.cli' file as well
-IPOBO, IKLE = getIPOBO_IKLE(adcirc_file)
+n,e,x,y,z,IKLE,IPOBO = getIPOBO_IKLE(adcirc_file)
 
 # rename temp.cli to proper name
 cli_file = output_file.split('.',1)[0] + '.cli'

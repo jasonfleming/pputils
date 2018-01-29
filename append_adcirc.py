@@ -59,6 +59,8 @@ else:
   sys.exit(0)
 
 # reads the first and second ADCIRC files
+# note that ikle's are zero based in the readAdcirc() method
+# but, we are not using the ikle's from here, only z1 and z2
 n1,e1,x1,y1,z1,ikle1 = readAdcirc(bathy_file)
 n2,e2,x2,y2,z2,ikle2 = readAdcirc(friction_file)
 
@@ -66,20 +68,19 @@ if (n1 != n2) or (e1 != e2):
   print('Nodes and elements of two input files do not match ... exiting.')
   sys.exit()
 
-# use getIPOBO_IKLE() to get IPOBO and IKLE arrays
+# use getIPOBO_IKLE() to get the geometry from the bathy file
 # this method also writes a 'temp.cli' file as well
-IPOBO, IKLE = getIPOBO_IKLE(bathy_file)
+# note indices in ikle and ipobo are one based
+n,e,x,y,z,IKLE,IPOBO = getIPOBO_IKLE(bathy_file)
 
 # rename temp.cli to proper name
 cli_file = output_file.split('.',1)[0] + '.cli'
 os.rename('temp.cli',cli_file)
 
 # It needs these to write the *.slf file
-NELEM = e1
-NPOIN = n1
+NELEM = e
+NPOIN = n
 NDP = 3 # always 3 for triangular elements
-x = x1
-y = y1
 
 # now we are ready to write the output *.slf file
 out = ppSELAFIN(output_file)

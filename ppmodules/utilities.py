@@ -449,144 +449,26 @@ def CCW(x1,y1,x2,y2,x3,y3):
    return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)
 
 # this method takes in an adcirc file, and returns the IPOBO and IKLE arrays
-# and also generates temp.cli file
-# This method is exactly as what is in my adcirc2sel.py code ... 
-# I will keep the code duplication until I fully test it ...
-def getIPOBO_IKLE(adcirc_file):  
-  ########################################################################
-  # this part of the code uses python's subprocess to call externally
-  # compiled version of the fortran program bnd_extr_pp.f
-  # 
-  # if subprocess fails, run the bnd_extr_pp.f externally, and obtain
-  # gredit.bnd file for use in this script! Delete everythng between the
-  # lines bound by ###
-  ########################################################################
-  # to determine if the system is 32 or 64 bit
-  archtype = struct.calcsize("P") * 8
+# and also generates temp.cli file for use in Telemac
+# this version uses the output from bnd_extr_stbtel.f90 Fortran program
 
-  curdir = os.getcwd()
-  print(curdir)
-  
-  # to determine the IPOBO array, call pre-compiled binary bnd_extr_pp
-  if (os.name == 'posix'):
-    # to determine processor type
-    proctype = os.uname()[4][:]		
-		
-    # to move the adcirc file to ./boundary/bin
-    callstr = 'mv ' + str(adcirc_file) + ' ./boundary/bin'
-    subprocess.call(callstr, shell=True)
-  
-    # change directory to get to executable
-    os.chdir('./boundary/bin')
-    
-    if (proctype == 'i686'):
-      # make sure the binary is allowed to be executed
-      subprocess.call(['chmod', '+x', 'bnd_extr_pp_32'])
-      
-      # execute the binary to generate the renumbered nodes and elements
-      print('Executing bnd_extr_pp program ...')
-      subprocess.call(['./bnd_extr_pp_32', adcirc_file])
-      
-    elif (proctype == 'x86_64'):
-      # make sure the binary is allowed to be executed
-      subprocess.call(['chmod', '+x', 'bnd_extr_pp_64'])
-      
-      # execute the binary to generate the renumbered nodes and elements
-      print('Executing bnd_extr_pp program ...')
-      subprocess.call(['./bnd_extr_pp_64', adcirc_file])
-  
-    elif (proctype == 'armv7l'):  
-      # make sure the binary is allowed to be executed
-      subprocess.call(['chmod', '+x', 'bnd_extr_pp_pi32'])
-      
-      # execute the binary to generate the renumbered nodes and elements
-      print('Executing bnd_extr_pp program ...')
-      subprocess.call(['./bnd_extr_pp_pi32', adcirc_file])
-      
-    # move the files back
-    subprocess.call('mv *.bnd ' + curdir, shell=True)
-    subprocess.call('mv ' + adcirc_file + ' ' + curdir, shell=True)
-    
-    # change directory back
-    os.chdir(curdir)
-    
-  if (os.name == 'nt'):
-    # nt is for windows
-    callstr = ".\\boundary\\bin\\bnd_extr_pp_32.exe"
-    subprocess.call([callstr, adcirc_file])
-      
-  ########################################################################
-  
-  # if we are here, this means gredit.bnd file is generated and moved to 
-  # root dir of pputils
-  if (os.path.isfile('gredit.bnd') == False):
-    print('Fortran compiled program bnd_exr_pp.f did not generate gredit.bnd!')
-    print('Exiting ...')
-    sys.exit()
-  
-  # now open gredit.bnd and read the boundary data
-  # read the contents of the gredit.bnd file into a master list, where each
-  # item in the list is a line
-  master = list()
-  with open('gredit.bnd','r') as f:
-    for i in f:
-      master.append(i)
-  f.close()
-  
-  # delete the gredit.bnd file
-  os.remove('gredit.bnd')
-  
-  # this is the number of boundaries read from the gredit.bnd file
-  # first line is ADCIRC, second line is num_bnd 
-  num_bnd = int(master[1].split()[0])
-  
-  # delete the first two records in the master
-  del master[0]
-  del master[0]
-  
-  # create a list for each boundary
-  # bnd is a list of lists
-  bnd = list()
-  for i in range(num_bnd):
-    bnd.append(list())
-  
-  # total boundary nodes for each boundary
-  bnd_nodes = list()
-  
-  # initialize count
-  count = -1
-  
-  # get how many arrays are in each boundary and store each
-  # boundary into its own list
-  # this is where interpretive languages are great!
-  for i in range(len(master)):
-    tmp = master[i].split()
-    if (len(tmp) == 2):
-      bnd_nodes.append(tmp[0])
-      count = count + 1
-    else:
-      bnd[count].append(tmp[0])
-  
-  # bnd[0] is the main land boundary
-  # convert the bnd[0] to a numpy array
-  land_bnd = np.asarray(bnd[0],dtype=np.int32)
-  
-  # read the adcirc file
+# note that this function returns the ikle and the ipobo arrays that are
+# one based, as this is what telemac needs
+
+def getIPOBO_IKLE(adcirc_file):
+
+  # reads the adcirc file (note the ikle here is zero based)
   n,e,x,y,z,ikle = readAdcirc(adcirc_file)
   
-  # the readAdcirc function returns ikle that starts with index 0; to get
-  # indexes to start at one, add 1 to all elements in ikle array
-  ikle[:,0] = ikle[:,0]+1
-  ikle[:,1] = ikle[:,1]+1
-  ikle[:,2] = ikle[:,2]+1
-  
+  # #######################
+  # make sure the elements are oriented in CCW fashion
   # go through each element, and make sure it is oriented in CCW fashion
   for i in range(len(ikle)):
     
     # if the element is not CCW then must change its orientation
-    if not CCW( x[ikle[i,0]-1], y[ikle[i,0]-1], x[ikle[i,1]-1], y[ikle[i,1]-1], 
-      x[ikle[i,2]-1], y[ikle[i,2]-1] ):
-      
+    if not CCW( x[ikle[i,0]], y[ikle[i,0]], x[ikle[i,1]], y[ikle[i,1]], 
+      x[ikle[i,2]], y[ikle[i,2]] ):
+    
       t0 = ikle[i,0]
       t1 = ikle[i,1]
       t2 = ikle[i,2]
@@ -594,72 +476,110 @@ def getIPOBO_IKLE(adcirc_file):
       # switch orientation
       ikle[i,0] = t2
       ikle[i,2] = t0
-      
-      #print('switching orientation for element: ' +str(i+1))
+  # #######################
+
+  # the above returns ikle that is zero based, but
+  # telemac will need them to be one-based; conversion is done below
+  ikle[:,0] = ikle[:,0] + 1
+  ikle[:,1] = ikle[:,1] + 1
+  ikle[:,2] = ikle[:,2] + 1
   
-  # note that the nodes here are indexed starting at zero
-  node = np.arange(n)+1
+  # temporary ipobo.txt (this is the output from the bnd_extr_stbtel.f90)
+  temp_ipobo = 'ipobo.txt'
   
-  # find lower left corner of the boundary
-  # algorithm is this: find the distance of each land_bnd node from 
-  # (-10000000,-10000000)
-  # the boundary node with the smallest distance is the lower left node
-  xdist = np.subtract(x,-10000000.0)
-  ydist = np.subtract(y,-10000000.0)
-  dist = np.sqrt(np.power(xdist,2.0) + np.power(ydist,2.0))
+  # now we are ready to generate the ppIPOB array by running a pre-compiled
+  # binary of bnd_extr_stbtel.f90
   
-  # find the location of the LL node in the mesh
-  LLnode = np.argmin(dist)
-  # print 'LL node in mesh is at index: ',LLnode
-  
-  # find the index of the LLnode in land_bnd
-  start_idx = 0
-  for i in range(len(land_bnd)):
-    if (land_bnd[i] == LLnode+1):
-      start_idx = i
-  #print 'Index in land_bnd with the LLnode is ', start_idx    
-  
-  # this makes sure the LLnode is at the start of the array
-  land_bnd_rolled = np.roll(land_bnd, len(land_bnd) - start_idx)
-  
-  # return the land_bnd_rolled back to bnd[0]
-  for i in range(len(bnd[0])):
-    bnd[0][i] = land_bnd_rolled[i]
+  # to determine if the system is 32 or 64 bit
+  archtype = struct.calcsize('P') * 8
+
+  # gets the current directory
+  curdir = os.getcwd()
+
+  ########################################################################
+  if (os.name == 'posix'):
+    # to determine processor type
+    proctype = os.uname()[4][:]
+	
+    # to move the adcirc file to ./boundary/bin
+    callstr = 'mv ' + str(adcirc_file) + ' ./boundary/bin'
+    subprocess.call(callstr, shell=True)
     
-  # *.cli file name string  
-  cli_file = 'temp.cli'
+    # change directory to get to executable
+    os.chdir('./boundary/bin')
+    
+    if (proctype == 'i686'):
+      # make sure the binary is allowed to be executed
+      subprocess.call(['chmod', '+x', 'bnd_extr_stbtel_32'])
+      
+      # execute the binary 
+      #print('Executing bnd_extr_stbtel program ...')
+      subprocess.call(['./bnd_extr_stbtel_32', adcirc_file, temp_ipobo])
+      
+    elif (proctype == 'x86_64'):
+      # make sure the binary is allowed to be executed
+      subprocess.call(['chmod', '+x', 'bnd_extr_stbtel_64'])
+      
+      # execute the binary 
+      #print('Executing bnd_extr_stbtel program ...')
+      subprocess.call(['./bnd_extr_stbtel_64', adcirc_file, temp_ipobo])
+      
+    elif (proctype == 'armv7l'):  
+      # make sure the binary is allowed to be executed
+      subprocess.call(['chmod', '+x', 'bnd_extr_stbtel_pi32'])
+      
+      # execute the binary 
+      #print('Executing bnd_extr_pp program ...')
+      subprocess.call(['./bnd_extr_stbtel_pi32', adcirc_file, temp_ipobo])
+      
+    # move the files back
+    subprocess.call('mv *.txt ' + curdir, shell=True)
+    subprocess.call('mv ' + adcirc_file + ' ' + curdir, shell=True)
   
-  # create the *.cli file
-  fcli = open(cli_file, 'w')
-  
-  # this is the base data for *.cli file
+    # change directory back
+    os.chdir(curdir)
+      
+  if (os.name == 'nt'):
+    # nt is for windows
+    callstr = ".\\boundary\\bin\\bnd_extr_stbtel_32.exe"
+    subprocess.call([callstr, adcirc_file, temp_ipobo])
+    ########################################################################
+
+  # now we can read in the ipobo.txt file, and populate the ppIPOB variable
+  # as well as write the *.cli file
+
+  # read the ipobo.txt file as a master list
+  line = list()
+  with open('ipobo.txt', 'r') as f1:
+    for i in f1:
+      line.append(i)
+
+  # now we can write the temp.cli file
+  fcli = open('temp.cli', 'w')
   cli_base = str('2 2 2 0.000 0.000 0.000 0.000 2 0.000 0.000 0.000 ')
-  
-  # print all boundary nodes according to what TELEMAC needs
-  a = -1
-  # store it all_bnd
-  # all_bnd is arranged so that it can be written to the *.cli file
-  all_bnd = list()
-  for i in range(num_bnd):
-    for item in bnd[i]:
-      a = a + 1
-      all_bnd.append(item)
-      fcli.write(cli_base + str(item) + ' ' + str(a+1) + '\n')
+
+  # write the *.cli file
+  for i in range(len(line)):
+    fcli.write(cli_base + str(int(line[i])) + ' ' + str(i+1) + '\n')
+
+  # close the *.cli file
   fcli.close()
-  
-  # convert all_bnd from a list to a numpy array
-  all_bnd_array = np.asarray(all_bnd)
-  
-  # now we can populate the ppIPOB array
-  ppIPOB = np.zeros(n,dtype=np.int32)
-  
-  # we have an all_bnd_array, that lists nodes of the boundary
-  # this just might work; must test
+
+  # note the temp.cli gets renamed in the master script
+
+  # now store the ppIPOB array
+  ppIPOB = np.zeros(n, dtype=np.int32)
+
   ipob_count = 0
-  
-  for i in range(len(all_bnd)):
+
+  # returns the ppIPOB array that is one based
+  for i in range(len(line)):
     ipob_count = ipob_count + 1
-    ppIPOB[int(all_bnd[i])-1] = ipob_count
+    ppIPOB[int(line[i])-1] = ipob_count
+
+  # now we can remove the ipobo.txt file
+  os.remove('ipobo.txt')
   
-  return ppIPOB, ikle
-  #######################################################################
+  return n,e,x,y,z,ikle,ppIPOB
+  
+

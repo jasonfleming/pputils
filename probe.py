@@ -58,6 +58,7 @@ ftype,fsize = slf.getPrecision()
 nplan = slf.getNPLAN()
 NELEM = slf.getNELEM()
 NPOIN = slf.getNPOIN()
+IPOBO = slf.getIPOBO()
 
 if (nplan > 1):
   slf_type = '3d'
@@ -118,5 +119,3 @@ else:
   print(str(records[nrecs-1]) +"-->" + str("{:10.1f}".format(times[nrecs-1])))
   
 print('#################################')
-
-

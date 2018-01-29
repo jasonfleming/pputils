@@ -23,6 +23,11 @@
 # Revised: May 6, 2017
 # Placed a call to processor type inside the posix if statement.
 #
+# Revised: Jan 29, 2018
+# The IPOBO array is now generated using the Fortran program
+# bnd_extr_stbtel.f90 (pre-compiled binaries are available for
+# Linux 32, Linux 64, and Windows).
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -42,11 +47,8 @@ import struct                              # to determine sys architecture
 import subprocess                          # to execute binaries
 from ppmodules.selafin_io_pp import *      # pp's SELAFIN io
 from ppmodules.readMesh import *           # for the readAdcirc function
+from ppmodules.utilities import *          # getIPOBO_IKLE() method
 #
-# this is the function that returns True if the elements is oriented CCW
-#def CCW((x1,y1),(x2,y2),(x3,y3)):
-#  return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)
-
 # this works for python 2 and 3
 def CCW(x1,y1,x2,y2,x3,y3):
    return (y3-y1)*(x2-x1) > (y2-y1)*(x3-x1)  
@@ -66,211 +68,15 @@ adcirc_file = sys.argv[2]
 precision = sys.argv[4]
 output_file = sys.argv[6]
 
-########################################################################
-# this part of the code uses python's subprocess to call externally
-# compiled version of the fortran program bnd_extr_pp.f
-# 
-# if subprocess fails, run the bnd_extr_pp.f externally, and obtain
-# gredit.bnd file for use in this script! Delete everythng between the
-# lines bound by ###
-########################################################################
-# to determine if the system is 32 or 64 bit
-archtype = struct.calcsize("P") * 8
+# reads mesh data using the get IPOBO_IKLE() method from utilities.py
+# the ikle and the ppIPOB are one-based
+n,e,x,y,z,ikle,ppIPOB = getIPOBO_IKLE(adcirc_file)
 
-# to determine the IPOBO array, call pre-compiled binary bnd_extr_pp
-if (os.name == 'posix'):
-  # to determine processor type
-  proctype = os.uname()[4][:]
-	
-  # to move the adcirc file to ./boundary/bin
-  callstr = 'mv ' + str(adcirc_file) + ' ./boundary/bin'
-  subprocess.call(callstr, shell=True)
-
-  # change directory to get to executable
-  os.chdir('./boundary/bin')
-  
-  if (proctype == 'i686'):
-    # make sure the binary is allowed to be executed
-    subprocess.call(['chmod', '+x', 'bnd_extr_pp_32'])
-    
-    # execute the binary to generate the renumbered nodes and elements
-    print('Executing bnd_extr_pp program ...')
-    subprocess.call(['./bnd_extr_pp_32', adcirc_file])
-    
-  elif (proctype == 'x86_64'):
-    # make sure the binary is allowed to be executed
-    subprocess.call(['chmod', '+x', 'bnd_extr_pp_64'])
-    
-    # execute the binary to generate the renumbered nodes and elements
-    print('Executing bnd_extr_pp program ...')
-    subprocess.call(['./bnd_extr_pp_64', adcirc_file])
-
-  elif (proctype == 'armv7l'):  
-    # make sure the binary is allowed to be executed
-    subprocess.call(['chmod', '+x', 'bnd_extr_pp_pi32'])
-    
-    # execute the binary to generate the renumbered nodes and elements
-    print('Executing bnd_extr_pp program ...')
-    subprocess.call(['./bnd_extr_pp_pi32', adcirc_file])
-    
-  # move the files back
-  subprocess.call('mv *.bnd ' + curdir, shell=True)
-  subprocess.call('mv ' + adcirc_file + ' ' + curdir, shell=True)
-  
-  # change directory back
-  os.chdir(curdir)
-  
-if (os.name == 'nt'):
-  # nt is for windows
-  callstr = ".\\boundary\\bin\\bnd_extr_pp_32.exe"
-  subprocess.call([callstr, adcirc_file])
-  
-########################################################################
-
-# if we are here, this means gredit.bnd file is generated and moved to 
-# root dir of pputils
-if (os.path.isfile('gredit.bnd') == False):
-  print('Fortran compiled program bnd_exr_pp.f did not generate gredit.bnd!')
-  print('Exiting ...')
-  sys.exit()
-
-# now open gredit.bnd and read the boundary data
-# read the contents of the gredit.bnd file into a master list, where each
-# item in the list is a line
-master = list()
-with open('gredit.bnd','r') as f:
-  for i in f:
-    master.append(i)
-f.close()
-
-# delete the gredit.bnd file
-os.remove('gredit.bnd')
-
-# this is the number of boundaries read from the gredit.bnd file
-# first line is ADCIRC, second line is num_bnd 
-num_bnd = int(master[1].split()[0])
-
-# delete the first two records in the master
-del master[0]
-del master[0]
-
-# create a list for each boundary
-# bnd is a list of lists
-bnd = list()
-for i in range(num_bnd):
-  bnd.append(list())
-
-# total boundary nodes for each boundary
-bnd_nodes = list()
-
-# initialize count
-count = -1
-
-# get how many arrays are in each boundary and store each
-# boundary into its own list
-# this is where interpretive languages are great!
-for i in range(len(master)):
-  tmp = master[i].split()
-  if (len(tmp) == 2):
-    bnd_nodes.append(tmp[0])
-    count = count + 1
-  else:
-    bnd[count].append(tmp[0])
-
-# bnd[0] is the main land boundary
-# convert the bnd[0] to a numpy array
-land_bnd = np.asarray(bnd[0],dtype=np.int32)
-
-# read the adcirc file
-n,e,x,y,z,ikle = readAdcirc(adcirc_file)
-
-# the readAdcirc function returns ikle that starts with index 0; to get
-# indexes to start at one, add 1 to all elements in ikle array
-ikle[:,0] = ikle[:,0]+1
-ikle[:,1] = ikle[:,1]+1
-ikle[:,2] = ikle[:,2]+1
-
-# go through each element, and make sure it is oriented in CCW fashion
-for i in range(len(ikle)):
-  
-  # if the element is not CCW then must change its orientation
-  if not CCW( x[ikle[i,0]-1], y[ikle[i,0]-1], x[ikle[i,1]-1], y[ikle[i,1]-1], 
-    x[ikle[i,2]-1], y[ikle[i,2]-1] ):
-    
-    t0 = ikle[i,0]
-    t1 = ikle[i,1]
-    t2 = ikle[i,2]
-    
-    # switch orientation
-    ikle[i,0] = t2
-    ikle[i,2] = t0
-    
-    #print('switching orientation for element: ' +str(i+1))
-
-# note that the nodes here are indexed starting at zero
-node = np.arange(n)+1
-
-# find lower left corner of the boundary
-# algorithm is this: find the distance of each land_bnd node from 
-# (-10000000,-10000000)
-# the boundary node with the smallest distance is the lower left node
-xdist = np.subtract(x,-10000000.0)
-ydist = np.subtract(y,-10000000.0)
-dist = np.sqrt(np.power(xdist,2.0) + np.power(ydist,2.0))
-
-# find the location of the LL node in the mesh
-LLnode = np.argmin(dist)
-# print 'LL node in mesh is at index: ',LLnode
-
-# find the index of the LLnode in land_bnd
-start_idx = 0
-for i in range(len(land_bnd)):
-  if (land_bnd[i] == LLnode+1):
-    start_idx = i
-#print 'Index in land_bnd with the LLnode is ', start_idx    
-
-# this makes sure the LLnode is at the start of the array
-land_bnd_rolled = np.roll(land_bnd, len(land_bnd) - start_idx)
-
-# return the land_bnd_rolled back to bnd[0]
-for i in range(len(bnd[0])):
-  bnd[0][i] = land_bnd_rolled[i]
-  
-# *.cli file name string  
+# the above method generates a file called temp.cli, which we rename here
 cli_file = output_file.split('.',1)[0] + '.cli'
+os.rename('temp.cli',cli_file)
 
-# create the *.cli file
-fcli = open(cli_file, 'w')
-
-# this is the base data for *.cli file
-cli_base = str('2 2 2 0.000 0.000 0.000 0.000 2 0.000 0.000 0.000 ')
-
-# print all boundary nodes according to what TELEMAC needs
-a = -1
-# store it all_bnd
-# all_bnd is arranged so that it can be written to the *.cli file
-all_bnd = list()
-for i in range(num_bnd):
-  for item in bnd[i]:
-    a = a + 1
-    all_bnd.append(item)
-    fcli.write(cli_base + str(item) + ' ' + str(a+1) + '\n')
-fcli.close()
-
-# convert all_bnd from a list to a numpy array
-all_bnd_array = np.asarray(all_bnd)
-
-# now we can populate the ppIPOB array
-ppIPOB = np.zeros(n,dtype=np.int32)
-
-# we have an all_bnd_array, that lists nodes of the boundary
-# this just might work; must test
-ipob_count = 0
-
-for i in range(len(all_bnd)):
-  ipob_count = ipob_count + 1
-  ppIPOB[int(all_bnd[i])-1] = ipob_count
-
+# now we can write the *.slf file
 #######################################################################
 if(precision == 'single'):
   ftype = 'f'
@@ -282,7 +88,7 @@ else:
   print('Precision unknown! Exiting!')
   sys.exit(0)
 
-# it gets these from readAdcirc function
+# getIPOBO_IKLE() method provides these values
 NELEM = e
 NPOIN = n
 NDP = 3 # always 3 for triangular elements
@@ -305,4 +111,3 @@ zz[0,:] = z
 
 slf.writeVariables(0.0, zz)
 #######################################################################
-
