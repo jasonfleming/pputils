@@ -5,7 +5,6 @@ import subprocess
 from collections import OrderedDict
 from scipy import spatial
 from ppmodules.readMesh import *
-from progressbar import ProgressBar, Bar, Percentage, ETA
 
 def remove_duplicate_nodes(x,y,z):
   # This method removes duplicate nodes by keeping the unique values of

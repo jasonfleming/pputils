@@ -67,10 +67,21 @@ fout.write('WKT,element' + '\n')
 
 for i in range(e):
 	fout.write('"POLYGON ((')
-	fout.write(str(x[ikle[i,0]]) + ' ' + str(y[ikle[i,0]]) + ' ' + str(z[ikle[i,0]]) + ',' +
-		str(x[ikle[i,1]]) + ' ' + str(y[ikle[i,1]]) + ' ' + str(z[ikle[i,1]]) + ',' +
-		str(x[ikle[i,2]]) + ' ' + str(y[ikle[i,2]]) + ' ' + str(z[ikle[i,2]]) + ',' +
-		str(x[ikle[i,0]]) + ' ' + str(y[ikle[i,0]]) + ' ' + str(z[ikle[i,0]]) + '))",' + str(i+1) + '\n')
+	fout.write(str('{:.3f}'.format(x[ikle[i,0]] )) + ' ' + 
+	  str('{:.3f}'.format(y[ikle[i,0]] )) + ' ' + 
+	  str('{:.3f}'.format(z[ikle[i,0]] )) + ', ' +
+	  
+	  str('{:.3f}'.format(x[ikle[i,1]] )) + ' ' + 
+	  str('{:.3f}'.format(y[ikle[i,1]] )) + ' ' + 
+	  str('{:.3f}'.format(z[ikle[i,1]] )) + ',' +
+	  
+	  str('{:.3f}'.format(x[ikle[i,2]] )) + ' ' + 
+	  str('{:.3f}'.format(y[ikle[i,2]] )) + ' ' + 
+	  str('{:.3f}'.format(z[ikle[i,2]] )) + ', ' +
+	  
+	  str('{:.3f}'.format(x[ikle[i,0]] )) + ' ' + 
+	  str('{:.3f}'.format(y[ikle[i,0]] )) + ' ' + 
+	  str('{:.3f}'.format(z[ikle[i,0]] )) + '))",' + str(i+1) + '\n')
 	
 # to generate the node file
 fout_n = open(output_file_n,"w")
@@ -80,5 +91,7 @@ fout_n.write('WKT,node' + '\n')
 
 for i in range(n):
 	fout_n.write('"POINT (')
-	fout_n.write(str(x[i]) + ' ' + str(y[i]) + ' ' + str(z[i]) + ')",' + 
-		str(i+1) + '\n')
+	fout_n.write(str('{:.3f}'.format(x[i] )) + ' ' + 
+	  str('{:.3f}'.format(y[i] )) + ' ' + 
+	  str('{:.3f}'.format(z[i] )) + ')",' + 
+	  str(i+1) + '\n')
