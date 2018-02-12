@@ -14,6 +14,9 @@
 # the salome platform. The produced file is a python script that can be
 # directly loaded by the salome platform for geometry and mesh creation.
 #
+# Revised: Feb 12, 2018
+# Added an extra argument to specify salome splines.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -32,20 +35,24 @@
 #
 #       --> -l is the node listing of the constraint lines for the mesh.
 #                        The lines file can include open or closed polylines.
-#                        The file listing has shapeid,x,y, where x,y have to 
-#                        reasonable match that of the nodes.csv file. Each distinct
+#                        The file listing has shapeid,x,y. Each distinct
 #                        line has to have an individual (integer) shapeid. If no 
 #                        constraint lines in the mesh, enter 'none' without the quotes.
 #
 #       --> -h is the node listing of the holes in the mesh.
 #                        The holes file must include closed polylines. The
-#                        file listing has shapeid,x,y, where x,y have to reasonably
-#                        match that of the nodes.csv file. Each distinct hole has to 
+#                        file listing has shapeid,x,y. Each distinct hole has to 
 #                        have an individual (integer) shapeid. If no holes 
 #                        (islands) in the mesh, enter 'none' without the quotes.
 #
-#      --> -o is the output python script that is to be loaded with the salome platform.
-#                         
+#       --> -s is the node listing of the Salome splines in the mesh.
+#                        The splines file must include open polylines. The
+#                        file listing has shapeid,x,y. Each distinct spline has to 
+#                        have an individual (integer) shapeid. If no splines 
+#                        in the mesh, enter 'none' without the quotes.
+#
+#--> -o is the output python script that is to be loaded with the salome platform.
+#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Global Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,15 +60,16 @@ import os,sys      # system parameters
 import numpy as np # numpy
 #
 # I/O
-if (len(sys.argv) == 9):
+if (len(sys.argv) == 11):
   boundary_file = sys.argv[2]
   lines_file = sys.argv[4]
   holes_file = sys.argv[6]
-  output_file = sys.argv[8]
+  splines_file = sys.argv[8]
+  output_file = sys.argv[10]
 else:
   print('Wrong number of Arguments, stopping now...')
   print('Usage:')
-  print('python gis2salome.py -b boundary.csv -l lines.csv -h holes.csv -o out.py')
+  print('python gis2salome.py -b boundary.csv -l lines.csv -h holes.csv -s splines.csv -o out.py')
   sys.exit()
 
 # we are now ready to read in the data from the above files
@@ -76,6 +84,9 @@ if (lines_file != 'none'):
 if (holes_file != 'none'):
   holes_data = np.loadtxt(holes_file, delimiter=',',skiprows=0,unpack=True)
 
+if (splines_file != 'none'):
+  splines_data = np.loadtxt(splines_file, delimiter=',',skiprows=0,unpack=True)
+  
 # we can start writing the output file (this file is to be loaded with salome)
 fout = open(output_file, 'w')
 
@@ -146,7 +157,27 @@ if (holes_file != 'none'):
         fout.write('pl.addPoints([' + str(hls_x[j]) + ', ' + str(hls_y[j]) + '])' + '\n')
     hname.append('Island_' + str(int(distinct_holes[i])))
     fout.write(hname[i] + ' = pl.result([0, 0, 0, 0, 0, 1, 1, 0, -0])' + '\n')
-      
+
+# if we have splines present, they are written here
+# splines are open polylines
+if (splines_file != 'none'):
+  spl_shapeid = splines_data[0,:]
+  spl_x = splines_data[1,:]
+  spl_y = splines_data[2,:]
+  distinct_splines = np.unique(spl_shapeid)
+  num_distinct_splines = len(distinct_splines)
+  sname = list()
+
+  # now we go through each hole, and write its data
+  for i in range(num_distinct_splines):
+    fout.write('pl = geompy.Polyline2D()' + '\n')
+    fout.write('pl.addSection("Section_1", GEOM.Interpolation, False)' + '\n')
+    for j in range(len(spl_x)):
+      if ((int(distinct_splines[i]) - int(spl_shapeid[j])) == 0):
+        fout.write('pl.addPoints([' + str(spl_x[j]) + ', ' + str(spl_y[j]) + '])' + '\n')
+    sname.append('Spline_' + str(int(distinct_splines[i])))
+    fout.write(sname[i] + ' = pl.result([0, 0, 0, 0, 0, 1, 1, 0, -0])' + '\n')
+
 # this is needed for the tail end of the salome file
 fout.write("geompy.addToStudy( O, 'O' )" + '\n')
 fout.write("geompy.addToStudy( OX, 'OX' )" + '\n')
@@ -162,5 +193,9 @@ if (holes_file != 'none'):
   for i in range(len(hname)):
     fout.write('geompy.addToStudy( ' + hname[i] + ', ' + "'" + hname[i] + "')" + '\n')  
 
+if (splines_file != 'none'):
+  for i in range(len(sname)):
+    fout.write('geompy.addToStudy( ' + sname[i] + ', ' + "'" + sname[i] + "')" + '\n')  
+    
 fout.write('if salome.sg.hasDesktop():' + '\n')
 fout.write('  salome.sg.updateObjBrowser(True)' + '\n')
