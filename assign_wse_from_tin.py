@@ -73,15 +73,20 @@ if (NPLAN > 1):
   print('3d SELAFIN files are not yet supported. Exiting!')
   sys.exit()
 
-# make sure that the variable 'BOTTOM' is in the mesh_file
+# make sure that the variable bottom is in the mesh_file
 idx_bottom = -999
+idx_bottom_friction = -999
 
 # find the index of the vector variables
 for i in range(len(variables)):
-  if (variables[i].find('BOTTOM') > -1):
+  if (variables[i].find('BOTTOM          ') > -1):
     idx_bottom = i
-  elif (variables[i].find('FOND') > -1):
+  elif (variables[i].find('FOND            ') > -1):
     idx_bottom = i
+  
+  # find bottom friction
+  elif (variables[i].find('BOTTOM FRICTION ') > -1):
+    idx_bottom_friction = i
 
 if (idx_bottom < 0):
   print('Variable BOTTOM or FOND not found in input file. Exiting!')
@@ -103,6 +108,7 @@ wse = interpolator(x, y)
 # if the mesh node is outside of the tin boundary, Matplotlib will assign
 # a NaN value to that node
 where_are_NaNs = np.isnan(wse)
+wse[where_are_NaNs] = -999.0
 
 # rather than keeping the -999.0 as the mesh node value outside the tin,
 # simply assign to that mesh node the bottom elevation.
@@ -114,8 +120,17 @@ for i in range(NPOIN):
 slf_ws = ppSELAFIN(output_file)
 slf_ws.setPrecision(float_type,float_size)
 slf_ws.setTitle('warm start file created with pputils')
-slf_ws.setVarNames(['BOTTOM','WATER DEPTH','FREE SURFACE','VELOCITY U', 'VELOCITY V'])
-slf_ws.setVarUnits(['M','M','M','M/S','M/S'])
+
+# if there is no bottom friction, write these variables
+if (idx_bottom_friction  < 0):
+  slf_ws.setVarNames(['BOTTOM','WATER DEPTH','FREE SURFACE','VELOCITY U', 'VELOCITY V'])
+  slf_ws.setVarUnits(['M','M','M','M/S','M/S'])
+  
+# if bottom friction is present, write these variables
+else:
+  slf_ws.setVarNames(['BOTTOM','BOTTOM FRICTION','WATER DEPTH','FREE SURFACE','VELOCITY U', 'VELOCITY V'])
+  slf_ws.setVarUnits(['M',' ','M','M','M/S','M/S'])
+
 slf_ws.setIPARAM([1, 0, 0, 0, 0, 0, 0, 0, 0, 1])
 slf_ws.setMesh(NELEM, NPOIN, NDP, IKLE, IPOBO, x, y)
 slf_ws.writeHeader()
@@ -132,12 +147,21 @@ for i in range(NPOIN):
     wse[i] = bottom[i]
 
 # this is the master results to write for the warm start file
-res_ws = np.zeros((5,NPOIN))
-res_ws[0,:] = bottom
-res_ws[1,:] = depth
-res_ws[2,:] = wse
-res_ws[3,:] = np.zeros(NPOIN)
-res_ws[4,:] = np.zeros(NPOIN)
+if (idx_bottom_friction  < 0):
+  res_ws = np.zeros((5,NPOIN))
+  res_ws[0,:] = bottom
+  res_ws[1,:] = depth
+  res_ws[2,:] = wse
+  res_ws[3,:] = np.zeros(NPOIN)
+  res_ws[4,:] = np.zeros(NPOIN)
+else:
+  res_ws = np.zeros((6,NPOIN))
+  res_ws[0,:] = bottom
+  res_ws[1,:] = results[idx_bottom_friction]
+  res_ws[2,:] = depth
+  res_ws[3,:] = wse
+  res_ws[4,:] = np.zeros(NPOIN)
+  res_ws[5,:] = np.zeros(NPOIN)
 
 # it does not write the time of the original file, but rather
 # writes zero instead as the time of the warm start file
