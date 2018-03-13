@@ -16,6 +16,11 @@
 # Revised: Dec 5, 2017
 # Made the *.cfg file a required command line input.
 #
+# Revised: Mar 8, 2018
+# If the colour code is set to none, then the script will write only
+# the mesh to the *.png file. This is to be used for quick visualization
+# of the mesh, without the need to open a mesh viewer.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -109,25 +114,28 @@ levels = np.linspace(cbar_min, cbar_max, 16)
 
 plt.figure()
 plt.gca().set_aspect('equal')
-cmap = cm.get_cmap(name=cbar_color_map)
+if (cbar_color_map != 'none'):
+  cmap = cm.get_cmap(name=cbar_color_map)
 
 # this plots the triangulation only
 if (show_mesh > 0):
   plt.triplot(triang, lw=lineweight, color=mesh_color)
 
-# this plots the colour coded z values
-plt.tricontourf(triang, z, levels=levels, cmap=cmap, antialiased=True)
+if (cbar_color_map != 'none'):
 
-# this is for the colorbar
-cb = plt.colorbar(orientation='vertical', shrink=0.3,format='%.3f')
-cb.set_ticks(levels)
-cb.ax.tick_params(labelsize=5)
-
-# determine the axis label
-title = 'z [m]'
-
-# set the title, and its size
-cb.ax.set_title(title, size=5)
+  # this plots the colour coded z values
+  plt.tricontourf(triang, z, levels=levels, cmap=cmap, antialiased=True)
+  
+  # this is for the colorbar
+  cb = plt.colorbar(orientation='vertical', shrink=0.3,format='%.3f')
+  cb.set_ticks(levels)
+  cb.ax.tick_params(labelsize=5)
+  
+  # determine the axis label
+  title = 'z [m]'
+  
+  # set the title, and its size
+  cb.ax.set_title(title, size=5)
 
 # axis limits (the zoom flag controls this)
 if (zoom > 0):
