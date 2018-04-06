@@ -27,6 +27,9 @@
 # Added an option so that the *.cfg file is now specified as a command
 # line argument after the input file. Use the sel2png.cfg file for
 # inspiration.
+# 
+# Revised: Apr 4, 2018
+# Fixed the erroneous input argument that caused output filenames to be wonky.
 #
 # 
 # Using: Python 2 or 3, Matplotlib, Numpy
@@ -62,7 +65,7 @@ if len(sys.argv) == 9:
   cfg_file = sys.argv[4]
   var_index1  = int(sys.argv[6])
   var_index2 = -999
-  output_file = sys.argv[6]
+  output_file = sys.argv[8]
   t_start = 0
   t_end = 0
 elif len(sys.argv) == 13:

@@ -17,6 +17,19 @@
 # the *.cli file --> 4555 is flow; 5444 is level; 5662 is offshore.
 # Of course, any valid four digits recognized by TELEMAC can be used.
 #
+# Revised: Apr 4, 2018
+# Added an ability to read a description field from the *.csv poly
+# file so that text based description can be written for each boundary.
+# This makes it easier for the user to know what each boundary is.
+#
+# The script is also backward compatible with the previous version,
+# which did not have the description field present.
+#
+# The PPUTILS poly file should have the following columns:
+# shapeid,x,y,bc_code,description [if the user wants the description]
+# or
+# shapeid,x,y,bc_code [if the user doesn't need the description]
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -90,18 +103,60 @@ cli_y = np.zeros(n_cli)
 for i in range(n_cli):
   cli_x[i] = x[global_nodes_int[i]-1]
   cli_y[i] = y[global_nodes_int[i]-1]
- 
-# now we read the BC poly file using numpy
-poly_data = np.loadtxt(poly_file, delimiter=',',skiprows=0,unpack=True)
 
-# boundary data
-shapeid_poly = poly_data[0,:]
-x_poly = poly_data[1,:]
-y_poly = poly_data[2,:]
-attr_poly = poly_data[3,:]
+# use pure python to read in the PPUTILS formatted poly file
+# this poly file can have one field (4 integer BC code) and a
+# 80 character description field
 
-# convert attr_poly to int
-attr_poly_int = attr_poly.astype(int)
+# store the PPUTILS formatted poly fine as a list (there will
+# never be thousands of lines in this file, so it is OK to
+# use the list structure here)
+poly_data = list()
+
+fpoly = open(poly_file, 'r')
+poly_data = fpoly.readlines()
+fpoly.close()
+
+# take the first line, and determine if there are description fields in the data
+# count is the number of columns in the input boundary polygon file
+numcols = len(poly_data[0].split(','))
+desc_present = False
+
+if (numcols == 5):
+  desc_present = True
+elif(numcols == 4):
+  desc_present = False
+else:
+  print('Input boundary polygon file is bad. Reformat and try again!')
+  sys.exit(0)
+
+# number of lines in the poly data
+n_poly = len(poly_data)
+
+# the poly data will be stored in these arrays/list
+shapeid_poly = np.zeros(n_poly, dtype=np.float64)
+x_poly = np.zeros(n_poly, dtype=np.float64)
+y_poly = np.zeros(n_poly, dtype=np.float64)
+attr_poly = np.zeros(n_poly, dtype=np.int32)
+desc_poly = list()
+
+# now assign the values to arrays/list
+for i in range(n_poly):
+  lst = poly_data[i].split(',')
+  shapeid_poly[i] = lst[0]
+  x_poly[i] = lst[1]
+  y_poly[i] = lst[2]
+  attr_poly[i] = lst[3]
+
+  if (desc_present):
+    desc_poly.append(lst[4])
+  else:
+    desc_poly.append('')
+
+# below is the same as the older version of this script
+
+# to accomodate code pasting
+attr_poly_int = attr_poly
 
 # round boundary nodes to three decimals
 x_poly = np.around(x_poly,decimals=3)
@@ -118,6 +173,7 @@ n_polygons = len(polygon_ids)
 
 # to get the attribute data for each polygon
 attribute_data = np.zeros(n_polygons, dtype=np.int)
+desc_data = list()
 attr_count = -1
 
 # go through the polygons, and assign attribute_data 
@@ -125,12 +181,26 @@ for i in range(nodes-1):
   if (shapeid_poly[i] - shapeid_poly[i+1] < 0):
     attr_count = attr_count + 1
     attribute_data[attr_count] = attr_poly[i]
-    
+
+    if (desc_present):
+      desc_data.append(desc_poly[i])
+    else:
+      desc_data.append('')
+
 # manually assign the attribute_data for the last polygon
 attribute_data[n_polygons-1] = attr_poly_int[nodes-1]
 
+if (desc_present):
+  desc_data.append(desc_poly[nodes-1])
+else:
+  desc_data.append('')
+
 # define the default *.cli file attribute for columns 1,2,3,8
 f = np.zeros(n_cli, dtype=np.int)
+
+# creates an numpy array of string, with n_cli elements, with each
+# element being 80 characters
+fdesc = np.chararray(n_cli, itemsize=80)
 
 # loop over all polygons
 for i in range(n_polygons):
@@ -146,17 +216,25 @@ for i in range(n_polygons):
     poly_test = point_in_poly(cli_x[k], cli_y[k], poly)
     if (poly_test == 'IN'):
       f[k] = attribute_data[i]
+      fdesc[k] = desc_data[i]
   
   # delete all elements in the poly list
   del poly[:]    
-  
+
 # now we are ready to write the new *.cli file
 for i in range(n_cli):
   if f[i] > 0:
     a = str(f[i])
-    fout.write(a[0] + ' ' +a[1] + ' ' + a[2] + ' 0.000 0.000 0.000 0.000 ' +
-       a[3] + ' 0.000 0.000 0.000 ' +
-       str(global_nodes_int[i]) + ' ' + str(i+1) + '\n')
+
+    # this is not perfect, but it works
+    if desc_present:
+      fout.write(a[0] + ' ' +a[1] + ' ' + a[2] + ' 0.000 0.000 0.000 0.000 ' +
+        a[3] + ' 0.000 0.000 0.000 ' +
+        str(global_nodes_int[i]) + ' ' + str(i+1) + ' # ' + fdesc[i].decode() + '\n')
+    else:
+      fout.write(a[0] + ' ' +a[1] + ' ' + a[2] + ' 0.000 0.000 0.000 0.000 ' +
+        a[3] + ' 0.000 0.000 0.000 ' +
+        str(global_nodes_int[i]) + ' ' + str(i+1) + ' # ' + fdesc[i] + '\n')
   else:
     fout.write('2 2 2 0.000 0.000 0.000 0.000 2 0.000 0.000 0.000 ' +
-      str(global_nodes_int[i]) + ' ' + str(i+1) + '\n')  
+      str(global_nodes_int[i]) + ' ' + str(i+1) + '\n')
