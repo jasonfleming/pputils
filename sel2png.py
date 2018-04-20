@@ -31,6 +31,10 @@
 # Revised: Apr 4, 2018
 # Fixed the erroneous input argument that caused output filenames to be wonky.
 #
+# Revised: Apr 20, 2018
+# Fixed a bug that plotted white when field values were outside specified
+# limits.
+#
 # 
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
@@ -261,14 +265,14 @@ for count, item in enumerate(filenames):
     cbar_min = cbar_min_global
     cbar_max = cbar_max_global
 
-  '''
+  
   # adjust the plot_array for limits of levels (before plotting)
+  # added on 2018.04.20
   for i in range(len(plot_array)):
     if (plot_array[i] < cbar_min):
-      plot_array[i] = cbar_min
+      plot_array[i] = cbar_min + cbar_min*0.01
     if (plot_array[i] > cbar_max):
-      plot_array[i] = cbar_max
-  '''
+      plot_array[i] = cbar_max - cbar_max*0.01
 
   # adjust the levels
   levels = np.linspace(cbar_min, cbar_max, 16)

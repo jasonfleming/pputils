@@ -12,7 +12,7 @@
 # Purpose: Script takes in a *.slf file (2d for now), and computes the
 # discharge through sections (which have to be re-sampled and be 
 # provided in PPUTILS line format). The cross sections have to be
-# defined such that they are parallel to the flow. If the sections
+# defined such that they are perpedicular to the flow. If the sections
 # are not perpedicular to the flow, garbage results may be reported.
 #
 # Uses: Python 2 or 3, Numpy
