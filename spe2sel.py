@@ -62,8 +62,6 @@ numvars = len(vnames)
 # index of the time step
 times = spe.getTimes()
 
-print(times)
-
 # gets the info from the spectral file and stores into approrpiate vars
 ELEM,NPOIN,NDP,IKLE,IPOBO,x,y = spe.getMesh()
 
