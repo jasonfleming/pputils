@@ -268,6 +268,10 @@ for count, item in enumerate(filenames):
   
   # adjust the plot_array for limits of levels (before plotting)
   # added on 2018.04.20
+  
+  # TODO: must fix this!!!
+  # the adjustments below work when plot_array are +ve values
+  # if plot_array values are -ve, the +/- signs need to be reversed!!!
   for i in range(len(plot_array)):
     if (plot_array[i] < cbar_min):
       plot_array[i] = cbar_min + cbar_min*0.01
