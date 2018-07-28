@@ -35,6 +35,9 @@
 # Fixed a bug that plotted white when field values were outside specified
 # limits.
 #
+# Revised: Jul 28, 2018
+# Added extra if statements that deal with plotting field values outside
+# the specified limits.
 # 
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
@@ -267,17 +270,27 @@ for count, item in enumerate(filenames):
 
   
   # adjust the plot_array for limits of levels (before plotting)
-  # added on 2018.04.20
-  
-  # TODO: must fix this!!!
-  # the adjustments below work when plot_array are +ve values
-  # if plot_array values are -ve, the +/- signs need to be reversed!!!
-  for i in range(len(plot_array)):
-    if (plot_array[i] < cbar_min):
-      plot_array[i] = cbar_min + cbar_min*0.01
-    if (plot_array[i] > cbar_max):
-      plot_array[i] = cbar_max - cbar_max*0.01
+  # added on 2018.07.28
 
+  # the adjustments below work when plot_array are +ve values
+  # I originally had it all like this      
+  if (cbar_max_global > 0):
+    #print('I am in the +ve section')
+    for i in range(len(plot_array)):
+      if (plot_array[i] < cbar_min):
+        plot_array[i] = cbar_min + cbar_min*0.01
+      if (plot_array[i] > cbar_max):
+        plot_array[i] = cbar_max - cbar_max*0.01
+  
+  # if plot_array values are -ve, reverse +/- signs from above
+  if (cbar_min_global < 0 and cbar_max_global < 0):
+    #print('I am in the -ve section')
+    for i in range(len(plot_array)):
+      if (plot_array[i] < cbar_min):
+        plot_array[i] = cbar_min - cbar_min*0.01
+      if (plot_array[i] > cbar_max):
+        plot_array[i] = cbar_max + cbar_max*0.01
+        
   # adjust the levels
   levels = np.linspace(cbar_min, cbar_max, 16)
   

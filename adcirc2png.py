@@ -103,13 +103,29 @@ else:
   cbar_min = cbar_min_global
   cbar_max = cbar_max_global
 
+is_default = (cbar_min_global == -1) and (cbar_max_global == -1)
+print(is_default)
+
 # adjust the plot_array for limits of levels (before plotting)
-for i in range(len(z)):
-  if (z[i] <= cbar_min):
-    z[i] = cbar_min
-  if (z[i] >= cbar_max):
-    z[i] = cbar_max
-  
+# added on 2018.07.28
+if (cbar_max_global > 0 and is_default == False):
+  print('I am in the +ve section')
+  for i in range(len(z)):
+    if (z[i] <= cbar_min):
+      z[i] = cbar_min + cbar_min*0.01
+    if (z[i] >= cbar_max):
+      z[i] = cbar_max - cbar_max*0.01
+
+if (cbar_min_global < 0 and cbar_max_global < 0 and is_default == False):
+  print('I am in the -ve section')
+  print(cbar_max)
+  for i in range(len(z)):
+    if (z[i] <= cbar_min):
+      z[i] = cbar_min - cbar_min*0.01
+    if (z[i] >= cbar_max):
+      z[i] = cbar_max + cbar_max*0.01
+
+# adjust the levels
 levels = np.linspace(cbar_min, cbar_max, 16)
 
 plt.figure()
