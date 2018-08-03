@@ -107,7 +107,16 @@ else:
   print('python sel2png.py -i input.slf -c sel2png.cfg -v 4 -o output.png -s 1 -e 5')
   print('python sel2png.py -i input.slf -c sel2png.cfg -v 4 5 -o output.png -s 1 -e 5')
   sys.exit()
-  
+ 
+# reads the extension from the output_file
+output_extension = output_file.split('.',1)[1]
+
+# only allow *.png and *.svg files to be generated
+if not(output_extension == 'png' or output_extension == 'svg'):
+  print('Output extension *.png and/or *.svg are only formats supported.')
+  print('Exiting!')
+  sys.exit()	
+
 # reads the *.cfg file for additional parameters
 # each line in the file is a list object
 line = list()
@@ -227,7 +236,7 @@ idx_list = list()
 filenames = list()
 for i in range(t_start, t_end+1, 1):
   filenames.append(output_file.split('.',1)[0] + '_' +
-    '{:0>5d}'.format(i) + '.png')
+    '{:0>5d}'.format(i) + '.' + output_extension)
   idx_list.append(i)
   
 # to check if the idx_list is within times list
@@ -379,7 +388,7 @@ for count, item in enumerate(filenames):
       # perform the triangulation
       interpolator = mtri.LinearTriInterpolator(triang, u)
       u_grid = interpolator(xreg, yreg)
-
+      
       interpolator = mtri.LinearTriInterpolator(triang, v)
       v_grid = interpolator(xreg, yreg)
 

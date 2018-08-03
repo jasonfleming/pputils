@@ -103,13 +103,13 @@ else:
   cbar_min = cbar_min_global
   cbar_max = cbar_max_global
 
+# the flag that tells if the limits are default or not
 is_default = (cbar_min_global == -1) and (cbar_max_global == -1)
-print(is_default)
 
 # adjust the plot_array for limits of levels (before plotting)
 # added on 2018.07.28
 if (cbar_max_global > 0 and is_default == False):
-  print('I am in the +ve section')
+  #print('I am in the +ve section')
   for i in range(len(z)):
     if (z[i] <= cbar_min):
       z[i] = cbar_min + cbar_min*0.01
@@ -117,8 +117,7 @@ if (cbar_max_global > 0 and is_default == False):
       z[i] = cbar_max - cbar_max*0.01
 
 if (cbar_min_global < 0 and cbar_max_global < 0 and is_default == False):
-  print('I am in the -ve section')
-  print(cbar_max)
+  #print('I am in the -ve section')
   for i in range(len(z)):
     if (z[i] <= cbar_min):
       z[i] = cbar_min - cbar_min*0.01
