@@ -76,7 +76,7 @@ outslf.setTitle('created with pputils')
 outslf.setVarNames(variables)
 outslf.setVarUnits(units)
 outslf.setIPARAM([1, 0, 0, 0, 0, 0, 0, 0, 0, 1])
-outslf.setMesh(NELEM, NPOIN, NDP, IKLE, IPOBO, x, y)
+outslf.setMesh(NELEM, NPOIN, NDP, IKLE, IPOBO, x_s, y_s)
 outslf.writeHeader()
 
 # read all data, for all time steps, and simply put it in outslf object
