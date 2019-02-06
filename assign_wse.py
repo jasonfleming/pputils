@@ -76,15 +76,17 @@ if (NPLAN > 1):
 idx_bottom = -999
 
 # find the index of the vector variables
+# in case the *.slf file has both bottom, and bottom friction, take only bottom
+
 for i in range(len(variables)):
-  if (variables[i].find('BOTTOM') > -1):
-    idx_bottom = i
-  elif (variables[i].find('FOND') > -1):
+  if (variables[i].find('BOTTOM') == 0) & (variables[i].find('BOTTOM FRICTION') !=0 ):
     idx_bottom = i
 
 if (idx_bottom < 0):
-  print('Variable BOTTOM or FOND not found in input file. Exiting!')
+  print('Variable BOTTOM not found in input file. Exiting!')
   sys.exit()
+
+
 
 # this is the bottom array, as a 1d vector
 bottom = results[idx_bottom,:]
