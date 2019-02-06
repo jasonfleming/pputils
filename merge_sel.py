@@ -17,7 +17,7 @@
 #
 # Example:
 #
-# python shift_sel.py -a a.slf -b b.slf -o merged.slf
+# python merge_sel.py -a a.slf -b b.slf -o merged.slf
 # where:
 # -a first *.slf file
 # -b second *.slf file
