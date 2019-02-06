@@ -155,11 +155,11 @@ for t in range(len(a_times)):
   merged.writeVariables(a_times[t], res)
   
 # read the results from b, and write it to the merged  
-for t in range(len(a_times)):
-  a.readVariables(t)
-  res = a.getVarValues()
+for t in range(len(b_times)):
+  b.readVariables(t)
+  res = b.getVarValues()
   
-  merged.writeVariables(a_times[t], res)
+  merged.writeVariables(b_times[t], res)
 
 a.close()
 b.close()
