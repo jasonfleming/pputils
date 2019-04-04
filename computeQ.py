@@ -179,9 +179,9 @@ for t in range(len(times)):
 
 # prints the final result to the file    
 # write the header string
-header_str = 'time,'
+header_str = 'time, '
 for i in range(n_lns-1):
-  header_str = header_str + str(unique_lines[i]) + ','
+  header_str = header_str + str(unique_lines[i]) + ', '
 header_str = header_str + str(unique_lines[n_lns-1]) + '\n'  
 
 print('Writing the output file ...')
@@ -194,9 +194,9 @@ fout.write(header_str)
 
 # write the output file
 for t in range(len(times)):
-  line = str(times[t]) + ','
+  line = str(times[t]) + ', '
   for j in range(n_lns-1):
-    line = line + str(Q[t,j]) + ','
+    line = line + str(Q[t,j]) + ', '
   line = line + str(Q[t,n_lns-1])
   line = line + '\n'
   fout.write(line)
