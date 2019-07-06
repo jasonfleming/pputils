@@ -16,6 +16,9 @@
 # Revised: Mar 9, 2017
 # Deleted the trailing comma in the text output.
 #
+# Revised: Jun 14, 2019
+# Added the progress bar.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Usage:
@@ -28,6 +31,7 @@ import sys
 import numpy as np
 import matplotlib.tri as mtri
 from ppmodules.selafin_io_pp import *
+from progressbar import ProgressBar, Bar, Percentage, ETA
 #
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # MAIN
@@ -108,12 +112,24 @@ triang = mtri.Triangulation(x, y, IKLE)
 
 print('Interpolating ...')
 
+# progress bar
+w = [Percentage(), Bar(), ETA()]
+pbar = ProgressBar(widgets=w, maxval=len(times)).start()
+
 for i in range(len(times)):
+  #print('Interpolating time: ' + str(times[i]) + ' out of ' + str(times[len(times)-1]))
+  
   slf.readVariables(i)
   results = slf.getVarValues()
 
   interpolator = mtri.LinearTriInterpolator(triang, results[v,:])
   ln_interp[i,:] = interpolator(lnx,lny)
+  
+  # update the pbar
+  pbar.update(i+1)
+
+# finish the pbar
+pbar.finish()
 
 print('Transposing ...')
   
