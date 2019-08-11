@@ -39,6 +39,9 @@
 # Added extra if statements that deal with plotting field values outside
 # the specified limits.
 # 
+# Revised: Aug 11, 2019
+# Added a text label for the time stamp in the lower left corner. 
+# 
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
 # Example: python sel2png.py -i input.slf -c sel2png.cfg -v 4 -o output.png
@@ -320,6 +323,10 @@ for count, item in enumerate(filenames):
   cb = plt.colorbar(orientation='vertical', shrink=0.3,format='%.3f')
   cb.set_ticks(levels)
   cb.ax.tick_params(labelsize=5)
+  
+  # this is the timestamp label
+  timestamp = 'Index: ' + str(count) + '\n' + 'Time:  ' + str(times[count]) + ' sec'
+  plt.text(np.min(x), np.min(y), timestamp, fontsize=6)
   
   # determine the axis label
   if (var_index2 > 0):
