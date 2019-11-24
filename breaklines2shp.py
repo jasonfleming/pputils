@@ -20,7 +20,11 @@
 #
 # Modififed: Nov 26, 2016
 # Added an option for checking if there the lines data has z values.
-# 
+#
+# Modififed: Nov 24, 2019
+# Incorporated changes suggested by user nstrahl, that make the script
+# work in the latest version of pyshp package.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -42,14 +46,14 @@ from progressbar import ProgressBar, Bar, Percentage, ETA
 #
 # I/O
 if len(sys.argv) == 7 :
-	lines_file = sys.argv[2]
-	shptype = sys.argv[4]
-	output_file = sys.argv[6]
+  lines_file = sys.argv[2]
+  shptype = sys.argv[4]
+  output_file = sys.argv[6]
 else:
-	print('Wrong number of Arguments, stopping now...')
-	print('Usage:')
-	print('python breaklines2shp.py -l lines3d.csv -t 2d -o lines3d.shp')
-	sys.exit()
+  print('Wrong number of Arguments, stopping now...')
+  print('Usage:')
+  print('python breaklines2shp.py -l lines3d.csv -t 2d -o lines3d.shp')
+  sys.exit()
 
 # use numpy to read the file
 # each column in the file is a row in data read by np.loadtxt method
@@ -66,11 +70,11 @@ x_lns = lines_data[1,:]
 y_lns = lines_data[2,:]
 
 # if z is in the file, retain the z, otherwise write zeros
-if (ncols == 4):
-	z_lns = lines_data[3,:]
+if (ncols > 3):
+  z_lns = lines_data[3,:]
 else:
-	z_lns = np.zeros(len(x_lns))
-	
+  z_lns = np.zeros(len(x_lns))
+  
 # round lines nodes to three decimals
 x_lns = np.around(x_lns,decimals=3)
 y_lns = np.around(y_lns,decimals=3)
@@ -87,11 +91,11 @@ pbar = ProgressBar(widgets=w, maxval=n_lns).start()
 
 # to create the output file
 if (shptype == '2d'):
-	out = Writer(shapeType=3) # this is POLYLINE type, or 2d shapefile
+  out = Writer(target=output_file, shapeType=3) # this is POLYLINE type, or 2d shapefile
 elif (shptype == '3d'):
-	out = Writer(shapeType=13) # this is POLYLINEZ, or 3d shapefile
+  out = Writer(target=output_file, shapeType=13) # this is POLYLINEZ, or 3d shapefile
 else:
-	print('Invalid type specified in the -t argument. Exiting!')
+  print('Invalid type specified in the -t argument. Exiting!')
 
 # create the field 'id'
 out.field('id', 'C', 10, 0)
@@ -101,32 +105,38 @@ out.field('id', 'C', 10, 0)
 part=[]
 
 for i in range(0,n_lns):
-	pbar.update(i+1)
+  pbar.update(i+1)
 
-	if (i>0):
-		cur_lns_shapeid = shapeid_lns[i]
-		prev_lns_shapeid = shapeid_lns[i-1]
+  if (i>0):
+    cur_lns_shapeid = shapeid_lns[i]
+    prev_lns_shapeid = shapeid_lns[i-1]
 
-		if (cur_lns_shapeid - prev_lns_shapeid < 0.001):
-			# create tupples for vertexes to add
-			
-			part.append([x_lns[i-1], y_lns[i-1], z_lns[i-1], 0.0])
-			
-			# this is needed, as the else below is never executed
-			# for the last line in the lines file!
-			if (i == n_lns-1):
-				part.append([x_lns[i], y_lns[i], z_lns[i], 0.0])
-				out.line(parts=[part])
-				out.record(id=i+1)
-			
-		else:
-			part.append([x_lns[i-1], y_lns[i-1], z_lns[i-1], 0.0])
-			out.line(parts=[part])
-			out.record(id=i+1)
-			
-			part=[]
+    if (cur_lns_shapeid - prev_lns_shapeid < 0.001):
+      # create tupples for vertexes to add
+      
+      part.append([x_lns[i-1], y_lns[i-1], z_lns[i-1], 0.0])
+      
+      # this is needed, as the else below is never executed
+      # for the last line in the lines file!
+      if (i == n_lns-1):
+        part.append([x_lns[i], y_lns[i], z_lns[i], 0.0])
+        if (shptype == '2d'):
+          out.line(lines=[part])
+        else:
+          out.linez(lines=[part])
+          
+        out.record(id=i+1)
+      
+    else:
+      part.append([x_lns[i-1], y_lns[i-1], z_lns[i-1], 0.0])
+      if (shptype == '2d'):
+        out.line(lines=[part])
+      else:
+        out.linez(lines=[part])
+          
+      out.record(id=i+1)
+      
+      part=[]
 
-# save the shapefile
-out.save(output_file)
-
-pbar.finish()	
+out.close()
+pbar.finish()  

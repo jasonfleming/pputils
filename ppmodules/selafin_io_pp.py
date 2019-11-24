@@ -30,6 +30,9 @@
 # spaces. This change is made in the readHeader() method. Paraview legacy
 # reader for *.vtk files did not like junk after variable names.
 #
+# Revised: Nov 24, 2019
+# Made the change recommended by Qilong Bi to work in writing 3d files.
+#
 # Uses: Python 2 or 3, Numpy
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -264,9 +267,8 @@ class ppSELAFIN:
     
     self.f.write(pack('>i', 4*self.NELEM*self.NDP))
     for i in range(self.NELEM):
-      self.f.write(pack('>i', self.IKLE[i,0]))
-      self.f.write(pack('>i', self.IKLE[i,1]))
-      self.f.write(pack('>i', self.IKLE[i,2]))
+      for j in range(self.NDP):
+        self.f.write(pack('>i', self.IKLE[i,j]))
     self.f.write(pack('>i', 4*self.NELEM*self.NDP))
     
     self.f.write(pack('>i', 4*self.NPOIN))

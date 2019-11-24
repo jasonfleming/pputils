@@ -88,9 +88,9 @@ lns_y = lines_data[2,:]
 lns_z = np.zeros(len(lns_x))
 
 # create the new output variables
-sta = np.zeros(len(x))
-tempid = np.zeros(len(x))
-dist = np.zeros(len(x))
+sta = np.zeros(len(lns_x))
+tempid = np.zeros(len(lns_x))
+dist = np.zeros(len(lns_x))
 
 print('Constructing KDTree object')
 # to create a KDTree object our of the xyz points file
