@@ -325,7 +325,7 @@ for count, item in enumerate(filenames):
   cb.ax.tick_params(labelsize=5)
   
   # this is the timestamp label
-  timestamp = 'Index: ' + str(count) + '\n' + 'Time:  ' + str(times[count]) + ' sec'
+  timestamp = 'Index: ' + str(count) + '\n' + 'Time:  ' + str('{:.1f}'.format(times[count])) + ' sec'
   plt.text(np.min(x), np.min(y), timestamp, fontsize=6)
   
   # determine the axis label
