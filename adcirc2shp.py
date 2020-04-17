@@ -17,6 +17,10 @@
 # 3D shapefile of type POLYGONZ, while the nodes is a 2D shapefile of
 # type POINT.
 #
+# Revised: Apr 17, 2020
+# Updated so that writing works for updated version of pyshp. It was the
+# same update that was made for breaklines2shp.py earlier.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -55,8 +59,8 @@ output_file_e = output_file.rsplit('.',1)[0] + '_e.shp'
 output_file_n = output_file.rsplit('.',1)[0] + '_n.shp'
 
 # to create the output file
-out_e = Writer(shapeType=15) # this is POLYGONZ
-out_n = Writer(shapeType=1) # this is POINT
+out_e = Writer(target=output_file_e, shapeType=15) # this is POLYGONZ
+out_n = Writer(target=output_file_n, shapeType=1) # this is POINT
 
 # read the adcirc file
 n,e,x,y,z,ikle = readAdcirc(adcirc_file)
@@ -68,7 +72,7 @@ for i in range(n):
 	out_n.point(x[i],y[i])
 	out_n.record(id=i+1, z=z[i])
 
-out_n.save(output_file_n)	
+#out_n.save(output_file_n)	
 
 # write the polygon shapefile
 out_e.field('id', 'C', 10, 0)
@@ -92,14 +96,10 @@ for i in range(e):
 	part.append([x1,y1,z1,0])
 	part.append([x2,y2,z2,0])
 	
-	out_e.poly(parts=[part])
-	
-	# this would write a polygon (2d) shapefile
-	#out_e.poly(parts=[[[x[ikle[i,0]],y[ikle[i,0]]],\
-	#	[x[ikle[i,1]],y[ikle[i,1]]],\
-	#	[x[ikle[i,2]],y[ikle[i,2]]]]])
+	#out_e.linez(lines=[part]) # if we were to do 3d lines
+	out_e.polyz(polys=[part]) # 3d polygons
 		
 	out_e.record(id=i+1)
 
-out_e.save(output_file_e)
+#out_e.save(output_file_e)
 print('All done!')
