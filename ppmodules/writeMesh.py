@@ -36,6 +36,32 @@ def writeAdcirc(n,e,x,y,z,ikle,name):
   
   return None
 
+# this function assumes the indices in the ikle array are zero based
+def write2dm(n,e,x,y,z,ikle,name):
+  
+  # write the file output
+  # name argument is the name of the output adcirc file
+  fout = open(name, 'w')
+  
+  # now to write the adcirc mesh file
+  fout.write('MESH2D' + '\n')
+
+  # writes the elements
+  # the n,e,x,y,z,ikle are zero based, so we add 1 to make it 1 based
+  for i in range(e):
+    fout.write('E3T ' + str(i+1) + ' ' + str(ikle[i,0]+1) + ' ' + str(ikle[i,1]+1) + 
+      ' ' +   str(ikle[i,2]+1) + ' 1' + '\n')
+
+  # writes the nodes
+  for i in range(n):
+    fout.write('ND ' + str(i+1) + ' ' + str('{:.3f}'.format(x[i] )) + ' ' + 
+      str('{:.3f}'.format(y[i])) + ' ' + str('{:.3f}'.format(z[i])) + '\n')
+
+  # close the fout file
+  fout.close()
+  
+  return None
+
 def writeVTKscalar(n,e,x,y,z,ikle,fname,vname):
   # write the file output
   # fname argument is the name of the output adcirc file

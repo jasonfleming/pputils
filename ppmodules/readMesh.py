@@ -50,6 +50,91 @@ def readAdcirc(adcirc_file):
   
   return n,e,x,y,z,ikle
 
+def read2dm(two_dm_file):
+
+  fin = open(two_dm_file)
+
+  # https://stackoverflow.com/questions/845058/how-to-get-line-count-of-a-large-file-cheaply-in-python
+  # this code here cheaply reads the number of lines of a text file
+  def _make_gen(reader):
+    b = reader(1024 * 1024)
+    while b:
+      yield b
+      b = reader(1024*1024)
+  def rawgencount(filename):
+    f = open(filename, 'rb')
+    f_gen = _make_gen(f.raw.read)
+    return sum( buf.count(b'\n') for buf in f_gen )
+
+  num_lines = rawgencount(two_dm_file)
+
+  # because of the header line, the total number of lines in the file
+  # (which is nodes and elements joined is) n_plus_e
+  n_plus_e = num_lines - 1
+
+  # reads the header line
+  str = fin.readline()
+
+  # the number of elements counter
+  e = 0
+  n = 0
+  
+  # go through each line and count the total number of elements and nodes
+  for i in range(n_plus_e):
+    str = fin.readline()
+    three_chars = str[0:3]
+    two_chars = str[0:2]
+    
+    if (three_chars == 'E3T'):
+      e = e + 1
+    if (two_chars == 'ND'):
+      n = n + 1
+
+  fin.close()
+
+  # open the same file again
+  fin = open(two_dm_file)
+  
+  # now we can declare the arrays that are needed to store the values read
+  x = np.zeros(n, dtype=np.float64)
+  y = np.zeros(n, dtype=np.float64)
+  z = np.zeros(n, dtype=np.float64)
+
+  ikle = np.zeros( (e,3), dtype = np.int64)
+
+  # counters for nodes and elements
+  node_count = 0
+  ele_count = 0
+  
+  # now to fill in x,y,z and ikle arrays
+  for i in range(n_plus_e):
+    str = fin.readline()
+    three_chars = str[0:3]
+    two_chars = str[0:2]
+    tmp = str.split(' ')
+    
+    if (three_chars == 'E3T'):
+      
+      ele_count = int(tmp[1])
+      ikle[ele_count-1,0] = int(tmp[2])
+      ikle[ele_count-1,1] = int(tmp[3])
+      ikle[ele_count-1,2] = int(tmp[4])
+
+    if (two_chars == 'ND'):
+      node_count = int(tmp[1])
+      x[node_count-1] = float(tmp[2])
+      y[node_count-1] = float(tmp[3])
+      z[node_count-1] = float(tmp[4])
+
+  fin.close()
+
+  # now we shift the element connectivities, so that they are zero based
+  ikle[:,0] = ikle[:,0] - 1
+  ikle[:,1] = ikle[:,1] - 1
+  ikle[:,2] = ikle[:,2] - 1
+  
+  return n,e,x,y,z,ikle
+
 def readPly(ply_file):
   #{{{
   # define lists
