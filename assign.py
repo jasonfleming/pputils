@@ -15,6 +15,11 @@
 # Modified: Feb 21, 2016
 # Changed ProgressBar, and updated for python 2 and 3.
 #
+# Modified: Aug 20, 2020
+# Changed so that it retains the original mesh values for nodes outside
+# of the polygon boundary. This is useful when trying to raise the nodes
+# in the mesh.
+#
 # Purpose: Script takes in a mesh in ADCIRC format, and a set of closed
 # boundaries in pputils format, and creates another ADCIRC file with
 # node z-values assigned with polygon attributes. This is useful for 
@@ -141,6 +146,8 @@ for i in range(n_polygons):
     poly_test = point_in_poly(x[k], y[k], poly)
     if (poly_test == 'IN'):
       f[k] = attribute_data[i]
+    else:
+      f[k] = z[k]
   
   # delete all elements in the poly list
   del poly[:]    
@@ -151,11 +158,11 @@ pbar.finish()
 
 # if a particular node of the mesh was not within any polygon
 # extract all values that were less then the condition f-default < 0.001
-outside_test = np.extract(f-default < 0.001,f)
+#outside_test = np.extract(f-default < 0.001,f)
 
-if (len(outside_test) > 0):
-  print('Warning: some nodes were not within any of the input polygons!')
-  print('Assigning default value of ' + str(default) + ' as attribute')
+#if (len(outside_test) > 0):
+#  print('Warning: some nodes were not within any of the input polygons!')
+#  print('Assigning default value of ' + str(default) + ' as attribute')
 
 # now to write the adcirc mesh file
 fout.write("ADCIRC" + "\n")
