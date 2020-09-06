@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
@@ -39,13 +40,13 @@ from scipy import spatial                  # kd tree for searching coords
 import struct                              # to determine sys architecture
 import subprocess                          # to execute binaries
 #
-# determine which version of python the user is running
-if (sys.version_info > (3, 0)):
-  version = 3
-  pystr = 'python3'
-elif (sys.version_info > (2, 7)):
-  version = 2
-  pystr = 'python'
+# deals with the paths
+try:
+  # this only works when the paths are sourced!
+  pputils_path = os.environ['PPUTILS']
+except:
+  pputils_path = os.getcwd()
+
 #
 if len(sys.argv) == 11 :
   poly_file = sys.argv[2]
@@ -127,16 +128,21 @@ tmp2.close()
 if (os.name == 'posix'):
   # determines processor type
   proctype = os.uname()[4][:]
-
-  # for linux32 its i686
-  # for linux64 its x86_64
-
-  # this assumes chmod +x has already been applied to the binaries
-  if (proctype == 'x86_64'):
-    # if wanting verbose output, add -vv to the gridgen call
-    subprocess.call( ['./gridgen/bin/gridgen', 'gridgen.prm', '-vv'] )
-  else:
+  
+  if (proctype == 'i686'):
     print('Support for 32 bit Linux is not provided! Upgrade system!')
+    sys.exit(0)
+  elif (proctype == 'x86_64'):
+    callstr = pputils_path + '/gridgen/bin/gridgen'
+  elif (proctype == 'armv7l'):
+    print('Support for 32 bit Raspberry Pi is not provided! Sorry!')
+    sys.exit(0)
+
+  # make sure the binary is allowed to be executed
+  subprocess.call(['chmod', '+x', callstr])
+
+  # call gridgen
+  subprocess.call( [callstr, 'gridgen.prm', '-vv'] )
     
 elif (os.name == 'nt'):
     print('Gridgen-c is not compiled for Windows yet. Sorry!')

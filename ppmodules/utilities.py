@@ -455,6 +455,12 @@ def CCW(x1,y1,x2,y2,x3,y3):
 # one based, as this is what telemac needs
 
 def getIPOBO_IKLE(adcirc_file):
+  
+  try:
+    # this only works when the paths are sourced!
+    pputils_path = os.environ['PPUTILS']
+  except:
+    pputils_path = os.getcwd()
 
   # reads the adcirc file (note the ikle here is zero based)
   n,e,x,y,z,ikle = readAdcirc(adcirc_file)
@@ -499,47 +505,23 @@ def getIPOBO_IKLE(adcirc_file):
   if (os.name == 'posix'):
     # to determine processor type
     proctype = os.uname()[4][:]
-	
-    # to move the adcirc file to ./boundary/bin
-    callstr = 'mv ' + str(adcirc_file) + ' ./boundary/bin'
-    subprocess.call(callstr, shell=True)
-    
-    # change directory to get to executable
-    os.chdir('./boundary/bin')
     
     if (proctype == 'i686'):
-      # make sure the binary is allowed to be executed
-      subprocess.call(['chmod', '+x', 'bnd_extr_stbtel_32'])
-      
-      # execute the binary 
-      #print('Executing bnd_extr_stbtel program ...')
-      subprocess.call(['./bnd_extr_stbtel_32', adcirc_file, temp_ipobo])
-      
+      callstr = pputils_path + '/boundary/bin/bnd_extr_stbtel_32'
     elif (proctype == 'x86_64'):
-      # make sure the binary is allowed to be executed
-      subprocess.call(['chmod', '+x', 'bnd_extr_stbtel_64'])
+      callstr = pputils_path + '/boundary/bin/bnd_extr_stbtel_64'
+    elif (proctype == 'armv7l'):
+      callstr = pputils_path + '/boundary/bin/bnd_extr_stbtel_pi32'
       
-      # execute the binary 
-      #print('Executing bnd_extr_stbtel program ...')
-      subprocess.call(['./bnd_extr_stbtel_64', adcirc_file, temp_ipobo])
+    # make sure the binary is allowed to be executed
+    subprocess.call(['chmod', '+x', callstr])
       
-    elif (proctype == 'armv7l'):  
-      # make sure the binary is allowed to be executed
-      subprocess.call(['chmod', '+x', 'bnd_extr_stbtel_pi32'])
-      
-      # execute the binary 
-      #print('Executing bnd_extr_pp program ...')
-      subprocess.call(['./bnd_extr_stbtel_pi32', adcirc_file, temp_ipobo])
-      
-    # move the files back
-    subprocess.call('mv *.txt ' + curdir, shell=True)
-    subprocess.call('mv ' + adcirc_file + ' ' + curdir, shell=True)
-  
-    # change directory back
-    os.chdir(curdir)
-      
+    # execute the binary 
+    #print('Executing bnd_extr_stbtel program ...')
+    subprocess.call([callstr, adcirc_file, temp_ipobo])
+          
   if (os.name == 'nt'):
-    # nt is for windows
+    # nt is for windows [still to update]
     callstr = ".\\boundary\\bin\\bnd_extr_stbtel_32.exe"
     subprocess.call([callstr, adcirc_file, temp_ipobo])
     ########################################################################

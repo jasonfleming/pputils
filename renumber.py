@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
@@ -41,12 +42,20 @@ import subprocess
 # MAIN
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 curdir = os.getcwd()
-
-# determine which version of python the user is running
-if (sys.version_info > (3, 0)):
-  version = 3
-elif (sys.version_info > (2, 7)):
-  version = 2
+#
+try:
+  # this only works when the paths are sourced!
+  pputils_path = os.environ['PPUTILS']
+except:
+  pputils_path = curdir
+  
+  # this is to maintain legacy support
+  if (sys.version_info > (3, 0)):
+    version = 3
+    pystr = 'python3'
+  elif (sys.version_info > (2, 7)):
+    version = 2
+    pystr = 'python'
 #
 # I/O
 if len(sys.argv) != 5 :
@@ -96,63 +105,39 @@ if (os.name == 'posix'):
   
   proctype = os.uname()[4][:]
   
-  # move the temp files to ./renumber/bin
-  subprocess.call('mv out_nodes.txt out_elements.txt ./renumber/bin',shell=True)
-  
-  # change directory to get to executable
-  os.chdir('./renumber/bin')
+  # this assumes chmod +x has already been applied to the binaries
+  if (proctype == 'i686'):
+    callstr = pputils_path + '/renumber/bin/triangulation_rcm_32'
+  elif (proctype == 'x86_64'):
+    callstr = pputils_path + '/renumber/bin/triangulation_rcm_64 out'
+  elif (proctype == 'armv7l'):
+    callstr = pputils_path + '/renumber/bin/triangulation_rcm_pi32'
+  else:
+    print('OS not supported!')
+    print('Exiting!')
+    sys.exit()
   
   # run the binary executable (this was compiled in gfortran)
-  if (proctype == 'i686'):
-    # its Linux 32-bit
-    # make sure the binary is allowed to be executed
-    subprocess.call('chmod +x triangulation_rcm_32',shell=True)
-    
-    # execute the binary to generate the renumbered nodes and elements
-    subprocess.call(['./triangulation_rcm_32', 'out'])
-    
-  elif (proctype == 'x86_64'):
-    # its Linux 64-bit
-    # make sure the binary is allowed to be executed
-    subprocess.call('chmod +x triangulation_rcm_64',shell=True)
-    
-    # execute the binary to generate the renumbered nodes and elements
-    subprocess.call(['./triangulation_rcm_64', 'out'])
-  
-  elif (proctype == 'armv7l'):
-    # make sure the binary is allowed to be executed
-    subprocess.call('chmod +x triangulation_rcm_pi32',shell=True)
-    
-    # execute the binary to generate the renumbered nodes and elements
-    subprocess.call(['./triangulation_rcm_pi32', 'out'])  
-    
-  # move the files back
-  subprocess.call('mv *.txt ' + curdir, shell=True)
-  
-  # change directory back
-  os.chdir(curdir)
-  
-  # this is the name of the renumbered *.grd file
-  # rcm_grd = output_file.split('.',1)[0] + '_rcm.grd'
-  
+  subprocess.call(callstr, shell=True)
+     
   # use subprocess to call ren2adcirc.py
   # TODO: port ren2adcirc.py code here, as opposed to calling it 
   # as a subprocess
-  
-  if (version == 2):
-    callstr = str('python ren2adcirc.py -i out_rcm_nodes.txt ' +
+  try:
+    # this only works when the paths are sourced!
+    callstr = str('ren2adcirc.py -i out_rcm_nodes.txt ' +
       'out_rcm_elements.txt -o ' + output_file + ' -s ' +
       str(xref) + ' ' + str(yref))
-  elif (version == 3):
-    callstr = str('python3 ren2adcirc.py -i out_rcm_nodes.txt ' +
+    
+    call_list = callstr.split()
+    subprocess.call(call_list)
+  except:
+    callstr = str(pystr + ' ren2adcirc.py -i out_rcm_nodes.txt ' +
       'out_rcm_elements.txt -o ' + output_file + ' -s ' +
-      str(xref) + ' ' + str(yref))  
-  
-  # this creates a list of the callstr, where each parameter is separed
-  # by a space
-  call_list = callstr.split()
-  
-  subprocess.call(call_list)
+      str(xref) + ' ' + str(yref))
+
+    call_list = callstr.split()
+    subprocess.call(call_list)
   
   # remove the intermediate files
   os.remove("out_nodes.txt")
@@ -164,16 +149,13 @@ if (os.name == 'posix'):
   # strip the extension from output file string
   wkt_file = output_file.split('.',1)[0]
 
-  if (version == 2):
-    callstr = str('python adcirc2wkt.py -i ' + output_file + ' -o ' +
-      wkt_file + 'WKT.csv')
-  elif (version == 3):
-    callstr = str('python3 adcirc2wkt.py -i ' + output_file + ' -o ' +
-      wkt_file + 'WKT.csv')  
-  
-  # this creates a list of the callstr, where each parameter is separed
-  # by a space
-  call_list = callstr.split()
-  
-  subprocess.call(call_list)
-
+  try:
+    # this only works when the paths are sourced!
+    callstr = str('adcirc2wkt.py -i ' + output_file + ' -o ' + wkt_file + 'WKT.csv')
+    call_list = callstr.split()
+    subprocess.call(call_list)
+    
+  except:
+    callstr = str(pystr + ' adcirc2wkt.py -i ' + output_file + ' -o ' + wkt_file + 'WKT.csv')  
+    call_list = callstr.split()
+    subprocess.call(call_list)

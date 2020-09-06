@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
@@ -79,14 +80,21 @@ from collections import OrderedDict        # for removal of duplicate nodes
 import struct                              # to determine sys architecture
 import subprocess                          # to execute binaries
 #
+curdir = os.getcwd()
 #
-# determine which version of python the user is running
-if (sys.version_info > (3, 0)):
-  version = 3
-  pystr = 'python3'
-elif (sys.version_info > (2, 7)):
-  version = 2
-  pystr = 'python'
+try:
+  # this only works when the paths are sourced!
+  pputils_path = os.environ['PPUTILS']
+except:
+  pputils_path = curdir
+  
+  # this is to maintain legacy support
+  if (sys.version_info > (3, 0)):
+    version = 3
+    pystr = 'python3'
+  elif (sys.version_info > (2, 7)):
+    version = 2
+    pystr = 'python'
 #
 # I/O
 if len(sys.argv) == 13 :
@@ -107,7 +115,12 @@ archtype = struct.calcsize("P") * 8
 
 # call gis2triangle.py
 print('Generating Triangle input files ...')
-subprocess.call([pystr, 'gis2triangle.py', '-n', nodes_file, 
+try:
+  subprocess.call(['gis2triangle.py', '-n', nodes_file, 
+  '-b', boundary_file, '-l', lines_file, '-h', holes_file, 
+  '-o', 'mesh.poly'])
+except:
+  subprocess.call([pystr, 'gis2triangle.py', '-n', nodes_file, 
   '-b', boundary_file, '-l', lines_file, '-h', holes_file, 
   '-o', 'mesh.poly'])
 
@@ -148,11 +161,11 @@ if (os.name == 'posix'):
   
   # this assumes chmod +x has already been applied to the binaries
   if (proctype == 'i686'):
-    subprocess.call( ['./triangle/bin/triangle_32', '-Dqa', 'mesh.poly' ] )
+    subprocess.call( [pputils_path + '/triangle/bin/triangle_32', '-Dqa', 'mesh.poly' ] )
   elif (proctype == 'x86_64'):
-    subprocess.call( ['./triangle/bin/triangle_64', '-Dqa', 'mesh.poly' ] )
+    subprocess.call( [pputils_path + '/triangle/bin/triangle_64', '-Dqa', 'mesh.poly' ] )
   elif (proctype == 'armv7l'):
-    subprocess.call( ['./triangle/bin/triangle_pi32', '-Dqa', 'mesh.poly' ] )
+    subprocess.call( [pputils_path + '/triangle/bin/triangle_pi32', '-Dqa', 'mesh.poly' ] )
 elif (os.name == 'nt'):
   subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', '-Dqa', 'mesh.poly' ] )
 else:
@@ -162,8 +175,12 @@ else:
   
 # call triangle2adcirc.py
 print('Converting Triangle output to ADCIRC mesh format ...')
-subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'mesh.1.node', 
-  '-e', 'mesh.1.ele', '-o', output_file])
+try:
+  subprocess.call(['triangle2adcirc.py', '-n', 'mesh.1.node', 
+    '-e', 'mesh.1.ele', '-o', output_file])
+except:
+  subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'mesh.1.node', 
+    '-e', 'mesh.1.ele', '-o', output_file])
 
 # to remove the temporary files
 os.remove('mesh.poly')
@@ -176,5 +193,8 @@ wkt_file = output_file.rsplit('.',1)[0] + 'WKT.csv'
 
 # now convert the *.grd file to a *.shp file by calling adcirc2shp.py
 print('Converting ADCIRC mesh to wkt format ...')
-subprocess.call([pystr, 'adcirc2wkt.py', '-i', output_file, '-o', wkt_file])
+try:
+  subprocess.call(['adcirc2wkt.py', '-i', output_file, '-o', wkt_file])
+except:
+  subprocess.call([pystr, 'adcirc2wkt.py', '-i', output_file, '-o', wkt_file])
 

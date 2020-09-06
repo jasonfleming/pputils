@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
@@ -78,13 +79,19 @@ import matplotlib.tri    as mtri           # matplotlib triangulations
 #
 curdir = os.getcwd()
 #
-# determine which version of python the user is running
-if (sys.version_info > (3, 0)):
-  version = 3
-  pystr = 'python3'
-elif (sys.version_info > (2, 7)):
-  version = 2
-  pystr = 'python'
+try:
+  # this only works when the paths are sourced!
+  pputils_path = os.environ['PPUTILS']
+except:
+  pputils_path = curdir
+  
+  # this is to maintain legacy support
+  if (sys.version_info > (3, 0)):
+    version = 3
+    pystr = 'python3'
+  elif (sys.version_info > (2, 7)):
+    version = 2
+    pystr = 'python'
 #
 # I/O
 if len(sys.argv) == 11 :
@@ -111,7 +118,15 @@ archtype = struct.calcsize("P") * 8
 print('Constructing Triangle poly file ...')
 
 # call gis2triangle.py
-subprocess.call([pystr, 'gis2triangle_kd.py', '-n', nodes_file, 
+# have to deal with cases when paths are sources, and when they are not
+try:
+  # this only works when the paths are sourced!
+  pputils_path = os.environ['PPUTILS']
+  subprocess.call(['gis2triangle_kd.py', '-n', nodes_file, 
+  '-b', boundary_file, '-l', lines_file, '-h', holes_file, 
+  '-o', 'tin.poly'])
+except:
+  subprocess.call([pystr, 'gis2triangle_kd.py', '-n', nodes_file, 
   '-b', boundary_file, '-l', lines_file, '-h', holes_file, 
   '-o', 'tin.poly'])
 
@@ -126,11 +141,11 @@ if (os.name == 'posix'):
 	
   # this assumes chmod +x has already been applied to the binaries
   if (proctype == 'i686'):
-    subprocess.call( ['./triangle/bin/triangle_32', 'tin.poly' ] )
+    subprocess.call( [pputils_path + '/triangle/bin/triangle_32', 'tin.poly' ] )
   elif (proctype == 'x86_64'):
-    subprocess.call( ['./triangle/bin/triangle_64', 'tin.poly' ] )
+    subprocess.call( [pputils_path + '/triangle/bin/triangle_64', 'tin.poly' ] )
   elif (proctype == 'armv7l'):
-    subprocess.call( ['./triangle/bin/triangle_pi32', 'tin.poly' ] )
+    subprocess.call( [pputils_path + '/triangle/bin/triangle_pi32', 'tin.poly' ] )
 elif (os.name == 'nt'):
   subprocess.call( ['.\\triangle\\bin\\triangle_32.exe', 'tin.poly' ] )
 else:
@@ -139,17 +154,33 @@ else:
   sys.exit()
 
 # call triangle2adcirc.py
+try:
+  # this only works when the paths are sourced!
+  subprocess.call(['gis2triangle_kd.py', '-n', nodes_file, 
+  '-b', boundary_file, '-l', lines_file, '-h', holes_file, 
+  '-o', 'tin.poly'])
+except:
+  subprocess.call([pystr, 'gis2triangle_kd.py', '-n', nodes_file, 
+  '-b', boundary_file, '-l', lines_file, '-h', holes_file, 
+  '-o', 'tin.poly'])
+
 print('Converting TIN from Triangle to ADCIRC format ...')
-subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'tin.1.node', 
-  '-e', 'tin.1.ele', '-o', output_file])
+try:
+  subprocess.call(['triangle2adcirc.py', '-n', 'tin.1.node', 
+    '-e', 'tin.1.ele', '-o', output_file])
+except:
+  subprocess.call([pystr, 'triangle2adcirc.py', '-n', 'tin.1.node', 
+    '-e', 'tin.1.ele', '-o', output_file])
 
 # construct the output wkt file
 wkt_file = output_file.rsplit('.',1)[0] + '_WKT.csv'
 
 # now convert the *.grd file to a *.wkt file by calling adcirc2wkt.py
 print('Converting TIN from ADCIRC to WKT format ...')
-subprocess.call([pystr, 'adcirc2wkt.py', '-i', output_file,
-                 '-o', wkt_file])
+try:
+  subprocess.call(['adcirc2wkt.py', '-i', output_file, '-o', wkt_file])
+except:
+  subprocess.call([pystr, 'adcirc2wkt.py', '-i', output_file, '-o', wkt_file])
 
 # to remove the temporary files
 os.remove('tin.poly')

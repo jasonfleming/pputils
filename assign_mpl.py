@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
@@ -14,14 +15,6 @@
 # node z-values assigned with polygon attributes. This is useful for 
 # delineating friction zones in GIS, and applying them to the mesh.
 #
-# If some of the mesh nodes fall outside of the polygon boundaries, the
-# default value (zero) is assigned to those nodes. Zero is hard coded,
-# but could easily be changed.
-#
-# The newly created ADCIRC file has to be converted to *.slf, then be 
-# used in the append.py script to generate the friction file for use in
-# Telemac modeling.
-#
 # Revised: Oct 26, 2015
 # The original version assumed that each polygon has a distinct attribute.
 # This version uses Matplotlib for the point in polygon test, instead of
@@ -30,6 +23,14 @@
 #
 # Revised: Feb 21, 2016
 # Changed ProgressBar, and updated for python 2 and 3.
+#
+# Modified: Aug 27, 2020
+# Changed so that default value is the original value read from the 
+# ADCIRC file. What gets modified is only what is contained in the 
+# polygon. This is different than how it used to be in the previous 
+# version, where values outside the polygon were assigned a default
+# value that was hard coded. This version retains the original values
+# for nodes outside of the polygons.
 #
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
@@ -154,6 +155,8 @@ for i in range(n_polygons):
 		poly_test = path.contains_point( (x[k], y[k]) )
 		if (poly_test == True):
 			f[k] = attribute_data[i]
+    else:
+      f[k] = z[i]
 	
 	# delete all elements in the poly list
 	del poly[:]		
@@ -164,11 +167,11 @@ pbar.finish()
 
 # if a particular node of the mesh was not within any polygon
 # extract all values that were less then the condition f-default < 0.001
-outside_test = np.extract(f-default < 0.001,f)
+# outside_test = np.extract(f-default < 0.001,f)
 
-if (len(outside_test) > 0):
-	print('Warning: some nodes were not within any of the input polygons!')
-	print('Assigning default value of ' + str(default) + ' as attribute')
+#if (len(outside_test) > 0):
+#	print('Warning: some nodes were not within any of the input polygons!')
+#	print('Assigning default value of ' + str(default) + ' as attribute')
 
 # now to write the adcirc mesh file
 fout.write("ADCIRC" + "\n")

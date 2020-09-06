@@ -1,0 +1,5 @@
+# enter directory where PPUTILS resides, so that it can be sourced
+export PPUTILS=/home/pprodano/pputils-git
+
+export PATH=$PPUTILS:.:$PATH
+export PYTHONPATH=$PPUTILS:$PYTHONPATH

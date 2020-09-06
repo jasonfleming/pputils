@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
@@ -27,13 +28,21 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os,sys,glob,subprocess
 #
-# determine which version of python the user is running
-if (sys.version_info > (3, 0)):
-  version = 3
-  pystr = 'python3'
-elif (sys.version_info > (2, 7)):
-  version = 2
-  pystr = 'python'
+curdir = os.getcwd()
+#
+try:
+  # this only works when the paths are sourced!
+  pputils_path = os.environ['PPUTILS']
+except:
+  pputils_path = curdir
+  
+  # this is to maintain legacy support
+  if (sys.version_info > (3, 0)):
+    version = 3
+    pystr = 'python3'
+  elif (sys.version_info > (2, 7)):
+    version = 2
+    pystr = 'python'
 #
 # I/O
 # gets a listing of all *.shp in the folder, and stores it in a list
@@ -52,6 +61,11 @@ for i in range(len(shp_list)):
 # now call shp2csv.py for each *.shp file in the list
 for i in range(len(shp_list)):
   print('converting ' + shp_list[i])
-  subprocess.call([pystr, 'shp2csv.py', '-i', shp_list[i], '-o', csv_list[i]])
+  try:
+    subprocess.call(['shp2csv.py', '-i', shp_list[i], '-o', csv_list[i]])
+  except:
+    subprocess.call([pystr, 'shp2csv.py', '-i', shp_list[i], '-o', csv_list[i]])
+    
+  
 
 print('All done!')
