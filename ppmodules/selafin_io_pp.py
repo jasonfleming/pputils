@@ -443,6 +443,9 @@ class ppSELAFIN:
 
   def getIPOBO(self):
     return self.IPOBO
+
+  def getDATE(self):
+    return self.DATE
     
   def getMesh(self):
     return self.NELEM, self.NPOIN, self.NDP, self.IKLE, self.IPOBO, self.x, self.y
@@ -461,7 +464,10 @@ class ppSELAFIN:
   
   def setTitle(self,title):
     self.title = title
-    
+
+  def setDATE(self,DATE):
+    self.DATE=DATE
+
   def setVarNames(self, vnames):
     self.NBV1 = len(vnames)
     self.vnames = vnames

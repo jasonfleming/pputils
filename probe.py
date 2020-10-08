@@ -60,6 +60,7 @@ nplan = slf.getNPLAN()
 NELEM = slf.getNELEM()
 NPOIN = slf.getNPOIN()
 IPOBO = slf.getIPOBO()
+DATE = slf.getDATE()
 
 if (nplan > 1):
   slf_type = '3d'
@@ -78,6 +79,9 @@ print('Precision: ' + precision )
 print('File type: ' + slf_type )
 print('Number of elements: ' + str(NELEM))
 print('Number of nodes: ' + str(NPOIN))
+print('Date: ' + str(DATE[0]) + '.' + str(DATE[1]).zfill(2) + '.'
+      + str(DATE[2]).zfill(2) + ' ' + str(DATE[3]).zfill(2) + ':'
+      + str(DATE[4]).zfill(2) + ':' + str(DATE[5]).zfill(2) )
 print(' ')
 print('#################################')
 print('Variables in '+input_file+' are: ')
