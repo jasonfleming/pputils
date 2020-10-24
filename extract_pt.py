@@ -33,6 +33,12 @@
 # Revised: Dec 5, 2017
 # Changed how parsing is done in formatting for the 3d ascii output.
 #
+# Revised: Oct 24, 2020
+# Deleted the first three lines from the output that were used to output
+# metadata; added the date and time to the time series output. The code
+# for 3d files had to be adjusted, so that output remained the same as
+# before.
+#
 # Uses: Python 2 or 3, Matplotlib, Numpy
 #
 # Example:
@@ -49,6 +55,7 @@
 import os,sys
 from scipy import spatial
 import numpy as np
+from datetime import datetime, date, time, timedelta
 from ppmodules.selafin_io_pp import *
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,6 +88,31 @@ times = slf.getTimes()
 variables = slf.getVarNames()
 units = slf.getVarUnits()
 
+# get the start date from the result file 
+# this is a numpy array of [yyyy mm dd hh mm ss]
+date = slf.getDATE()
+year = date[0]
+month = date[1]
+day = date[2]
+hour = date[3]
+minute = date[4]
+second = date[5]
+
+# use the date info from the above array to construct a python datetime
+# object, in order to display day/time
+try:
+  pydate = datetime(year, month, day, hour, minute, second)
+except:
+  print('Date in file invalid. Printing default date in output file.')
+  pydate = datetime(1997, 8, 29, 2, 15, 0)
+
+# this is the time step in seconds, as read from the file
+# assumes the time steps are regular
+if (len(times) > 1):
+  pydelta = times[1] - times[0]
+else:
+  pydelta = 0.0
+
 # number of variables
 NVAR = len(variables)
 
@@ -94,7 +126,7 @@ NELEM, NPOIN, NDP, IKLE, IPOBO, x, y = slf.getMesh()
 
 # determine if the *.slf file is 2d or 3d by reading how many planes it has
 NPLAN = slf.getNPLAN()
-fout.write('The file has ' + str(NPLAN) + ' planes' + '\n')
+#fout.write('The file has ' + str(NPLAN) + ' planes' + '\n')
 
 # store just the x and y coords
 x2d = x[0:int(len(x)/NPLAN)]
@@ -108,8 +140,8 @@ tree = spatial.cKDTree(source)
 d, idx = tree.query((xu,yu), k = 1)
 
 # print the node location to the output file
-fout.write('Extraction performed at: ' + str(x[idx]) + ' ' + str(y[idx]) + '\n')
-fout.write('Note this is the closest node to the input coordinate!' + '\n')
+#fout.write('Extraction performed at: ' + str(x[idx]) + ' ' + str(y[idx]) + '\n')
+#fout.write('Note this is the closest node to the input coordinate!' + '\n')
 
 # now we need this index for all planes
 idx_all = np.zeros(NPLAN,dtype=np.int32)
@@ -123,12 +155,12 @@ for i in range(1,NPLAN,1):
 
 # now we are ready to output the results
 # to write the header of the output file
-fout.write('TIME, ')
+fout.write('DATE, TIME, ')
 for i in range(NVAR):
   fout.write(variables[i] + ', ')
 fout.write('\n')
 
-fout.write('S, ')
+fout.write('-, S, ')
 for i in range(NVAR):
   fout.write(units[i] + ', ')
 fout.write('\n')
@@ -138,10 +170,15 @@ fout.write('\n')
 for p in range(NPLAN):
   slf.readVariablesAtNode(idx_all[p])
   results = slf.getVarValuesAtNode()
-
-  # outputs the results
+  
+  # outputs the results 'd %b %Y %H:%M'
   for i in range(len(times)):
+    fout.write(str(pydate.strftime('%Y-%m-%d %H:%M') + ', '))
     fout.write(str("{:.3f}").format(times[i]) + ', ')
+    
+    # now we need to increment the pydate by the pydelta
+    pydate = pydate + timedelta(seconds=pydelta)
+    
     for j in range(NVAR):
       fout.write(str("{:.12f}").format(results[i][j]) + ', ')
     fout.write('\n')
@@ -202,8 +239,12 @@ if NPLAN > 1:
   
   with open(output_file, 'r') as f1:
     for i in f1:
-      master.append(i)
-      if (count > 2) and (count < 5):
+      ls = i.split(',')[1:]
+      str2 = ','.join(ls) # join the list into a string, with a comma separator
+      
+      master.append(str2)
+      # first two lines are the header string
+      if (count < 2):
         header_str = header_str + master[count]
       count = count + 1
 
@@ -211,8 +252,8 @@ if NPLAN > 1:
   os.remove(output_file)
 
   for i in range(len(master)):
-    if i > 2:
-      master2.append(master[i].rsplit(',',1)[0])
+    #if i > 0:
+    master2.append(master[i].rsplit(',',1)[0])
       
   for i in range(len(master2)):
     fout2.write(master2[i] + '\n')

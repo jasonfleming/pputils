@@ -42,6 +42,10 @@
 # 
 # Revised: Aug 11, 2019
 # Added a text label for the time stamp in the lower left corner. 
+#
+# Revised: Oct 24, 2020
+# Added a white background arount the time stamp. This makes it nicer
+# for the eyes, especially when the time stamp goes over the mesh.
 # 
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
@@ -69,6 +73,7 @@ import matplotlib.tri as mtri
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
+from datetime import datetime, date, time, timedelta
 from ppmodules.selafin_io_pp import *
 
 if len(sys.argv) == 9:
@@ -173,6 +178,24 @@ if (NPLAN > 1):
 times = slf.getTimes()
 variables = slf.getVarNames()
 units = slf.getVarUnits()
+
+# get the start date from the result file 
+# this is a numpy array of [yyyy mm dd hh mm ss]
+date = slf.getDATE()
+year = date[0]
+month = date[1]
+day = date[2]
+hour = date[3]
+minute = date[4]
+second = date[5]
+
+# use the date info from the above array to construct a python datetime
+# object, in order to display day/time
+pydate = datetime(year, month, day, hour, minute, second)
+
+# this is the time step in seconds, as read from the file
+# assumes the time steps are regular
+pydelta = times[1] - times[0]
 
 # the vector variables that it searches for
 # for telemac2d
@@ -280,7 +303,6 @@ for count, item in enumerate(filenames):
   else:
     cbar_min = cbar_min_global
     cbar_max = cbar_max_global
-
   
   # adjust the plot_array for limits of levels (before plotting)
   # added on 2018.07.28
@@ -326,8 +348,18 @@ for count, item in enumerate(filenames):
   cb.ax.tick_params(labelsize=5)
   
   # this is the timestamp label
-  timestamp = 'Index: ' + str(count) + '\n' + 'Time:  ' + str('{:.1f}'.format(times[count])) + ' sec'
-  plt.text(np.min(x), np.min(y), timestamp, fontsize=6)
+  timestamp = 'Index: ' + str(count) + '\n' + \
+    'Time:  ' + str('{:.1f}'.format(times[count])) + ' sec' + '\n' +\
+    'Date: ' + str(pydate.strftime("%d %b %Y %H:%M"))
+  
+  # now we need to increment the pydate by the pydelta
+  pydate = pydate + timedelta(seconds=pydelta)
+  
+  if (zoom > 0):
+    t=plt.text(xll, yll, timestamp, fontsize=6, bbox=dict(boxstyle='square'))
+    t.set_bbox(dict(facecolor='white', alpha=1.0))
+  else:
+    t=plt.text(np.min(x), np.min(y), timestamp, fontsize=6)
   
   # determine the axis label
   if (var_index2 > 0):
@@ -420,4 +452,3 @@ for count, item in enumerate(filenames):
   fig.set_size_inches(12,9)
   fig.savefig(file_out[count], dpi=300, bbox_inches='tight', transparent=False)
   plt.close()
-  

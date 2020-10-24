@@ -79,7 +79,7 @@ for item in filenames:
 	file_out[x] = open(item,'w')
 	
 	for i in range(len(master)):
-		if (str(master[i]).find("2D RESULTS FILE") == 0):
+		if (str(master[i]).find("2D RESULTS FILE = ") == 0):
 			file_out[x].write("2D RESULTS FILE " + str('= ') + 
 				str("{:0>5d}".format(scen_id[x])) + '.slf' + '\n')
 		
@@ -93,7 +93,7 @@ for item in filenames:
 			
 		elif (str(master[i]).find("BOUNDARY PEAK FREQUENCY") == 0):
 			file_out[x].write("BOUNDARY PEAK FREQUENCY " + str('= ') + 
-				str("{:.3f}".format(1.0 / scen_wave_period[x])) + '\n' )
+				str("{:.5f}".format(1.0 / scen_wave_period[x])) + '\n' )
 			
 		elif (str(master[i]).find("BOUNDARY MAIN DIRECTION 1") == 0):
 			file_out[x].write("BOUNDARY MAIN DIRECTION 1 " + str('= ') + 
@@ -107,7 +107,7 @@ for item in filenames:
 # now to create a bash script file that will run all the scenarios
 fs = open("run_scenarios.sh", "w")
 for item in filenames:
-	fs.write("python runModule.py tomawac " + item + "\n")
+	fs.write("runcode.py tomawac -s --ncsize=4 " + item + "\n")
 	fs.write("rm *.sortie" + "\n")
 	fs.write("rm *.zip" + "\n")
 

@@ -181,9 +181,3 @@ lib.close()
 res.close()
 
 pbar.finish()
-
-
-
-
-
-
