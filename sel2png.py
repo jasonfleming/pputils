@@ -195,7 +195,10 @@ pydate = datetime(year, month, day, hour, minute, second)
 
 # this is the time step in seconds, as read from the file
 # assumes the time steps are regular
-pydelta = times[1] - times[0]
+if(len(times)>1):
+  pydelta = times[1] - times[0]
+else:
+  pydelta = 0.0
 
 # the vector variables that it searches for
 # for telemac2d

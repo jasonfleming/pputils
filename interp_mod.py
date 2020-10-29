@@ -2,7 +2,7 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 interp.py                             # 
+#                                 interp_mod.py                         # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
@@ -14,9 +14,11 @@
 # Made it work under python 2 or 3
 #
 # Modified: Oct 29, 2020
-# For mesh nodes that are outside of the tin the script simply takes 
-# the closest tin node, and assigns it to the mesh. Look at interp_mod.py
-# for an alternate way.
+# Made it so that values are assigned only from the area bounded by the
+# tin. For nodes in the mesh that fall outside of the tin, current node
+# values are retained (and are not modified). This script works when one
+# has a tin for only a fraction of the mesh domain, and wants to modify
+# values in that area only, leaving everying else unchanged.
 #
 # Purpose: Script takes in a tin and a mesh file (both in ADCIRC format), 
 # and interpolates the nodes of the mesh file from the tin.
@@ -70,33 +72,18 @@ tin = mtri.Triangulation(t_x, t_y, t_ikle)
 
 # to perform the triangulation
 interpolator = mtri.LinearTriInterpolator(tin, t_z)
-m_z = interpolator(m_x, m_y)
+m_z_interp = interpolator(m_x, m_y)
 
 # if the node is outside of the boundary of the domain, assign value -999.0
 # as the interpolated node
-where_are_NaNs = np.isnan(m_z)
-m_z[where_are_NaNs] = -999.0
-'''
-if (np.sum(where_are_NaNs) > 0):
-	print '#####################################################'
-	print ''
-	print 'WARNING: Some nodes are outside of the TIN boundary!!!'
-	print ''
-	print 'Closest TIN node is assigned to those nodes!'
-	print ''
-	print '#####################################################'
-'''
+where_are_NaNs = np.isnan(m_z_interp)
+m_z_interp[where_are_NaNs] = -999.0
 
 # rather than keeping the -999.0 as the mesh node value outside the tin,
-# simply assign to that mesh node the elevation of the closest tin node.
+# simply assign to that mesh node the elevation of its original node
 for i in range(len(m_x)):
 	if (where_are_NaNs[i] == True):
-		xdist = np.subtract(t_x,m_x[i])
-		ydist = np.subtract(t_y,m_y[i])
-		dist = np.sqrt(np.power(xdist,2.0) + np.power(ydist,2.0))
-		minidx = np.argmin(dist)
-		
-		m_z[i] = t_z[minidx]
+		m_z_interp[i] = m_z[i]
 
 # to create the output file
 fout = open(output_file,"w")
@@ -109,7 +96,7 @@ fout.write(str(m_e) + " " + str(m_n) + "\n")
 # writes the nodes
 for i in range(0,m_n):
 	fout.write(str(i+1) + " " + str("{:.3f}".format(m_x[i])) + " " + 
-		str("{:.3f}".format(m_y[i])) + " " + str("{:.3f}".format(m_z[i])) + "\n")
+		str("{:.3f}".format(m_y[i])) + " " + str("{:.3f}".format(m_z_interp[i])) + "\n")
 #
 # writes the elements
 for i in range(0,m_e):
