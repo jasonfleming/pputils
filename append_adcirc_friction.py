@@ -2,7 +2,7 @@
 #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #                                                                       #
-#                                 append_adcirc.py                      # 
+#                                 append_adcirc_friction.py             # 
 #                                                                       #
 #+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!+!
 #
@@ -41,7 +41,7 @@ from ppmodules.utilities import *
 if len(sys.argv) != 9 :
   print('Wrong number of arguments, stopping now...')
   print('Usage:')
-  print('python append_adcirc.py -b bathy.grd -f friction.grd -p single -o merged.slf')
+  print('python append_adcirc_friction.py -b bathy.grd -f friction.grd -p single -o merged.slf')
   sys.exit()
 
 bathy_file = sys.argv[2]
