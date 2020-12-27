@@ -28,6 +28,11 @@
 # value that was hard coded. This version retains the original values
 # for nodes outside of the polygons.
 #
+# Modified: Nov 1, 2020
+# The previous revision had a bug when two polygons were used (when it
+# got to the second polygon, it didn't remember the updates made in the
+# first polygon). This is now fixed.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -116,8 +121,8 @@ attribute_data[n_polygons-1] = attr_poly[nodes-1]
 # default attribute
 default = 0.0
 
-# define the mesh attribute
-f = np.zeros(n) * default # n is number of mesh nodes
+# define the mesh attribute as the value read from the file
+f = z
 
 # for the progress bar
 w = [Percentage(), Bar(), ETA()]
@@ -131,7 +136,7 @@ for i in range(n_polygons):
   for j in range(nodes):
     if (shapeid_poly[j] == polygon_ids[i]):
       poly.append( (x_poly[j], y_poly[j]) )
-  #print poly
+  #print(poly)
   
   # to loop over all nodes in the mesh (inneficient)
   # TODO remove the brute force component of this code!!!
@@ -141,8 +146,10 @@ for i in range(n_polygons):
     poly_test = point_in_poly(x[k], y[k], poly)
     if (poly_test == 'IN'):
       f[k] = attribute_data[i]
+    elif (poly_test == 'OUT'):
+      f[k] = f[k]
     else:
-      f[k] = z[i]
+      f[k] = -999
   
   # delete all elements in the poly list
   del poly[:]    

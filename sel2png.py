@@ -46,6 +46,9 @@
 # Revised: Oct 24, 2020
 # Added a white background arount the time stamp. This makes it nicer
 # for the eyes, especially when the time stamp goes over the mesh.
+#
+# Revised: Dec 27, 2020
+# Added the date to the time stamp, as it is read from the slf file.
 # 
 # Using: Python 2 or 3, Matplotlib, Numpy
 #
@@ -191,7 +194,6 @@ second = date[5]
 
 # use the date info from the above array to construct a python datetime
 # object, in order to display day/time
-pydate = datetime(year, month, day, hour, minute, second)
 
 # this is the time step in seconds, as read from the file
 # assumes the time steps are regular
@@ -200,6 +202,18 @@ if(len(times)>1):
 else:
   pydelta = 0.0
 
+# create an empty list
+pydates_all = list()
+
+# put the pydate at time index 0
+pydates_all.append(datetime(year, month, day, hour, minute, second))
+
+# fill in the list for all dates corresponding to times variable
+for i in range(len(times)):
+  if (i > 0):
+    # now we need to increment the pydate by the pydelta
+    pydates_all.append(pydates_all[i-1] + timedelta(seconds=pydelta))
+    
 # the vector variables that it searches for
 # for telemac2d
 idx_vel_u = -1000
@@ -262,12 +276,17 @@ idx_times = np.arange(len(times))
 # initialize the index list of time steps to extract
 idx_list = list()
 
-# create a list of filenames based on time records in the slf file
+# create a list of filenames to be written
 filenames = list()
 for i in range(t_start, t_end+1, 1):
   filenames.append(output_file.split('.',1)[0] + '_' +
     '{:0>5d}'.format(i) + '.' + output_extension)
   idx_list.append(i)
+  
+# create a list of dates to be written
+pydates = list()
+for i in range(t_start, t_end+1, 1):
+  pydates.append(pydates_all[i])
   
 # to check if the idx_list is within times list
 if (idx_list[0] not in idx_times):
@@ -321,7 +340,8 @@ for count, item in enumerate(filenames):
         plot_array[i] = cbar_max - cbar_max*0.01
   
   # if plot_array values are -ve, reverse +/- signs from above
-  if (cbar_min_global < 0 and cbar_max_global < 0):
+  #if (cbar_min_global < 0 and cbar_max_global < 0):
+  if (cbar_min_global < 0):
     #print('I am in the -ve section')
     for i in range(len(plot_array)):
       if (plot_array[i] < cbar_min):
@@ -350,19 +370,19 @@ for count, item in enumerate(filenames):
   cb.set_ticks(levels)
   cb.ax.tick_params(labelsize=5)
   
-  # this is the timestamp label
-  timestamp = 'Index: ' + str(count) + '\n' + \
-    'Time:  ' + str('{:.1f}'.format(times[count])) + ' sec' + '\n' +\
-    'Date: ' + str(pydate.strftime("%d %b %Y %H:%M"))
-  
-  # now we need to increment the pydate by the pydelta
-  pydate = pydate + timedelta(seconds=pydelta)
-  
+  # this is the timestamp label 
+  timestamp = 'Index: ' + str(idx_list[count]) + '\n' + \
+    'Time: ' + str('{:.1f}'.format(times[idx_list[count]])) + ' sec' + '\n' + \
+    'Date: ' + str(pydates[count].strftime("%d %b %Y %H:%M"))
+
   if (zoom > 0):
     t=plt.text(xll, yll, timestamp, fontsize=6, bbox=dict(boxstyle='square'))
     t.set_bbox(dict(facecolor='white', alpha=1.0))
+    # this I used to plot the mesh
+    #plt.triplot(triang, lw=0.1, color='black')
   else:
-    t=plt.text(np.min(x), np.min(y), timestamp, fontsize=6)
+    t=plt.text(np.min(x), np.min(y), timestamp, fontsize=6, bbox=dict(boxstyle='square'))
+    t.set_bbox(dict(facecolor='white', alpha=1.0))
   
   # determine the axis label
   if (var_index2 > 0):

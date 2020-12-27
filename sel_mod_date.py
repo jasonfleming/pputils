@@ -13,6 +13,9 @@
 # date according to the intputs given. Nothing is changed in the *.slf
 # file other than the date.
 #
+# Revised: Nov 2, 2020
+# Times were incorrectly written in the result file. This is now fixed.
+#
 # Uses: Python 2 or 3, Numpy
 #
 # Example:
@@ -106,5 +109,5 @@ for t in range(len(times)):
   results = slf.getVarValues()
 
   # write the answers to the output file
-  slf_out.writeVariables(t, results)
+  slf_out.writeVariables(times[t], results)
 pbar.finish()
