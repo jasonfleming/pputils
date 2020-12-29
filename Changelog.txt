@@ -22,4 +22,4 @@ Change-log:
 
 1.07 (April 7, 2017): Major updates to the code base; number of scripts increased nearly by double compared to previous version; added an ability to read and write ESRI Shapefiles (using pyshp module); added point and line cropping scripts; added ability to retain a specified time step from a SELAFIN file (for use in hot-starting); added an ability to extract data form a SELAFIN file using points and lines; cleaned up the interpolation scripts (everything now uses Scipy's cKDTree); added the code to generate and manage wave libraries; added a first version of the manual.
 
-1.08 (September 6, 2020). Major updates to a number of scripts, with a heavily expanded scope. Updated the code so that PPUTILS can be sourced in a terminal (for now this feature works only on Linux). M.
+1.08 (September 6, 2020). Major updates to a number of scripts, with a heavily expanded scope. Updated the code so that PPUTILS can be sourced in a terminal (for now this feature works only on Linux).
