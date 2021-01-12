@@ -107,11 +107,11 @@ if (os.name == 'posix'):
   
   # this assumes chmod +x has already been applied to the binaries
   if (proctype == 'i686'):
-    callstr = pputils_path + '/renumber/bin/triangulation_rcm_32'
+    callstr = pputils_path + '/renumber/bin/triangulation_rcm_32 out'
   elif (proctype == 'x86_64'):
     callstr = pputils_path + '/renumber/bin/triangulation_rcm_64 out'
   elif (proctype == 'armv7l'):
-    callstr = pputils_path + '/renumber/bin/triangulation_rcm_pi32'
+    callstr = pputils_path + '/renumber/bin/triangulation_rcm_pi32 out'
   else:
     print('OS not supported!')
     print('Exiting!')

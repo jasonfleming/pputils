@@ -135,8 +135,7 @@ if (os.name == 'posix'):
   elif (proctype == 'x86_64'):
     callstr = pputils_path + '/gridgen/bin/gridgen'
   elif (proctype == 'armv7l'):
-    print('Support for 32 bit Raspberry Pi is not provided! Sorry!')
-    sys.exit(0)
+    callstr = pputils_path + '/gridgen/bin/gridgen_pi32'
 
   # make sure the binary is allowed to be executed
   subprocess.call(['chmod', '+x', callstr])
@@ -146,6 +145,7 @@ if (os.name == 'posix'):
     
 elif (os.name == 'nt'):
     print('Gridgen-c is not compiled for Windows yet. Sorry!')
+    sys.exit(0)
 else:
   print('OS not supported!')
   print('Exiting!')
