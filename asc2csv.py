@@ -93,7 +93,7 @@ for i in range(NROWS):
     count = count + 1
 
 # write the header    
-fout.write('x,y,z' + '\n')
+#fout.write('x,y,z' + '\n')
     
 # only retain non-missing values
 for i in range(n):
