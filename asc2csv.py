@@ -12,6 +12,9 @@
 #
 # Purpose: Script takes in a ESRI *.asc file and generates a comma
 # delimited *.csv file. 
+#
+# Revised: September 28, 2021
+# Added a progress bar to monitor write progress.
 # 
 #
 # Uses: Python 2 or 3, Numpy
@@ -28,6 +31,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os,sys                              # system parameters
 import numpy             as np             # numpy
+from progressbar import ProgressBar, Bar, Percentage, ETA
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN
@@ -94,11 +98,18 @@ for i in range(NROWS):
 
 # write the header    
 #fout.write('x,y,z' + '\n')
+
+print('writing data file ...')
+w = [Percentage(), Bar(), ETA()]
+pbar = ProgressBar(widgets=w, maxval=n).start()
     
 # only retain non-missing values
 for i in range(n):
+  
   if (not(z[i] - NODATA_VALUE) < 0.001):
     fout.write(str('{:.3f}'.format(x[i])) + ',' + str('{:.3f}'.format(y[i]))
       + ',' + str('{:.3f}'.format(z[i])) + '\n')
+  pbar.update(i+1)
+pbar.finish()
     
 print("All done!")
