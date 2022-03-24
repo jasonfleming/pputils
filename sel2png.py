@@ -381,7 +381,7 @@ for count, item in enumerate(filenames):
     # this I used to plot the mesh
     #plt.triplot(triang, lw=0.1, color='black')
   else:
-    t=plt.text(np.min(x), np.min(y), timestamp, fontsize=6, bbox=dict(boxstyle='square'))
+    t=plt.text(np.max(x), np.min(y), timestamp, fontsize=6, bbox=dict(boxstyle='square'))
     t.set_bbox(dict(facecolor='white', alpha=1.0))
   
   # determine the axis label
