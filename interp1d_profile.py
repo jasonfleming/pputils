@@ -80,7 +80,7 @@ ynew = f(xnew_array)
 fout = open(output_file, 'w')
 
 for i in range(n):
-  fout.write(str(xnew_array[i]) + ',' + str(ynew[i]) + '\n')
+  fout.write(str(xnew_array[i]) + ',' + str('{:.3f}'.format(ynew[i])) + '\n')
 
 print('All done!')
 

@@ -19,7 +19,7 @@
 #
 # python 2dm_to_adcirc.py -i -out.2dm -o out.grd 
 # where:
-# -i input 2dm mesh file
+# -i input 2dm mesh file 
 # -o output adcirc mesh file
 # 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
